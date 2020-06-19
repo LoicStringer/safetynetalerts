@@ -14,6 +14,11 @@ public class MedicalRecord {
 	private String[] medications;
 	private String[] allergies;
 
+	public MedicalRecord() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public MedicalRecord(String firstName, String lastName, String birthdate, String[] medications,
 			String[] allergies) {
 		super();
@@ -64,5 +69,4 @@ public class MedicalRecord {
 		this.allergies = allergies;
 	}
 
-	
 }
