@@ -1,16 +1,17 @@
 package com.safetynet.safetynetalerts.dao;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.safetynet.safetynetalerts.model.Person;
 
-public class PersonDao implements IDao<Person>{
+public class PersonDao extends AbstractDataDao implements IDao<Person>{
 
 	
 	@Override
 	public List<Person> getAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Person> persons = Arrays.asList(getObjectMapper().convertValue(getPersonsData(), Person[].class));
+		return persons;
 	}
 
 	@Override

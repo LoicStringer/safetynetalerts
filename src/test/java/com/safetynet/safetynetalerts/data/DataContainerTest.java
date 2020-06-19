@@ -29,7 +29,7 @@ class DataContainerTest {
 		assertTrue(jsonNode.isContainerNode());
 		assertEquals(3, jsonNode.size());
 	}
-
+/*
 	@Test
 	void containsPersonDataTest() {
 		jsonNode = dataContainer.containsPersonsData();
@@ -54,5 +54,5 @@ class DataContainerTest {
 		assertTrue(jsonNode.isContainerNode());
 		assertEquals(13, jsonNode.size());
 	}
-
+*/
 }

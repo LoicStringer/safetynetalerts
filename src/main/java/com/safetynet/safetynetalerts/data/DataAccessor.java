@@ -25,15 +25,15 @@ public class DataAccessor extends Properties {
 	}
 
 	public String getMedicalRecordsNode() {
-		return getProperty("json.medicalrecordsNode");
+		return getProperty("json.medicalRecordsNode");
 	}
 
 	public String getPersonsNode() {
 		return getProperty("json.personsNode");
 	}
 
-	public String getFireStationsNode() {
-		return getProperty("json.firestationsNode");
+	public String getLinkedFireStationsNode() {
+		return getProperty("json.linkedFireStationsNode");
 
 	}
 }

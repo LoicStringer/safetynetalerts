@@ -6,20 +6,20 @@ package com.safetynet.safetynetalerts.model;
  * @author newbie
  *
  */
-public class LinkedFirestation {
+public class LinkedFireStation {
 
 	private String address;
-	private String stationId;
+	private String station;
 
-	public LinkedFirestation() {
+	public LinkedFireStation() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public LinkedFirestation(String address, String stationId) {
+	public LinkedFireStation(String address, String station) {
 		super();
 		this.address = address;
-		this.stationId = stationId;
+		this.station = station;
 	}
 
 	public String getAddress() {
@@ -30,12 +30,12 @@ public class LinkedFirestation {
 		this.address = address;
 	}
 
-	public String getStationId() {
-		return stationId;
+	public String getStation() {
+		return station;
 	}
 
-	public void setStationId(String stationId) {
-		this.stationId = stationId;
+	public void setStationId(String station) {
+		this.station = station;
 	}
 
 }

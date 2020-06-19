@@ -28,7 +28,7 @@ public class DataContainer {
 		}
 		return data;
 	}
-
+/*
 	public JsonNode containsPersonsData() {
 		JsonNode personData = null;
 		personData = containsData().get(dataAccessor.getPersonsNode());
@@ -43,10 +43,10 @@ public class DataContainer {
 	
 	public JsonNode containsLinkedFireStationsData() {
 		JsonNode personData = null;
-		personData = containsData().get(dataAccessor.getFireStationsNode());
+		personData = containsData().get(dataAccessor.getLinkedFireStationsNode());
 		return personData;
 	}
-
+*/
 	
 	
 	
