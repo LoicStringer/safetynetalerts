@@ -38,4 +38,11 @@ public class LinkedFireStation {
 		this.station = station;
 	}
 
+	@Override
+	public String toString() {
+		return "LinkedFireStation [address=" + address + ", station=" + station + "]";
+	}
+	
+	
+
 }

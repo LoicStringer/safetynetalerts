@@ -19,9 +19,9 @@ public class Person {
 	
 	
 	
+	
 	public Person() {
-		super();
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public Person(String firstName, String lastName, String address, String city, String zip, String phone,
@@ -92,4 +92,15 @@ public class Person {
 		this.email = email;
 	}
 
+	@Override
+	public String toString() {
+		return "Person [firstName=" + firstName + ", lastName=" + lastName + ", address=" + address + ", city=" + city
+				+ ", zip=" + zip + ", phone=" + phone + ", email=" + email + "]";
+	}
+
+	
+	
+
+	
+	
 }

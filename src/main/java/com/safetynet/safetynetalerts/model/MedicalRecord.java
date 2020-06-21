@@ -1,5 +1,7 @@
 package com.safetynet.safetynetalerts.model;
 
+import java.util.Arrays;
+
 /**
  * A person's medical record representation.
  * 
@@ -68,5 +70,13 @@ public class MedicalRecord {
 	public void setAllergies(String[] allergies) {
 		this.allergies = allergies;
 	}
+
+	@Override
+	public String toString() {
+		return "MedicalRecord [firstName=" + firstName + ", lastName=" + lastName + ", birthdate=" + birthdate
+				+ ", medications=" + Arrays.toString(medications) + ", allergies=" + Arrays.toString(allergies) + "]";
+	}
+	
+	
 
 }
