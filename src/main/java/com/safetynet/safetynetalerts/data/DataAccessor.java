@@ -5,9 +5,7 @@ import java.util.Properties;
 
 public class DataAccessor extends Properties {
 
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 
 	public DataAccessor() {

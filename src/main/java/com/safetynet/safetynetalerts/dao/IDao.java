@@ -2,9 +2,16 @@ package com.safetynet.safetynetalerts.dao;
 
 import java.util.List;
 
+
+
+/**
+ * 
+ * @author newbie
+ *
+ * @param <T>
+ */
 public interface IDao<T> {
 
-	//void setList(List<T> list);
 	List<T> getAll();
 	boolean insert(T t);
 	boolean update(T t);

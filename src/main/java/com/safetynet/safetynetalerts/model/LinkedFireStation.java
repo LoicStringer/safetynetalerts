@@ -1,7 +1,9 @@
 package com.safetynet.safetynetalerts.model;
 
 /**
- * Retrieves the link between an address and a fire station by its Id.
+ * Retrieves the link between an address and a fire station.</br>
+ * Constructed of two <code>String</code> attributes, an address and a fire station id,
+ * as provided by the data source Json file.
  * 
  * @author newbie
  *
@@ -13,7 +15,6 @@ public class LinkedFireStation {
 
 	public LinkedFireStation() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public LinkedFireStation(String address, String station) {
@@ -34,7 +35,7 @@ public class LinkedFireStation {
 		return station;
 	}
 
-	public void setStationId(String station) {
+	public void setStation(String station) {
 		this.station = station;
 	}
 

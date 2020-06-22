@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.safetynet.safetynetalerts.data.DataContainer;
 import com.safetynet.safetynetalerts.data.DataProvider;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 
@@ -15,7 +14,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	@Override
 	public List<MedicalRecord> getAll() {
 		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
-		ArrayNode medicalRecordsNode = DataContainer.getMedicalRecordsData();
+		ArrayNode medicalRecordsNode = getDataContainer().getMedicalRecordsData();
 		Iterator<JsonNode> elements = medicalRecordsNode.elements();
 		
 		while (elements.hasNext()) {
@@ -31,11 +30,11 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	public boolean insert(MedicalRecord medicalRecord) {
 		boolean isSaved = false;
 		JsonNode medicalRecordNode = getObjectMapper().convertValue(medicalRecord, JsonNode.class);
-		ArrayNode medicalRecordsData = DataContainer.getMedicalRecordsData();
+		ArrayNode medicalRecordsData = getDataContainer().getMedicalRecordsData();
+		int size = medicalRecordsData.size();
 		
 		medicalRecordsData.add(medicalRecordNode);
-		DataContainer.setMedicalRecordsData(medicalRecordsData);	
-		int size = medicalRecordsData.size();
+		getDataContainer().setMedicalRecordsData(medicalRecordsData);	
 		
 		if(medicalRecordsData.size() == (size+1))
 			isSaved = true;
@@ -56,7 +55,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 			isUpdated = true;
 
 		ArrayNode newMedicalRecordsData = getObjectMapper().valueToTree(medicalrecords);
-		DataContainer.setMedicalRecordsData(newMedicalRecordsData);
+		getDataContainer().setMedicalRecordsData(newMedicalRecordsData);
 		
 		return isUpdated;
 	}
@@ -76,7 +75,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 			isDeleted = true;
 		
 		ArrayNode newMedicalRecordsData = getObjectMapper().valueToTree(medicalRecords);
-		DataContainer.setMedicalRecordsData(newMedicalRecordsData);
+		getDataContainer().setMedicalRecordsData(newMedicalRecordsData);
 		
 		return isDeleted;
 	}

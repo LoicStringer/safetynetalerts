@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.safetynet.safetynetalerts.data.DataContainer;
 import com.safetynet.safetynetalerts.data.DataProvider;
 import com.safetynet.safetynetalerts.model.Person;
 
@@ -15,7 +14,7 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 	@Override
 	public List<Person> getAll() {
 		List<Person> persons = new ArrayList<Person>();
-		ArrayNode personsData = DataContainer.getPersonsData();
+		ArrayNode personsData = getDataContainer().getPersonsData();
 		Iterator<JsonNode> elements = personsData.elements();
 		
 		while (elements.hasNext()) {
@@ -31,11 +30,11 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 	public boolean insert(Person person) {
 		boolean isSaved = false;
 		JsonNode personNode = getObjectMapper().convertValue(person, JsonNode.class);
-		ArrayNode personsData = DataContainer.getPersonsData();
+		ArrayNode personsData = getDataContainer().getPersonsData();
+		int size = personsData.size();
 		
 		personsData.add(personNode);
-		DataContainer.setPersonsData(personsData);	
-		int size = personsData.size();
+		getDataContainer().setPersonsData(personsData);	
 		
 		if(personsData.size() == (size+1))
 			isSaved = true;
@@ -56,7 +55,7 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 			isUpdated = true;
 
 		ArrayNode newPersonsData = getObjectMapper().valueToTree(persons);
-		DataContainer.setPersonsData(newPersonsData);
+		getDataContainer().setPersonsData(newPersonsData);
 		
 		return isUpdated;
 	}
@@ -76,7 +75,7 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 			isDeleted = true;
 		
 		ArrayNode newPersonsData = getObjectMapper().valueToTree(persons);
-		DataContainer.setPersonsData(newPersonsData);
+		getDataContainer().setPersonsData(newPersonsData);
 		
 		return isDeleted;
 	}

@@ -11,37 +11,36 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 
-
 class DataContainerTest {
 
-	
-	private static ArrayNode arrayNode;
+	private ArrayNode arrayNode;
+	private DataContainer dataContainer;
 
 	@BeforeEach
 	void setUp() {
 		arrayNode = null;
+		dataContainer = new DataContainer();
 	}
 
 	@Test
 	void containsPersonDataTest() {
-		arrayNode = DataContainer.getPersonsData();
+		arrayNode = dataContainer.getPersonsData();
 		assertNotNull(arrayNode);
 		assertTrue(arrayNode.isContainerNode());
 		assertEquals(23, arrayNode.size());
-
 	}
 
 	@Test
 	void containsMedicalRecordsDataTest() {
-		arrayNode = DataContainer.getMedicalRecordsData();
+		arrayNode = dataContainer.getMedicalRecordsData();
 		assertNotNull(arrayNode);
 		assertTrue(arrayNode.isContainerNode());
 		assertEquals(23, arrayNode.size());
-
 	}
+	
 	@Test
 	void containsFireStationsDataTest() {
-		arrayNode = DataContainer.getLinkedFireStationsData();
+		arrayNode = dataContainer.getLinkedFireStationsData();
 		assertNotNull(arrayNode);
 		assertTrue(arrayNode.isContainerNode());
 		assertEquals(13, arrayNode.size());

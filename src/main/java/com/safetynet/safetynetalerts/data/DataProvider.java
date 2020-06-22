@@ -5,17 +5,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class DataProvider {
 
 	
-	public ObjectMapper objectMapper = new ObjectMapper();
-	public DataAccessor dataAccessor = new DataAccessor();
-	
+	private ObjectMapper objectMapper = new ObjectMapper();
+	private DataAccessor dataAccessor = new DataAccessor();
+	private DataContainer dataContainer = new DataContainer();
 	
 	public ObjectMapper getObjectMapper() {
 		return objectMapper;
 	}
+	
 	public DataAccessor getDataAccessor() {
 		return dataAccessor;
 	}
 	
+	public DataContainer getDataContainer() {
+		return dataContainer;
+	}
 	
 	
 	

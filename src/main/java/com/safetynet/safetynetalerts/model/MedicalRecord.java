@@ -3,7 +3,10 @@ package com.safetynet.safetynetalerts.model;
 import java.util.Arrays;
 
 /**
- * A person's medical record representation.
+ * A person's medical record representation.</br>
+ * Constructed of <code>String</code> attributes 
+ * including two <code>Array</code> for the medications and allergies,
+ * as provided by the data source Json file.
  * 
  * @author newbie
  *
@@ -18,7 +21,6 @@ public class MedicalRecord {
 
 	public MedicalRecord() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public MedicalRecord(String firstName, String lastName, String birthdate, String[] medications,
