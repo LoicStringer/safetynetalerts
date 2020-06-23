@@ -1,59 +1,49 @@
 package com.safetynet.safetynetalerts.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.JsonNode;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 
 class DataContainerTest {
 
-	private static DataContainer dataContainer;
-	private static JsonNode jsonNode;
+	private ArrayNode arrayNode;
+	private DataContainer dataContainer;
 
 	@BeforeEach
 	void setUp() {
+		arrayNode = null;
 		dataContainer = new DataContainer();
-		jsonNode = null;
-	}
-
-	@Test
-	void containDatatest() {
-		jsonNode = dataContainer.containsData();
-		assertNotNull(jsonNode);
-		assertTrue(jsonNode.isContainerNode());
-		assertEquals(3, jsonNode.size());
 	}
 
 	@Test
 	void containsPersonDataTest() {
-		jsonNode = dataContainer.containsPersonsData();
-		assertNotNull(jsonNode);
-		assertTrue(jsonNode.isContainerNode());
-		assertEquals(23, jsonNode.size());
-
+		arrayNode = dataContainer.getPersonsData();
+		assertNotNull(arrayNode);
+		assertTrue(arrayNode.isContainerNode());
+		assertEquals(23, arrayNode.size());
 	}
 
 	@Test
 	void containsMedicalRecordsDataTest() {
-		jsonNode = dataContainer.containsMedicalRecordsData();
-		assertNotNull(jsonNode);
-		assertTrue(jsonNode.isContainerNode());
-		assertEquals(23, jsonNode.size());
-
+		arrayNode = dataContainer.getMedicalRecordsData();
+		assertNotNull(arrayNode);
+		assertTrue(arrayNode.isContainerNode());
+		assertEquals(23, arrayNode.size());
 	}
+	
 	@Test
 	void containsFireStationsDataTest() {
-		jsonNode = dataContainer.containsLinkedFireStationsData();
-		assertNotNull(jsonNode);
-		assertTrue(jsonNode.isContainerNode());
-		assertEquals(13, jsonNode.size());
+		arrayNode = dataContainer.getLinkedFireStationsData();
+		assertNotNull(arrayNode);
+		assertTrue(arrayNode.isContainerNode());
+		assertEquals(13, arrayNode.size());
 	}
 
 }

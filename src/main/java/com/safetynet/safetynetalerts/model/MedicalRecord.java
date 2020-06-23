@@ -1,7 +1,12 @@
 package com.safetynet.safetynetalerts.model;
 
+import java.util.Arrays;
+
 /**
- * A person's medical record representation.
+ * A person's medical record representation.</br>
+ * Constructed of <code>String</code> attributes 
+ * including two <code>Array</code> for the medications and allergies,
+ * as provided by the data source Json file.
  * 
  * @author newbie
  *
@@ -13,6 +18,10 @@ public class MedicalRecord {
 	private String birthdate;
 	private String[] medications;
 	private String[] allergies;
+
+	public MedicalRecord() {
+		super();
+	}
 
 	public MedicalRecord(String firstName, String lastName, String birthdate, String[] medications,
 			String[] allergies) {
@@ -64,5 +73,12 @@ public class MedicalRecord {
 		this.allergies = allergies;
 	}
 
+	@Override
+	public String toString() {
+		return "MedicalRecord [firstName=" + firstName + ", lastName=" + lastName + ", birthdate=" + birthdate
+				+ ", medications=" + Arrays.toString(medications) + ", allergies=" + Arrays.toString(allergies) + "]";
+	}
 	
+	
+
 }

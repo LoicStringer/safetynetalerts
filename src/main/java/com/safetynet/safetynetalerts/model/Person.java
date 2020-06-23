@@ -1,7 +1,10 @@
 package com.safetynet.safetynetalerts.model;
 
 /**
- * Representation of a person.
+ * Representation of a person.</br>
+ * Constructed of <code>String</code> attributes 
+ * containing informations such as address or email,
+ * as provided by the data source Json file.
  * 
  * @author newbie
  *
@@ -16,12 +19,8 @@ public class Person {
 	private String phone;
 	private String email;
 
-	
-	
-	
 	public Person() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Person(String firstName, String lastName, String address, String city, String zip, String phone,
@@ -92,4 +91,15 @@ public class Person {
 		this.email = email;
 	}
 
+	@Override
+	public String toString() {
+		return "Person [firstName=" + firstName + ", lastName=" + lastName + ", address=" + address + ", city=" + city
+				+ ", zip=" + zip + ", phone=" + phone + ", email=" + email + "]";
+	}
+
+	
+	
+
+	
+	
 }
