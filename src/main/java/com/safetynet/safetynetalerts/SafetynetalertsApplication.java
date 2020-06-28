@@ -12,7 +12,7 @@ import com.safetynet.safetynetalerts.dao.PersonDao;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 import com.safetynet.safetynetalerts.model.Person;
-import com.safetynet.safetynetalerts.servivce.CommunityService;
+import com.safetynet.safetynetalerts.service.CommunityService;
 
 @SpringBootApplication
 public class SafetynetalertsApplication {

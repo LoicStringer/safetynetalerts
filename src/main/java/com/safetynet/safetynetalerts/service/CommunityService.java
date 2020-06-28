@@ -1,14 +1,12 @@
-package com.safetynet.safetynetalerts.servivce;
+package com.safetynet.safetynetalerts.service;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,9 +38,10 @@ public class CommunityService {
 	}
 
 	public List<String> getCommunityEmails(String city) {
-		List<Person> persons = personDao.getAll();
 		List<String> emails = new ArrayList<String>();
 
+		List<Person> persons = personDao.getAll();
+		
 		for (Person person : persons) {
 			if (person.getCity().equals(city))
 				emails.add(person.getEmail());
@@ -51,9 +50,10 @@ public class CommunityService {
 	}
 
 	public LinkedHashMap<String, String> getPersonInfo(String identifier) {
+		LinkedHashMap<String, String> infos = new LinkedHashMap<String, String>();
+		
 		Person personToGetInfoFrom = personDao.getOne(identifier);
 		MedicalRecord medicalRecordToGetInfoFrom = medicalRecordDao.getOne(identifier);
-		LinkedHashMap<String, String> infos = new LinkedHashMap<String, String>();
 
 		infos.put("firstName", personToGetInfoFrom.getFirstName());
 		infos.put("lastName", personToGetInfoFrom.getLastName());
@@ -67,14 +67,15 @@ public class CommunityService {
 	}
 
 	public List<LinkedHashMap<String, String>> getPersonsCoveredByFireStations(String stationNumber) {
-		List<LinkedFireStation> linkedFireStations = linkedFireStationDao.getAll();
-		List<Person> persons = personDao.getAll();
-		List<MedicalRecord> medicalRecords = medicalRecordDao.getAll();
 		LinkedHashMap<String, String> ageCount = new LinkedHashMap<String, String>();
-		LinkedHashMap<String, String> personsInfo;
 		List<LinkedHashMap<String, String>> personsCovered = new ArrayList<LinkedHashMap<String, String>>();
 		int childCount = 0;
 		int adultCount = 0;
+		LinkedHashMap<String, String> personsInfo;
+		
+		List<LinkedFireStation> linkedFireStations = linkedFireStationDao.getAll();
+		List<Person> persons = personDao.getAll();
+		List<MedicalRecord> medicalRecords = medicalRecordDao.getAll();
 
 		for (LinkedFireStation linkedFireStation : linkedFireStations) {
 			if (linkedFireStation.getStation().equals(stationNumber)) {
