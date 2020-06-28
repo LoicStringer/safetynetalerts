@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.safetynet.safetynetalerts.data.DataProvider;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
+import com.safetynet.safetynetalerts.model.Person;
 
+
+@Component
 public class LinkedFireStationDao  extends DataProvider implements IDao<LinkedFireStation>{
 
 	@Override
@@ -25,7 +30,24 @@ public class LinkedFireStationDao  extends DataProvider implements IDao<LinkedFi
 		
 		return linkedFireStations;
 	}
+	
+	@Override
+	public LinkedFireStation getOne(String address) {
+		ArrayNode linkedFireStationsData = getDataContainer().getLinkedFireStationsData();
+		LinkedFireStation linkedFireStationToGet = new LinkedFireStation();
+		Iterator<JsonNode> elements = linkedFireStationsData.elements();
 
+		while (elements.hasNext()) {
+			JsonNode linkedFireStationNode = elements.next();
+			String adressToGet = linkedFireStationNode.findValue("address").asText();
+			if(adressToGet.equals(address))
+				linkedFireStationToGet = getObjectMapper().convertValue(linkedFireStationNode, LinkedFireStation.class);
+				break;
+		}
+		return linkedFireStationToGet;
+	}
+
+	
 	@Override
 	public boolean insert(LinkedFireStation  linkedFireStation) {
 		boolean isSaved = false;
@@ -45,11 +67,10 @@ public class LinkedFireStationDao  extends DataProvider implements IDao<LinkedFi
 	@Override
 	public boolean update(LinkedFireStation  linkedFireStation) {
 		boolean isUpdated = false;
-		String identifier = linkedFireStation.getAddress();
-		List<LinkedFireStation> linkedFireStations = this.getAll();
+		String address = linkedFireStation.getAddress();
 		
-		LinkedFireStation linkedStationToUpdate = linkedFireStations.stream()
-				.filter(lfs -> identifier.equals(lfs.getAddress())).findAny().orElse(null);
+		List<LinkedFireStation> linkedFireStations = this.getAll();
+		LinkedFireStation linkedStationToUpdate = this.getOne(address);
 		int index = linkedFireStations.indexOf(linkedStationToUpdate);
 		linkedFireStations.set(index, linkedFireStation);
 		if(linkedFireStations.get(index) != linkedStationToUpdate)
@@ -64,12 +85,11 @@ public class LinkedFireStationDao  extends DataProvider implements IDao<LinkedFi
 	@Override
 	public boolean delete(LinkedFireStation  linkedFireStation) {
 		boolean isDeleted = false;
-		String identifier = linkedFireStation.getAddress() + linkedFireStation.getStation();
+		String address = linkedFireStation.getAddress() + linkedFireStation.getStation();
 		List<LinkedFireStation> linkedFireStations = this.getAll();
 		int size = linkedFireStations.size();
 		
-		LinkedFireStation linkedStationToUpdate = linkedFireStations.stream()
-				.filter(lfs -> identifier.equals(lfs.getAddress() + lfs.getStation())).findAny().orElse(null);
+		LinkedFireStation linkedStationToUpdate = this.getOne(address);
 		int index = linkedFireStations.indexOf(linkedStationToUpdate);
 		linkedFireStations.remove(index);
 		
@@ -82,4 +102,5 @@ public class LinkedFireStationDao  extends DataProvider implements IDao<LinkedFi
 		return isDeleted;
 	}
 
+	
 }

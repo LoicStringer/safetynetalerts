@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.safetynet.safetynetalerts.data.DataProvider;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
+import com.safetynet.safetynetalerts.model.Person;
 
+
+@Component
 public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord> {
 
 	@Override
@@ -26,6 +31,23 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 		return medicalRecords;
 	}
 
+	@Override
+	public MedicalRecord getOne(String identifier) {
+		ArrayNode medicalRecordsData = getDataContainer().getMedicalRecordsData();
+		MedicalRecord medicalRecordToGet = new MedicalRecord();
+		Iterator<JsonNode> elements = medicalRecordsData.elements();
+
+		while (elements.hasNext()) {
+			JsonNode medicalRecordNode = elements.next();
+			String name = medicalRecordNode.findValue("firstName").asText() 
+					+ medicalRecordNode.findValue("lastName").asText();
+			if(name.equals(identifier))
+				medicalRecordToGet = getObjectMapper().convertValue(medicalRecordNode, MedicalRecord.class);
+				break;
+		}
+		return medicalRecordToGet;
+	}
+	
 	@Override
 	public boolean insert(MedicalRecord medicalRecord) {
 		boolean isSaved = false;
@@ -46,11 +68,12 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	public boolean update(MedicalRecord medicalRecord) {
 		boolean isUpdated = false;
 		String identifier = medicalRecord.getFirstName() + medicalRecord.getLastName();
-		List<MedicalRecord> medicalrecords = this.getAll();
 		
-		MedicalRecord medicalRecordToUpdate = medicalrecords.stream().filter(mr -> identifier.equals(mr.getFirstName() + mr.getLastName())).findAny().orElse(null);
+		List<MedicalRecord> medicalrecords = this.getAll();
+		MedicalRecord medicalRecordToUpdate = this.getOne(identifier);
 		int index = medicalrecords.indexOf(medicalRecordToUpdate);
 		medicalrecords.set(index, medicalRecord);
+		
 		if(medicalrecords.get(index) != medicalRecordToUpdate)
 			isUpdated = true;
 
@@ -64,10 +87,10 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	public boolean delete(MedicalRecord medicalRecord) {
 		boolean isDeleted = false;
 		String identifier = medicalRecord.getFirstName() + medicalRecord.getLastName();
+		
 		List<MedicalRecord> medicalRecords = this.getAll();
 		int size = medicalRecords.size();
-		
-		MedicalRecord medicalRecordToDelete = medicalRecords.stream().filter(mr -> identifier.equals(mr.getFirstName() + mr.getLastName())).findAny().orElse(null);
+		MedicalRecord medicalRecordToDelete = this.getOne(identifier);
 		int index = medicalRecords.indexOf(medicalRecordToDelete);
 		medicalRecords.remove(index);
 		
@@ -79,5 +102,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 		
 		return isDeleted;
 	}
+
+	
 
 }

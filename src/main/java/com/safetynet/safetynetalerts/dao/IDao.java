@@ -16,5 +16,5 @@ public interface IDao<T> {
 	boolean insert(T t);
 	boolean update(T t);
 	boolean delete (T t);
-	
+	T getOne(String s);
 }
