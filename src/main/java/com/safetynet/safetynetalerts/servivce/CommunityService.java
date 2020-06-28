@@ -13,8 +13,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.safetynet.safetynetalerts.dao.LinkedFireStationDao;
 import com.safetynet.safetynetalerts.dao.MedicalRecordDao;
 import com.safetynet.safetynetalerts.dao.PersonDao;
+import com.safetynet.safetynetalerts.model.LinkedFireStation;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 import com.safetynet.safetynetalerts.model.Person;
 
@@ -23,23 +25,23 @@ public class CommunityService {
 
 	@Autowired
 	private PersonDao personDao;
-	
+
 	@Autowired
 	private MedicalRecordDao medicalRecordDao;
 
-	
-	public String getAgeFromBirthDate(String birthDate ) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+	@Autowired
+	private LinkedFireStationDao linkedFireStationDao;
+
+	public String getAgeFromBirthDate(String birthDate) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 		LocalDate birthDateToDate = LocalDate.parse(birthDate, formatter);
 		String age = String.valueOf(Period.between(birthDateToDate, LocalDate.now()).getYears());
 		return age;
 	}
-	
-	public List<String> getCommunityEmails(String city) {
-		List<Person> persons = new ArrayList<Person>();
-		List<String> emails = new ArrayList<String>();
 
-		persons = personDao.getAll();
+	public List<String> getCommunityEmails(String city) {
+		List<Person> persons = personDao.getAll();
+		List<String> emails = new ArrayList<String>();
 
 		for (Person person : persons) {
 			if (person.getCity().equals(city))
@@ -48,20 +50,70 @@ public class CommunityService {
 		return emails;
 	}
 
-	public LinkedHashMap<String,String> getPersonInfo(String identifier) {
+	public LinkedHashMap<String, String> getPersonInfo(String identifier) {
 		Person personToGetInfoFrom = personDao.getOne(identifier);
 		MedicalRecord medicalRecordToGetInfoFrom = medicalRecordDao.getOne(identifier);
-		LinkedHashMap<String,String> infos = new LinkedHashMap<String,String>();
-		
+		LinkedHashMap<String, String> infos = new LinkedHashMap<String, String>();
+
 		infos.put("firstName", personToGetInfoFrom.getFirstName());
 		infos.put("lastName", personToGetInfoFrom.getLastName());
-		infos.put("age",this.getAgeFromBirthDate(medicalRecordToGetInfoFrom.getBirthdate()));
+		infos.put("age", this.getAgeFromBirthDate(medicalRecordToGetInfoFrom.getBirthdate()));
 		infos.put("address", personToGetInfoFrom.getAddress());
 		infos.put("email", personToGetInfoFrom.getEmail());
-		infos.put("medications",Arrays.toString(medicalRecordToGetInfoFrom.getMedications()));
-		infos.put("allergies", Arrays.deepToString(medicalRecordToGetInfoFrom.getAllergies()));
-		
+		infos.put("medications", Arrays.toString(medicalRecordToGetInfoFrom.getMedications()));
+		infos.put("allergies", Arrays.toString(medicalRecordToGetInfoFrom.getAllergies()));
+
 		return infos;
+	}
+
+	public List<LinkedHashMap<String, String>> getPersonsCoveredByFireStations(String stationNumber) {
+		List<LinkedFireStation> linkedFireStations = linkedFireStationDao.getAll();
+		List<Person> persons = personDao.getAll();
+		List<MedicalRecord> medicalRecords = medicalRecordDao.getAll();
+		LinkedHashMap<String, String> ageCount = new LinkedHashMap<String, String>();
+		LinkedHashMap<String, String> personsInfo;
+		List<LinkedHashMap<String, String>> personsCovered = new ArrayList<LinkedHashMap<String, String>>();
+		int childCount = 0;
+		int adultCount = 0;
+
+		for (LinkedFireStation linkedFireStation : linkedFireStations) {
+			if (linkedFireStation.getStation().equals(stationNumber)) {
+				String adressCovered = linkedFireStation.getAddress();
+				for (Person person : persons) {
+					if (adressCovered.equals(person.getAddress())) {
+
+						personsInfo = new LinkedHashMap<String, String>();
+						personsInfo.put("firstname", person.getFirstName());
+						personsInfo.put("lastName", person.getLastName());
+						personsInfo.put("address", person.getAddress());
+						personsInfo.put("phone", person.getPhone());
+						personsCovered.add(personsInfo);
+						adultCount++;
+
+						for (MedicalRecord medicalRecord : medicalRecords) {
+							if ((medicalRecord.getFirstName() + medicalRecord.getLastName())
+									.equals((person.getFirstName() + person.getLastName()))) {
+								String age = getAgeFromBirthDate(medicalRecord.getBirthdate());
+
+								if (Integer.valueOf(age) < 18) {
+									adultCount--;
+									childCount++;
+								}
+							}
+
+						}
+
+					}
+
+				}
+			}
+
+		}
+		ageCount.put("adults", String.valueOf(adultCount));
+		ageCount.put("children", String.valueOf(childCount));
+		personsCovered.add(ageCount);
+		
+		return personsCovered;
 	}
 
 }

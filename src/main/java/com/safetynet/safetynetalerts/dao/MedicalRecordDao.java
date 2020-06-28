@@ -39,9 +39,9 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 
 		while (elements.hasNext()) {
 			JsonNode medicalRecordNode = elements.next();
-			String name = medicalRecordNode.findValue("firstName").asText() 
+			String identifierToFind = medicalRecordNode.findValue("firstName").asText() 
 					+ medicalRecordNode.findValue("lastName").asText();
-			if(name.equals(identifier))
+			if(identifierToFind.equals(identifier))
 				medicalRecordToGet = getObjectMapper().convertValue(medicalRecordNode, MedicalRecord.class);
 				break;
 		}

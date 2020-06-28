@@ -38,7 +38,20 @@ public class CommunityController {
 		LinkedHashMap<String,String> personInfo = communityService.getPersonInfo(identifier);
 		
 		return personInfo;
+	}
+	
+	@GetMapping("/firestation")
+	public List<LinkedHashMap<String,String>> personsCoveredByFireStation
+	(@RequestParam("stationNumber")String stationNumber){
+		List<LinkedHashMap<String,String>> personsCovered = communityService.getPersonsCoveredByFireStations(stationNumber);
+		
+		return personsCovered;
 		
 	}
+	
+	
+	
+	
+	
 	
 }
