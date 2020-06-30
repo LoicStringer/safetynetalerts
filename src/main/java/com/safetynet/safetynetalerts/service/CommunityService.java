@@ -5,8 +5,10 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import com.safetynet.safetynetalerts.dao.PersonDao;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 import com.safetynet.safetynetalerts.model.Person;
+import com.safetynet.safetynetalerts.responseentity.CommunityPersonInfo;
+import com.safetynet.safetynetalerts.responseentity.CommunityPersonCoveredByFireStation;
 
 @Service
 public class CommunityService {
@@ -41,7 +45,7 @@ public class CommunityService {
 		List<String> emails = new ArrayList<String>();
 
 		List<Person> persons = personDao.getAll();
-		
+
 		for (Person person : persons) {
 			if (person.getCity().equals(city))
 				emails.add(person.getEmail());
@@ -49,30 +53,28 @@ public class CommunityService {
 		return emails;
 	}
 
-	public LinkedHashMap<String, String> getPersonInfo(String identifier) {
-		LinkedHashMap<String, String> infos = new LinkedHashMap<String, String>();
-		
+	public CommunityPersonInfo getPersonInfo(String identifier) {
+		CommunityPersonInfo communityPersonInfo = new CommunityPersonInfo();
+
 		Person personToGetInfoFrom = personDao.getOne(identifier);
 		MedicalRecord medicalRecordToGetInfoFrom = medicalRecordDao.getOne(identifier);
 
-		infos.put("firstName", personToGetInfoFrom.getFirstName());
-		infos.put("lastName", personToGetInfoFrom.getLastName());
-		infos.put("age", this.getAgeFromBirthDate(medicalRecordToGetInfoFrom.getBirthdate()));
-		infos.put("address", personToGetInfoFrom.getAddress());
-		infos.put("email", personToGetInfoFrom.getEmail());
-		infos.put("medications", Arrays.toString(medicalRecordToGetInfoFrom.getMedications()));
-		infos.put("allergies", Arrays.toString(medicalRecordToGetInfoFrom.getAllergies()));
+		communityPersonInfo.setFirstName(personToGetInfoFrom.getFirstName());
+		communityPersonInfo.setLastName(personToGetInfoFrom.getLastName());
+		communityPersonInfo.setAge(this.getAgeFromBirthDate(medicalRecordToGetInfoFrom.getBirthdate()));
+		communityPersonInfo.setAddress(personToGetInfoFrom.getAddress());
+		communityPersonInfo.setEmail(personToGetInfoFrom.getEmail());
+		communityPersonInfo.setMedications(Arrays.toString(medicalRecordToGetInfoFrom.getMedications()));
+		communityPersonInfo.setAllergies(Arrays.toString(medicalRecordToGetInfoFrom.getAllergies()));
 
-		return infos;
+		return communityPersonInfo;
 	}
 
-	public List<LinkedHashMap<String, String>> getPersonsCoveredByFireStations(String stationNumber) {
-		LinkedHashMap<String, String> ageCount = new LinkedHashMap<String, String>();
-		List<LinkedHashMap<String, String>> personsCovered = new ArrayList<LinkedHashMap<String, String>>();
+	public List<Object> getPersonsCoveredByFireStations(String stationNumber) {
+		List<Object> communityPersonsCoveredByFireStation = new ArrayList<Object>();
 		int childCount = 0;
 		int adultCount = 0;
-		LinkedHashMap<String, String> personsInfo;
-		
+
 		List<LinkedFireStation> linkedFireStations = linkedFireStationDao.getAll();
 		List<Person> persons = personDao.getAll();
 		List<MedicalRecord> medicalRecords = medicalRecordDao.getAll();
@@ -82,13 +84,10 @@ public class CommunityService {
 				String adressCovered = linkedFireStation.getAddress();
 				for (Person person : persons) {
 					if (adressCovered.equals(person.getAddress())) {
+						CommunityPersonCoveredByFireStation communityPersonCoveredByFireStation = new CommunityPersonCoveredByFireStation(
+								person.getFirstName(), person.getLastName(), person.getAddress(), person.getPhone());
+						communityPersonsCoveredByFireStation.add(communityPersonCoveredByFireStation);
 
-						personsInfo = new LinkedHashMap<String, String>();
-						personsInfo.put("firstname", person.getFirstName());
-						personsInfo.put("lastName", person.getLastName());
-						personsInfo.put("address", person.getAddress());
-						personsInfo.put("phone", person.getPhone());
-						personsCovered.add(personsInfo);
 						adultCount++;
 
 						for (MedicalRecord medicalRecord : medicalRecords) {
@@ -101,20 +100,17 @@ public class CommunityService {
 									childCount++;
 								}
 							}
-
 						}
-
 					}
-
 				}
 			}
-
 		}
-		ageCount.put("adults", String.valueOf(adultCount));
-		ageCount.put("children", String.valueOf(childCount));
-		personsCovered.add(ageCount);
-		
-		return personsCovered;
+		Map<String, Integer> personsCount = new HashMap<String, Integer>();
+		personsCount.put("adultsCount", adultCount);
+		personsCount.put("childrenCount", childCount);
+		communityPersonsCoveredByFireStation.add(personsCount);
+
+		return communityPersonsCoveredByFireStation;
 	}
 
 }

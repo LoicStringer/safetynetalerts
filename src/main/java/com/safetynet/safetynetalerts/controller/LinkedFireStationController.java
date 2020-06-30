@@ -1,9 +1,11 @@
 package com.safetynet.safetynetalerts.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,13 +25,12 @@ public class LinkedFireStationController {
 		return false;
 	}
 	
-	@PatchMapping("/{address}")
-	public boolean updateLinkedFireStation
-	(@PathVariable String address) {
-		
+	@PostMapping("/{address}")
+	public ResponseEntity<LinkedFireStation> updateLinkedFireStation
+	(@PathVariable("address")String address) {
+		LinkedFireStation linkedFireStation = new LinkedFireStation();
 	
-		return false;
-		
+		return ResponseEntity.ok(linkedFireStation);
 	}
 	
 	@DeleteMapping("/{address}")

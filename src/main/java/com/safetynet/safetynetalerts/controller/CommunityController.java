@@ -5,10 +5,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.safetynet.safetynetalerts.responseentity.CommunityPersonInfo;
+import com.safetynet.safetynetalerts.responseentity.CommunityPersonCoveredByFireStation;
 import com.safetynet.safetynetalerts.service.CommunityService;
 
 @RestController
@@ -27,22 +30,22 @@ public class CommunityController {
 	}
 
 	@GetMapping("/personInfo")
-	public LinkedHashMap<String,String> personInfo 
+	public CommunityPersonInfo personInfo 
 	(@RequestParam("firstName")String firstName, @RequestParam("lastName")String lastName){
 		String identifier = firstName + lastName ;
 		
-		LinkedHashMap<String,String> personInfo = communityService.getPersonInfo(identifier);
+		CommunityPersonInfo communityPersonInfo = communityService.getPersonInfo(identifier);
 		
-		return personInfo;
+		return communityPersonInfo;
 	}
 	
 	@GetMapping("/firestation")
-	public List<LinkedHashMap<String,String>> personsCoveredByFireStation
+	public ResponseEntity<List<Object>> personsCoveredByFireStation
 	(@RequestParam("stationNumber")String stationNumber){
-		List<LinkedHashMap<String,String>> personsCovered = communityService.getPersonsCoveredByFireStations(stationNumber);
 		
-		return personsCovered;
+		List<Object> personsCovered = communityService.getPersonsCoveredByFireStations(stationNumber);
 		
+		return ResponseEntity.ok(personsCovered);	
 	}
 	
 	
