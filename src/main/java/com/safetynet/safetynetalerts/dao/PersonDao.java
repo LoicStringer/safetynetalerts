@@ -38,11 +38,12 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 
 		while (elements.hasNext()) {
 			JsonNode personNode = elements.next();
-			String identifierToFind = personNode.findValue("firstName").asText() 
-					+ personNode.findValue("lastName").asText();
-			if(identifierToFind.equals(identifier))
+			String identifierToFind = personNode.get("firstName").asText()
+					+ personNode.get("lastName").asText();
+			if(identifierToFind.equals(identifier)) {
 				personToGet = getObjectMapper().convertValue(personNode, Person.class);
 				break;
+			}
 		}
 		return personToGet;
 	}

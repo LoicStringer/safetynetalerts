@@ -73,4 +73,10 @@ public class CommunityPersonInfo {
 		this.allergies = allergies;
 	}
 
+	@Override
+	public String toString() {
+		return "CommunityPersonInfo [firstName=" + firstName + ", lastName=" + lastName + ", age=" + age + ", address="
+				+ address + ", email=" + email + ", medications=" + medications + ", allergies=" + allergies + "]";
+	}
+
 }

@@ -1,7 +1,6 @@
 package com.safetynet.safetynetalerts.controller;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.safetynet.safetynetalerts.responseentity.CommunityPersonInfo;
-import com.safetynet.safetynetalerts.responseentity.CommunityPersonCoveredByFireStation;
 import com.safetynet.safetynetalerts.service.CommunityService;
 
 @RestController
@@ -21,22 +19,23 @@ public class CommunityController {
 	private CommunityService communityService ;
 	
 	@GetMapping("/communityEmail")
-	public List<String> communityEmails (@RequestParam("city")String city){
+	public ResponseEntity<List<String>> communityEmails (@RequestParam("city")String city){
 		List<String> communityEmails = new ArrayList<String>();
 		
 		communityEmails = communityService.getCommunityEmails(city);
 		
-		return communityEmails;
+		return ResponseEntity.ok(communityEmails);
 	}
 
 	@GetMapping("/personInfo")
-	public CommunityPersonInfo personInfo 
+	public ResponseEntity<CommunityPersonInfo> personInfo 
 	(@RequestParam("firstName")String firstName, @RequestParam("lastName")String lastName){
+		
 		String identifier = firstName + lastName ;
 		
 		CommunityPersonInfo communityPersonInfo = communityService.getPersonInfo(identifier);
 		
-		return communityPersonInfo;
+		return ResponseEntity.ok(communityPersonInfo);
 	}
 	
 	@GetMapping("/firestation")

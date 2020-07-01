@@ -57,6 +57,12 @@ public class CommunityPersonCoveredByFireStation {
 		this.phoneNumber = phoneNumber;
 	}
 
+	@Override
+	public String toString() {
+		return "CommunityPersonCoveredByFireStation [firstName=" + firstName + ", lastName=" + lastName + ", address="
+				+ address + ", phoneNumber=" + phoneNumber + "]";
+	}
+
 	
 
 }
