@@ -6,8 +6,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.safetynet.safetynetalerts.data.DataProvider;
 import com.safetynet.safetynetalerts.model.Person;
 
@@ -45,6 +47,7 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 				break;
 			}
 		}
+		
 		return personToGet;
 	}
 	

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.safetynet.safetynetalerts.responseentity.EmergencyChildAlert;
 import com.safetynet.safetynetalerts.service.EmergencyService;
 
 @RestController
@@ -18,12 +19,12 @@ public class EmergencyController {
 	private EmergencyService emergencyService;
 	
 	@GetMapping("/childAlert")
-	public List<LinkedHashMap<String,String>> getChildren
+	public ResponseEntity<List<Object>> getChildren
 	(@RequestParam("address")String address){
 		
-		List<LinkedHashMap<String,String>> anyChildThere = emergencyService.getChildrenThere(address);
+		List<Object> anyChildThere = emergencyService.getChildrenThere(address);
 		
-		return anyChildThere;
+		return ResponseEntity.ok(anyChildThere);
 	}
 	
 	@GetMapping("/phoneAlert")
@@ -36,10 +37,10 @@ public class EmergencyController {
 	}
 	
 	@GetMapping("/fire")
-	public  ResponseEntity<List<LinkedHashMap<String, LinkedHashMap<String,String>>>> getInhabitants
+	public  ResponseEntity<List<Object>> getInhabitants
 	(@RequestParam("address")String address){
 		
-		List<LinkedHashMap<String, LinkedHashMap<String,String>>> inhabitantsThere = emergencyService.whosThere(address);
+		List<Object> inhabitantsThere = emergencyService.whosThere(address);
 		
 		return ResponseEntity.ok(inhabitantsThere);
 	}

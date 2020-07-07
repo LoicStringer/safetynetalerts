@@ -1,29 +1,28 @@
 package com.safetynet.safetynetalerts.responseentity;
 
+
+
 import org.springframework.stereotype.Component;
 
-@Component
-public class CommunityPersonCoveredByFireStation {
+
+public class CoveredPersonInfo {
 	
 	private String firstName;
 	private String lastName;
 	private String address;
 	private String phoneNumber;
 	
-	
-	public CommunityPersonCoveredByFireStation() {
+	public CoveredPersonInfo() {
 		super();
 	}
 	
-	public CommunityPersonCoveredByFireStation(String firstName, String lastName, String address, String phoneNumber) {
+	public CoveredPersonInfo(String firstName, String lastName, String address, String phoneNumber) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.address = address;
 		this.phoneNumber = phoneNumber;
 	}
-
-
 
 	public String getFirstName() {
 		return firstName;
@@ -59,10 +58,9 @@ public class CommunityPersonCoveredByFireStation {
 
 	@Override
 	public String toString() {
-		return "CommunityPersonCoveredByFireStation [firstName=" + firstName + ", lastName=" + lastName + ", address="
+		return "CoveredPersonInfo [firstName=" + firstName + ", lastName=" + lastName + ", address="
 				+ address + ", phoneNumber=" + phoneNumber + "]";
 	}
-
 	
 
 }
