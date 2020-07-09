@@ -31,17 +31,13 @@ public class CommunityService {
 	private LinkedFireStationDao linkedFireStationDao;
 
 	public List<String> getCommunityEmails(String city) {
-		
-		List<String> emails =  personDao.getAll().stream()
+		return  personDao.getAll().stream()
 				.filter(p -> p.getCity().equals(city))
 				.map(p -> p.getEmail())
 				.collect(Collectors.toList());
-		
-		return emails;
 	}
 
 	public CommunityPersonInfo getPersonInfo(String identifier) {
-		
 		CommunityPersonInfo communityPersonInfo = new CommunityPersonInfo();
 
 		Person personToGetInfoFrom = personDao.getOne(identifier);
@@ -59,25 +55,24 @@ public class CommunityService {
 	}
 
 	public CommunityPersonsCoveredByFireStation getPersonsCoveredByFireStation(String stationNumber) {
-		
-		List<String> addressesCovered = getAdressesCoveredByFirestation(stationNumber);
-		List<Person> personsCovered = getPersonsInAddresses(addressesCovered);
-		
 		CommunityPersonsCoveredByFireStation communityPersonsCoveredByFireStation
 			= new CommunityPersonsCoveredByFireStation();
+		
+		List<String> addressesCovered = getAdressesCoveredByFirestation(stationNumber);
+		List<Person> personsCovered = getPersonsThere(addressesCovered);
+
 		personsCovered.stream()
-		.forEach(p -> communityPersonsCoveredByFireStation.addPerson(p.getFirstName(), p.getLastName(), p.getAddress(), p.getPhone(),getPersonAge(p)));
+		.forEach(p -> communityPersonsCoveredByFireStation.addCoveredPerson(p.getFirstName(), p.getLastName(), p.getAddress(), p.getPhone(),getPersonAge(p)));
 		
 		return communityPersonsCoveredByFireStation;
 	}
 	
 	private int getPersonAge(Person p) {
 		String birthDate = medicalRecordDao.getOne(p.getFirstName()+p.getLastName()).getBirthdate();
-		int age = Integer.valueOf(this.getAgeFromBirthDate(birthDate));
-		return age;
+		return Integer.valueOf(this.getAgeFromBirthDate(birthDate));
 	}
 
-	private List<Person> getPersonsInAddresses(List<String> addressesCovered) {
+	private List<Person> getPersonsThere(List<String> addressesCovered) {
 		return personDao.getAll().stream()
 				.filter(p -> addressesCovered.contains(p.getAddress()))
 				.collect(Collectors.toList());
@@ -90,13 +85,10 @@ public class CommunityService {
 				.collect(Collectors.toList());
 	}
 
-	public String getAgeFromBirthDate(String birthDate) {
-		
+	public int getAgeFromBirthDate(String birthDate) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 		LocalDate birthDateToDate = LocalDate.parse(birthDate, formatter);
-		String age = String.valueOf(Period.between(birthDateToDate, LocalDate.now()).getYears());
-		
-		return age;
+		 return Period.between(birthDateToDate, LocalDate.now()).getYears();	
 	}
 	
 }

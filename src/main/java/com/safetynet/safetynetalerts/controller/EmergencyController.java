@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.safetynet.safetynetalerts.responseentity.EmergencyChildAlert;
+import com.safetynet.safetynetalerts.responseentity.EmergencyFireAddressInfos;
+import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos;
 import com.safetynet.safetynetalerts.service.EmergencyService;
 
 @RestController
@@ -19,10 +21,10 @@ public class EmergencyController {
 	private EmergencyService emergencyService;
 	
 	@GetMapping("/childAlert")
-	public ResponseEntity<List<Object>> getChildren
+	public ResponseEntity<EmergencyChildAlert> getChildren
 	(@RequestParam("address")String address){
 		
-		List<Object> anyChildThere = emergencyService.getChildrenThere(address);
+		EmergencyChildAlert anyChildThere = emergencyService.getChildrenThere(address);
 		
 		return ResponseEntity.ok(anyChildThere);
 	}
@@ -37,22 +39,21 @@ public class EmergencyController {
 	}
 	
 	@GetMapping("/fire")
-	public  ResponseEntity<List<Object>> getInhabitants
+	public  ResponseEntity<EmergencyFireAddressInfos> getInhabitants
 	(@RequestParam("address")String address){
 		
-		List<Object> inhabitantsThere = emergencyService.whosThere(address);
+		EmergencyFireAddressInfos inhabitantsThere = emergencyService.getPersonsThereInfos(address);
 		
 		return ResponseEntity.ok(inhabitantsThere);
 	}
 	
 	@GetMapping("/flood/stations")
-	public LinkedHashMap<String, LinkedHashMap<LinkedHashMap<String, String>, List<LinkedHashMap<String, LinkedHashMap<String, String>>>>>
-	getHomesInfo(@RequestParam("stations")List<String> stationNumbers){
+	public ResponseEntity<EmergencyFloodInfos> getHomesInfo
+	(@RequestParam("stations")List<String> stationNumbers){
 		
-		LinkedHashMap<String, LinkedHashMap<LinkedHashMap<String, String>, List<LinkedHashMap<String, LinkedHashMap<String, String>>>>>
-		homesInfo = emergencyService.getHomesInfoByFireStations(stationNumbers);
+		EmergencyFloodInfos emergencyFloodInfos = emergencyService.getCoveredHomesInfos(stationNumbers);
 		
-		return homesInfo;
+		return ResponseEntity.ok(emergencyFloodInfos);
 	}
 	
 }

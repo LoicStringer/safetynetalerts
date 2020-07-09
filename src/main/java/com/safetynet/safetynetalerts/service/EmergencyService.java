@@ -1,9 +1,5 @@
 package com.safetynet.safetynetalerts.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,10 +10,12 @@ import com.safetynet.safetynetalerts.dao.LinkedFireStationDao;
 import com.safetynet.safetynetalerts.dao.MedicalRecordDao;
 import com.safetynet.safetynetalerts.dao.PersonDao;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
-import com.safetynet.safetynetalerts.model.MedicalRecord;
 import com.safetynet.safetynetalerts.model.Person;
 import com.safetynet.safetynetalerts.responseentity.EmergencyChildAlert;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFireAddressInfos;
+import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos;
+import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos.HomeInfo;
+import com.safetynet.safetynetalerts.responseentity.InhabitantInfos;
 
 @Service
 public class EmergencyService {
@@ -34,215 +32,108 @@ public class EmergencyService {
 	@Autowired
 	private CommunityService communityService;
 
-	public List<Object> getChildrenThere(String address) {
-		List<Object> childrenThere = new ArrayList<Object>();
+	public EmergencyChildAlert getChildrenThere(String address) {
+		EmergencyChildAlert childrenThere = new EmergencyChildAlert();
 		
-		List<Person> personsThere = personDao.getAll().stream()
-				.filter(p -> p.getAddress().equals(address))
-				.collect(Collectors.toList());
+		List<Person> personsThere = getPersonsThere(address);
 		
-		List<String> identifiers = personsThere.stream()
-				.map(id ->  id.getFirstName() + id.getLastName())
-				.collect(Collectors.toList());
-		
-		List<HashMap<String,String>> adultsThere = medicalRecordDao.getAll().stream()
-				.filter(mr ->  identifiers.contains(mr.getFirstName()+mr.getLastName()))
-				.filter(mr -> Integer.valueOf(communityService.getAgeFromBirthDate(mr.getBirthdate()))>18)
-				.map(temp -> {
-					HashMap <String,String> adult = new HashMap<String,String>();
-					adult.put("firstName", temp.getFirstName());
-					adult.put("lastName", temp.getLastName());
-					adult.put("age", communityService.getAgeFromBirthDate(temp.getBirthdate()));
-					return adult;
-				}).collect(Collectors.toList());
-				
-		List<EmergencyChildAlert> anyChildThere = medicalRecordDao.getAll().stream()
-				.filter(mr -> identifiers.contains(mr.getFirstName()+mr.getLastName()))
-				.filter(mr -> Integer.valueOf(communityService.getAgeFromBirthDate(mr.getBirthdate()))<18)
-				.map(temp ->{
-					EmergencyChildAlert childThere = new EmergencyChildAlert();
-					childThere.setFirstName(temp.getFirstName());
-					childThere.setLastName(temp.getLastName());
-					childThere.setAge(communityService.getAgeFromBirthDate(temp.getBirthdate()));
-					return childThere;
-				}).collect(Collectors.toList());
-		
-		
-		/*
-		for (Person person : persons) {
-			if (person.getAddress().equals(address)) {
-				String personIdentifier = person.getFirstName() + person.getLastName();
-				otherPersons.add(person.getFirstName() + " " + person.getLastName());
-				for (MedicalRecord medicalRecord : medicalRecords) {
-					String medicalIdentifier = medicalRecord.getFirstName() + medicalRecord.getLastName();
-					int age = Integer.valueOf(communityService.getAgeFromBirthDate(medicalRecord.getBirthdate()));
-					if (medicalIdentifier.equals(personIdentifier) && age < 18) {
-						otherPersons.remove(otherPersons.size() - 1);
-						childrenInfo = new LinkedHashMap<String, String>();
-						childrenInfo.put("firstName", person.getFirstName());
-						childrenInfo.put("lastName", person.getLastName());
-						childrenInfo.put("age", String.valueOf(age));
-						childrenInfo.put("otherPersons", otherPersons.toString());
-						anyChildThere.add(childrenInfo);
-					}
-				}
-			}
-		}
-		*/
-		childrenThere.add(anyChildThere);
-		childrenThere.add(adultsThere);
+		personsThere.stream()
+		.forEach(p -> childrenThere.addPerson(p.getFirstName(), p.getLastName(),getPersonAge(p)));
 		return childrenThere;
 	}
 
 	public List<String> getCoveredPersonsPhoneNumbers(String stationNumber) {
-		
-		List<String> addressesCovered = linkedFireStationDao.getAll().stream()
-				.filter(lfs -> lfs.getStation().equals(stationNumber))
-				.map(LinkedFireStation::getAddress)
-				.collect(Collectors.toList());
-		
-		List<String> phoneNumbers = personDao.getAll().stream()
+		List<String> addressesCovered = getAdressesCoveredByFirestation(stationNumber);
+		return personDao.getAll().stream()
 				.filter(p -> addressesCovered.contains(p.getAddress()))
 				.map(Person::getPhone)
 				.collect(Collectors.toList());
-				
-				
-		/*
-		for (LinkedFireStation linkedFireStation : linkedFireStations) {
-			String coveredAdress = linkedFireStation.getAddress();
-			if (linkedFireStation.getStation().equals(stationNumber)) {
-				for (Person person : persons) {
-					String personAdress = person.getAddress();
-					if (personAdress.equals(coveredAdress)) {
-						phoneNumbers.add(person.getPhone());
-					}
-				}
-			}
-		}
-		 */
-		return phoneNumbers;
 	}
-/*
-	public List<Object> whosThere(String address) {
+	
+	public EmergencyFireAddressInfos getPersonsThereInfos (String address) {
+		EmergencyFireAddressInfos emergencyFireAddressInfos = new EmergencyFireAddressInfos();
 		
-		List<Person> personsThere = personDao.getAll().stream()
+		emergencyFireAddressInfos.setStationNumber(getStationNumberCoveringAddress(address));
+		
+		List<Person> personsThere = getPersonsThere(address);
+		List<String> identifiers = getPersonIdentifiers(personsThere);
+		List<InhabitantInfos> inhabitantsThere = getInhabitantInfos(identifiers);
+		
+		emergencyFireAddressInfos.setInhabitantsThere(inhabitantsThere);
+		
+		return emergencyFireAddressInfos;
+	}
+	
+	public EmergencyFloodInfos getCoveredHomesInfos(List<String>stationNumbers) {
+		EmergencyFloodInfos emergencyFloodInfos = new EmergencyFloodInfos();
+				
+		stationNumbers.stream()
+		.forEach(sn -> emergencyFloodInfos.getCoveredHomesMap().put("stationNumber: "+sn,getHomesInfos(getAdressesCoveredByFirestation(sn))));
+
+		return emergencyFloodInfos;
+	}
+	
+	public List<Person> getPersonsThere(String address){
+		return personDao.getAll().stream()
 				.filter(p -> p.getAddress().equals(address))
 				.collect(Collectors.toList());
+	}
 	
-		List<String> identifiers = personsThere.stream()
-				.map(id ->  id.getFirstName() + id.getLastName())
+	private int getPersonAge(Person p) {
+		String birthDate = medicalRecordDao.getOne(p.getFirstName()+p.getLastName()).getBirthdate();
+		return communityService.getAgeFromBirthDate(birthDate);
+	}
+
+	private List<String> getAdressesCoveredByFirestation(String stationNumber) {
+		return linkedFireStationDao.getAll().stream()
+				.filter(ad -> ad.getStation().equals(stationNumber))
+				.map(LinkedFireStation::getAddress)
 				.collect(Collectors.toList());
+	}
 		
-		List<EmergencyFireAddressInfos> addressesInfos = medicalRecordDao.getAll().stream()
+	public String getStationNumberCoveringAddress(String address) {
+		return linkedFireStationDao.getAll().stream()
+				.filter(lfs -> lfs.getAddress().equals(address))
+				.map(lfs -> lfs.getStation())
+				.findAny().get();
+	}
+	
+	public String getPhoneNumber(String identifier) {
+		return personDao.getAll().stream()
+				.filter(p -> (p.getFirstName()+p.getLastName()).equals(identifier))
+				.map(p -> p.getPhone())
+				.findAny().get();
+	}
+	
+	public List<String> getPersonIdentifiers(List<Person> personsThere){
+		return personsThere.stream()
+				.map(p -> p.getFirstName()+p.getLastName())
+				.collect(Collectors.toList());
+	}
+	
+	public List<InhabitantInfos> getInhabitantInfos(List<String> identifiers){
+		return medicalRecordDao.getAll().stream()
 				.filter(mr -> identifiers.contains(mr.getFirstName()+mr.getLastName()))
-				.map(temp -> {
-					EmergencyFireAddressInfos addressInfo = new EmergencyFireAddressInfos();
-					addressInfo.setAge(communityService.getAgeFromBirthDate(temp.getBirthdate()));
-					addressInfo.setFirstName(temp.getFirstName());
-					addressInfo.setLastname(temp.getLastName());
-					addressInfo.setMedications(temp.getMedications());
-					addressInfo.setAllergies(temp.getAllergies());
-					return addressInfo;
+				.map(temp ->{
+					InhabitantInfos inhabitantThere = new InhabitantInfos();
+					inhabitantThere.setFirstName(temp.getFirstName());
+					inhabitantThere.setLastName(temp.getLastName());
+					inhabitantThere.setAge(Integer.valueOf(communityService.getAgeFromBirthDate(temp.getBirthdate())));
+					inhabitantThere.setPhoneNumber(getPhoneNumber(temp.getFirstName()+temp.getLastName()));
+					inhabitantThere.setMedications(temp.getMedications());
+					inhabitantThere.setAllergies(temp.getAllergies());
+					return inhabitantThere;
 				}).collect(Collectors.toList());
-		
-					
-				
-				*/
-		
-		
-		
-		/*
-		List<LinkedHashMap<String, LinkedHashMap<String, String>>> inhabitantsThere = new ArrayList<LinkedHashMap<String, LinkedHashMap<String, String>>>();
-		LinkedHashMap<String, LinkedHashMap<String, String>> inhabitants;
-		LinkedHashMap<String, String> inhabitantInfo;
-		int inhabitantCount = 0;
-
-		List<LinkedFireStation> linkedFireStations = linkedFireStationDao.getAll();
-		List<Person> persons = personDao.getAll();
-		List<MedicalRecord> medicalRecords = medicalRecordDao.getAll();
-
-		for (LinkedFireStation linkedFireStation : linkedFireStations) {
-			if (linkedFireStation.getAddress().equals(address)) {
-				inhabitants = new LinkedHashMap<String, LinkedHashMap<String, String>>();
-				inhabitantInfo = new LinkedHashMap<String, String>();
-				inhabitantInfo.put("stationNumber", linkedFireStation.getStation());
-				inhabitants.put("coveringFireStation", inhabitantInfo);
-				inhabitantsThere.add(inhabitants);
-			}
-		}
-		for (Person person : persons) {
-			String personIdentifier = person.getFirstName() + person.getLastName();
-			if (person.getAddress().equals(address)) {
-				for (MedicalRecord medicalRecord : medicalRecords) {
-					String medicalIdentifier = medicalRecord.getFirstName() + medicalRecord.getLastName();
-					if (personIdentifier.equals(medicalIdentifier)) {
-						inhabitantCount++;
-						inhabitantInfo = new LinkedHashMap<String, String>();
-						inhabitants = new LinkedHashMap<String, LinkedHashMap<String, String>>();
-						inhabitantInfo.put("firstName", medicalRecord.getFirstName());
-						inhabitantInfo.put("lastName", medicalRecord.getLastName());
-						inhabitantInfo.put("age", communityService.getAgeFromBirthDate(medicalRecord.getBirthdate()));
-						inhabitantInfo.put("phoneNumber", person.getPhone());
-						inhabitantInfo.put("medications", Arrays.toString(medicalRecord.getMedications()));
-						inhabitantInfo.put("allergies", Arrays.toString(medicalRecord.getAllergies()));
-						inhabitants.put("inhabitant" + " " + inhabitantCount, inhabitantInfo);
-						inhabitantsThere.add(inhabitants);
-					}
-				}
-			}
-		}
-		
-		
-		List<Object> inhabitantsThere = new ArrayList<Object>();
-		inhabitantsThere.add(stationNumber);
-		inhabitantsThere.add(addressesInfos);
-		
-		return inhabitantsThere;
 	}
-*/
-	public LinkedHashMap<String, LinkedHashMap<LinkedHashMap<String, String>, List<LinkedHashMap<String, LinkedHashMap<String, String>>>>> getHomesInfoByFireStations(
-			List<String> stationNumbers) {
-
-		LinkedHashMap<String, LinkedHashMap<LinkedHashMap<String, String>, List<LinkedHashMap<String, LinkedHashMap<String, String>>>>> homesInfoByFireStation 
-		= new LinkedHashMap<String, LinkedHashMap<LinkedHashMap<String, String>, List<LinkedHashMap<String, LinkedHashMap<String, String>>>>>();
-		LinkedHashMap<String, String> coveredHomes;
-		List<LinkedHashMap<String, LinkedHashMap<String, String>>> inhabitantsInfo;
-		LinkedHashMap<LinkedHashMap<String, String>, List<LinkedHashMap<String, LinkedHashMap<String, String>>>> homesInfo
-		= new LinkedHashMap<LinkedHashMap<String, String>, List<LinkedHashMap<String, LinkedHashMap<String, String>>>>();
-		int homesCount = 0;
-
-		List<LinkedFireStation> linkedFireStations = linkedFireStationDao.getAll();
-		
-		for (LinkedFireStation linkedFireStation : linkedFireStations) {
-			String linkedStationNumber = linkedFireStation.getStation();
-			for (String stationNumber : stationNumbers) {
-				if (linkedStationNumber.equals(stationNumber)) {
-					homesCount++;
-					coveredHomes = new LinkedHashMap<String, String>();
-					coveredHomes.put("home" + " " + homesCount, linkedFireStation.getAddress());
-					inhabitantsInfo = new ArrayList<LinkedHashMap<String, LinkedHashMap<String, String>>>();
-					//inhabitantsInfo = this.whosThere(linkedFireStation.getAddress());
-					inhabitantsInfo.remove(0);
-					homesInfo.put(coveredHomes, inhabitantsInfo);
-				}
-				homesInfoByFireStation.put("fireStation number" + " " + stationNumber, homesInfo);
-			}
-			
-			
-		}
-			
-			
-		
-					
-					
-					
-					
-					
-				
-
-		
-
-		return homesInfoByFireStation;
+	
+	public List<HomeInfo> getHomesInfos (List<String> addresses){
+		return addresses.stream()
+				.map(ad -> {
+					HomeInfo homeInfo = new EmergencyFloodInfos().new HomeInfo();
+					homeInfo.setAddress(ad);
+					homeInfo.setInhabitantsThere(getInhabitantInfos(getPersonIdentifiers(getPersonsThere(ad))));
+					return homeInfo;
+				}).collect(Collectors.toList());
 	}
-
+	
 }
