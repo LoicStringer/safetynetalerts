@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public class DataContainer  {
 
-	private  ObjectMapper objectMapper = new ObjectMapper();
+	private ObjectMapper objectMapper = new ObjectMapper();
 	private DataAccessor dataAccessor = new DataAccessor();
 	private ArrayNode medicalRecordsData ;
 	private ArrayNode linkedFireStationsData;

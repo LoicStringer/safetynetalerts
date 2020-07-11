@@ -13,8 +13,8 @@ import java.util.List;
 public interface IDao<T> {
 
 	List<T> getAll();
-	boolean insert(T t);
-	boolean update(T t);
-	boolean delete (T t);
-	
+	T insert(T t);
+	T update(T t);
+	boolean delete (String s);
+	T getOne(String s);
 }

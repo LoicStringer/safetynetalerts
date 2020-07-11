@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.safetynet.safetynetalerts.data.DataProvider;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
 
+
+@Component
 public class LinkedFireStationDao  extends DataProvider implements IDao<LinkedFireStation>{
 
 	@Override
@@ -22,54 +26,61 @@ public class LinkedFireStationDao  extends DataProvider implements IDao<LinkedFi
 			LinkedFireStation linkFireStation = getObjectMapper().convertValue(linkedFireStationNode, LinkedFireStation.class);
 			linkedFireStations.add(linkFireStation);
 		}
-		
 		return linkedFireStations;
 	}
-
+	
 	@Override
-	public boolean insert(LinkedFireStation  linkedFireStation) {
-		boolean isSaved = false;
+	public LinkedFireStation getOne(String address) {
+		ArrayNode linkedFireStationsData = getDataContainer().getLinkedFireStationsData();
+		LinkedFireStation linkedFireStationToGet = new LinkedFireStation();
+		Iterator<JsonNode> elements = linkedFireStationsData.elements();
+
+		while (elements.hasNext()) {
+			JsonNode linkedFireStationNode = elements.next();
+			String adressToGet = linkedFireStationNode.findValue("address").asText();
+			if(adressToGet.equals(address)) {
+				linkedFireStationToGet = getObjectMapper().convertValue(linkedFireStationNode, LinkedFireStation.class);
+				break;
+			}
+		}
+		return linkedFireStationToGet;
+	}
+
+	
+	@Override
+	public LinkedFireStation insert(LinkedFireStation  linkedFireStation) {
 		JsonNode linkedFireStationNode = getObjectMapper().convertValue(linkedFireStation, JsonNode.class);
 		ArrayNode linkedFireStationsData = getDataContainer().getLinkedFireStationsData();
-		int size = linkedFireStationsData.size();
 		
 		linkedFireStationsData.add(linkedFireStationNode);
 		getDataContainer().setLinkedFireStationsData(linkedFireStationsData);	
 		
-		if(linkedFireStationsData.size() == (size+1))
-			isSaved = true;
-		
-		return isSaved;
+		return linkedFireStation;
 	}
 
 	@Override
-	public boolean update(LinkedFireStation  linkedFireStation) {
-		boolean isUpdated = false;
-		String identifier = linkedFireStation.getAddress();
-		List<LinkedFireStation> linkedFireStations = this.getAll();
+	public LinkedFireStation update(LinkedFireStation  linkedFireStation) {
+		String address = linkedFireStation.getAddress();
 		
-		LinkedFireStation linkedStationToUpdate = linkedFireStations.stream()
-				.filter(lfs -> identifier.equals(lfs.getAddress())).findAny().orElse(null);
+		List<LinkedFireStation> linkedFireStations = this.getAll();
+		LinkedFireStation linkedStationToUpdate = this.getOne(address);
 		int index = linkedFireStations.indexOf(linkedStationToUpdate);
 		linkedFireStations.set(index, linkedFireStation);
-		if(linkedFireStations.get(index) != linkedStationToUpdate)
-			isUpdated = true;
 
 		ArrayNode newLinkedFireStatiosData = getObjectMapper().valueToTree(linkedFireStations);
 		getDataContainer().setLinkedFireStationsData(newLinkedFireStatiosData);
 		
-		return isUpdated;
+		return linkedFireStation;
 	}
 
 	@Override
-	public boolean delete(LinkedFireStation  linkedFireStation) {
+	public boolean delete(String address) {
 		boolean isDeleted = false;
-		String identifier = linkedFireStation.getAddress() + linkedFireStation.getStation();
+
 		List<LinkedFireStation> linkedFireStations = this.getAll();
 		int size = linkedFireStations.size();
 		
-		LinkedFireStation linkedStationToUpdate = linkedFireStations.stream()
-				.filter(lfs -> identifier.equals(lfs.getAddress() + lfs.getStation())).findAny().orElse(null);
+		LinkedFireStation linkedStationToUpdate = this.getOne(address);
 		int index = linkedFireStations.indexOf(linkedStationToUpdate);
 		linkedFireStations.remove(index);
 		
@@ -82,4 +93,5 @@ public class LinkedFireStationDao  extends DataProvider implements IDao<LinkedFi
 		return isDeleted;
 	}
 
+	
 }
