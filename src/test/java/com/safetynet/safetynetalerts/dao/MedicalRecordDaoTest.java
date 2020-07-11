@@ -30,7 +30,7 @@ class MedicalRecordDaoTest {
 		medicalRecords = medicalRecordDao.getAll();
 		assertEquals(23, medicalRecords.size());
 	}
-
+/*
 	@Test
 	void insertTest() {
 		medicalRecord.setFirstName("Newbie");
@@ -67,6 +67,6 @@ class MedicalRecordDaoTest {
 		assertNotEquals("John", medicalRecords.get(0).getFirstName());
 		
 	}
-	
+*/	
 
 }

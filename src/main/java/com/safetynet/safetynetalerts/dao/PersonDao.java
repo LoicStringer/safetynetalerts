@@ -6,10 +6,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.safetynet.safetynetalerts.data.DataProvider;
 import com.safetynet.safetynetalerts.model.Person;
 
@@ -28,7 +26,6 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 			Person person = getObjectMapper().convertValue(personNode, Person.class);
 			persons.add(person);
 		}
-
 		return persons;
 	}
 
@@ -47,53 +44,42 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 				break;
 			}
 		}
-		
 		return personToGet;
 	}
 	
 	@Override
-	public boolean insert(Person person) {
-		boolean isSaved = false;
+	public Person insert(Person person) {
 		JsonNode personNode = getObjectMapper().convertValue(person, JsonNode.class);
 		ArrayNode personsData = getDataContainer().getPersonsData();
-		int size = personsData.size();
-
+	
 		personsData.add(personNode);
 		getDataContainer().setPersonsData(personsData);
-
-		if (personsData.size() == (size + 1))
-			isSaved = true;
-
-		return isSaved;
+		
+		return person;
 	}
 
 	@Override
-	public boolean update(Person person) {
-		boolean isUpdated = false;
-		String identifier = person.getFirstName() + person.getLastName();
-		
+	public Person update(Person personUpdated) {
+		Person personToUpdate = this.getOne( personUpdated.getFirstName() + personUpdated.getLastName());
+	
 		List<Person> persons = this.getAll();
-		Person personToUpdate = this.getOne(identifier);
 		int index = persons.indexOf(personToUpdate);
-		persons.set(index, person);
-		if (persons.get(index) != personToUpdate)
-			isUpdated = true;
-		 
+		persons.set(index, personUpdated);
+		
 		ArrayNode newPersonsData = getObjectMapper().valueToTree(persons);
 		getDataContainer().setPersonsData(newPersonsData);
 
-		return isUpdated;
+		return personUpdated;
 	}
 
 	@Override
-	public boolean delete(Person person) {
+	public boolean delete(String identifier) {
 		boolean isDeleted = false;
-		String identifier = person.getFirstName() + person.getLastName();
 		
 		List<Person> persons = this.getAll();
 		int size = persons.size();
-		Person personToUpdate = this.getOne(identifier);
-		int index = persons.indexOf(personToUpdate);
+		Person personToDelete = this.getOne(identifier);
+		int index = persons.indexOf(personToDelete);
 		persons.remove(index);
 
 		if (persons.size() == (size - 1))

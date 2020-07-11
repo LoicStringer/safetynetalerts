@@ -30,7 +30,7 @@ class PersonDaoTest {
 		persons = personDao.getAll();
 		assertEquals(23, persons.size());
 	}
-
+/*
 	@Test
 	void insertTest() {
 		person.setFirstName("Newbie");
@@ -67,6 +67,7 @@ class PersonDaoTest {
 		assertNotEquals("John", persons.get(0).getFirstName());
 		
 	}
-	
+
+*/
 	
 }

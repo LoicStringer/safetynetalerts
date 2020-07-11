@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.safetynet.safetynetalerts.data.DataProvider;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
-import com.safetynet.safetynetalerts.model.Person;
 
 
 @Component
@@ -27,7 +26,6 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 			MedicalRecord medicalRecord = getObjectMapper().convertValue(medicalRecordNode, MedicalRecord.class);
 			medicalRecords.add(medicalRecord);
 		}
-		
 		return medicalRecords;
 	}
 
@@ -50,44 +48,34 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	}
 	
 	@Override
-	public boolean insert(MedicalRecord medicalRecord) {
-		boolean isSaved = false;
+	public MedicalRecord insert(MedicalRecord medicalRecord) {
 		JsonNode medicalRecordNode = getObjectMapper().convertValue(medicalRecord, JsonNode.class);
 		ArrayNode medicalRecordsData = getDataContainer().getMedicalRecordsData();
-		int size = medicalRecordsData.size();
 		
 		medicalRecordsData.add(medicalRecordNode);
 		getDataContainer().setMedicalRecordsData(medicalRecordsData);	
-		
-		if(medicalRecordsData.size() == (size+1))
-			isSaved = true;
-		
-		return isSaved;
+	
+		return medicalRecord;
 	}
 
 	@Override
-	public boolean update(MedicalRecord medicalRecord) {
-		boolean isUpdated = false;
+	public MedicalRecord update(MedicalRecord medicalRecord) {
 		String identifier = medicalRecord.getFirstName() + medicalRecord.getLastName();
 		
 		List<MedicalRecord> medicalrecords = this.getAll();
 		MedicalRecord medicalRecordToUpdate = this.getOne(identifier);
 		int index = medicalrecords.indexOf(medicalRecordToUpdate);
 		medicalrecords.set(index, medicalRecord);
-		
-		if(medicalrecords.get(index) != medicalRecordToUpdate)
-			isUpdated = true;
-
+	
 		ArrayNode newMedicalRecordsData = getObjectMapper().valueToTree(medicalrecords);
 		getDataContainer().setMedicalRecordsData(newMedicalRecordsData);
 		
-		return isUpdated;
+		return medicalRecord;
 	}
 
 	@Override
-	public boolean delete(MedicalRecord medicalRecord) {
+	public boolean delete(String identifier) {
 		boolean isDeleted = false;
-		String identifier = medicalRecord.getFirstName() + medicalRecord.getLastName();
 		
 		List<MedicalRecord> medicalRecords = this.getAll();
 		int size = medicalRecords.size();

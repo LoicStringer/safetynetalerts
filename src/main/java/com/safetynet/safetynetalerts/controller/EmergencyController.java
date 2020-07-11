@@ -1,6 +1,5 @@
 package com.safetynet.safetynetalerts.controller;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;

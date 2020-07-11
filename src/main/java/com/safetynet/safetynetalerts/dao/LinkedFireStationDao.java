@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.safetynet.safetynetalerts.data.DataProvider;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
-import com.safetynet.safetynetalerts.model.Person;
 
 
 @Component
@@ -27,7 +26,6 @@ public class LinkedFireStationDao  extends DataProvider implements IDao<LinkedFi
 			LinkedFireStation linkFireStation = getObjectMapper().convertValue(linkedFireStationNode, LinkedFireStation.class);
 			linkedFireStations.add(linkFireStation);
 		}
-		
 		return linkedFireStations;
 	}
 	
@@ -50,43 +48,35 @@ public class LinkedFireStationDao  extends DataProvider implements IDao<LinkedFi
 
 	
 	@Override
-	public boolean insert(LinkedFireStation  linkedFireStation) {
-		boolean isSaved = false;
+	public LinkedFireStation insert(LinkedFireStation  linkedFireStation) {
 		JsonNode linkedFireStationNode = getObjectMapper().convertValue(linkedFireStation, JsonNode.class);
 		ArrayNode linkedFireStationsData = getDataContainer().getLinkedFireStationsData();
-		int size = linkedFireStationsData.size();
 		
 		linkedFireStationsData.add(linkedFireStationNode);
 		getDataContainer().setLinkedFireStationsData(linkedFireStationsData);	
 		
-		if(linkedFireStationsData.size() == (size+1))
-			isSaved = true;
-		
-		return isSaved;
+		return linkedFireStation;
 	}
 
 	@Override
-	public boolean update(LinkedFireStation  linkedFireStation) {
-		boolean isUpdated = false;
+	public LinkedFireStation update(LinkedFireStation  linkedFireStation) {
 		String address = linkedFireStation.getAddress();
 		
 		List<LinkedFireStation> linkedFireStations = this.getAll();
 		LinkedFireStation linkedStationToUpdate = this.getOne(address);
 		int index = linkedFireStations.indexOf(linkedStationToUpdate);
 		linkedFireStations.set(index, linkedFireStation);
-		if(linkedFireStations.get(index) != linkedStationToUpdate)
-			isUpdated = true;
 
 		ArrayNode newLinkedFireStatiosData = getObjectMapper().valueToTree(linkedFireStations);
 		getDataContainer().setLinkedFireStationsData(newLinkedFireStatiosData);
 		
-		return isUpdated;
+		return linkedFireStation;
 	}
 
 	@Override
-	public boolean delete(LinkedFireStation  linkedFireStation) {
+	public boolean delete(String address) {
 		boolean isDeleted = false;
-		String address = linkedFireStation.getAddress() + linkedFireStation.getStation();
+
 		List<LinkedFireStation> linkedFireStations = this.getAll();
 		int size = linkedFireStations.size();
 		
