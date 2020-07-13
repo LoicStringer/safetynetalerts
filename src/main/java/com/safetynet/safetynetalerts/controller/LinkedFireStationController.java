@@ -17,7 +17,7 @@ import com.safetynet.safetynetalerts.model.LinkedFireStation;
 import com.safetynet.safetynetalerts.service.LinkedFireStationService;
 
 @RestController
-@RequestMapping("/firestation")
+@RequestMapping("/firestations")
 public class LinkedFireStationController {
 	
 	@Autowired

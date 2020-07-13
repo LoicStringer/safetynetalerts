@@ -13,6 +13,11 @@ import com.safetynet.safetynetalerts.responseentity.EmergencyFireAddressInfos;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos;
 import com.safetynet.safetynetalerts.service.EmergencyService;
 
+/**
+ * Controller class which exposes endpoints dealing with
+ * @author newbie
+ *
+ */
 @RestController
 public class EmergencyController {
 

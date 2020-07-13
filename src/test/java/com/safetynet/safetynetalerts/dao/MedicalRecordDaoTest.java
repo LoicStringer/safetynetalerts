@@ -30,15 +30,14 @@ class MedicalRecordDaoTest {
 		medicalRecords = medicalRecordDao.getAll();
 		assertEquals(23, medicalRecords.size());
 	}
-/*
+
 	@Test
 	void insertTest() {
 		medicalRecord.setFirstName("Newbie");
 		
-		boolean isInserted = medicalRecordDao.insert(medicalRecord);
+		medicalRecordDao.insert(medicalRecord);
 		medicalRecords = medicalRecordDao.getAll();
 		
-		assertTrue(isInserted);
 		assertEquals("Newbie",medicalRecords.get(medicalRecords.size()-1).getFirstName());
 	}
 	
@@ -48,10 +47,9 @@ class MedicalRecordDaoTest {
 		medicalRecord.setLastName("Boyd");
 		
 		medicalRecord.setBirthdate("01/04/1978");
-		boolean isUpdated = medicalRecordDao.update(medicalRecord);
+		medicalRecordDao.update(medicalRecord);
 		medicalRecords = medicalRecordDao.getAll();
 		
-		assertTrue(isUpdated);
 		assertEquals("01/04/1978", medicalRecords.get(0).getBirthdate());
 	}
 	
@@ -60,13 +58,12 @@ class MedicalRecordDaoTest {
 		medicalRecord.setFirstName("John");
 		medicalRecord.setLastName("Boyd");
 		
-		boolean isDeleted = medicalRecordDao.delete(medicalRecord);
+		boolean isDeleted = medicalRecordDao.delete(medicalRecord.getFirstName()+medicalRecord.getLastName());
 		medicalRecords = medicalRecordDao.getAll();
 		
 		assertTrue(isDeleted);
 		assertNotEquals("John", medicalRecords.get(0).getFirstName());
-		
 	}
-*/	
+	
 
 }

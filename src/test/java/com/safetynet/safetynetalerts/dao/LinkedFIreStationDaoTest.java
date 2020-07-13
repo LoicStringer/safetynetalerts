@@ -30,15 +30,14 @@ class LinkedFIreStationDaoTest {
 		linkedFireStations = linkedFireStationDao.getAll();
 		assertEquals(13, linkedFireStations.size());
 	}
-/*
+
 	@Test
 	void insertTest() {
 		linkedFireStation.setStation("20");
 		
-		boolean isInserted = linkedFireStationDao.insert(linkedFireStation);
+		linkedFireStationDao.insert(linkedFireStation);
 		linkedFireStations = linkedFireStationDao.getAll();
 		
-		assertTrue(isInserted);
 		assertEquals("20",linkedFireStations.get(linkedFireStations.size()-1).getStation());
 	}
 	
@@ -47,10 +46,9 @@ class LinkedFIreStationDaoTest {
 		linkedFireStation.setAddress("1509 Culver St");
 		
 		linkedFireStation.setStation("20");
-		boolean isUpdated = linkedFireStationDao.update(linkedFireStation);
+		linkedFireStationDao.update(linkedFireStation);
 		linkedFireStations = linkedFireStationDao.getAll();
 		
-		assertTrue(isUpdated);
 		assertEquals("20", linkedFireStations.get(0).getStation());
 	}
 	
@@ -59,13 +57,13 @@ class LinkedFIreStationDaoTest {
 		linkedFireStation.setAddress("1509 Culver St");
 		linkedFireStation.setStation("3");
 		
-		boolean isDeleted = linkedFireStationDao.delete(linkedFireStation);
+		boolean isDeleted = linkedFireStationDao.delete(linkedFireStation.getAddress());
 		linkedFireStations = linkedFireStationDao.getAll();
 		
 		assertTrue(isDeleted);
 		assertNotEquals("1509 Culver St", linkedFireStations.get(0).getAddress());
 	}
-*/
+
 	
 	
 }

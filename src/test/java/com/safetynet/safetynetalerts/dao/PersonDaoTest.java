@@ -2,6 +2,7 @@ package com.safetynet.safetynetalerts.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -28,17 +29,23 @@ class PersonDaoTest {
 	@Test
 	void getAllTest() {
 		persons = personDao.getAll();
+		assertNotNull(persons);
 		assertEquals(23, persons.size());
 	}
-/*
+
+	@Test
+	void getOneTest() {
+		
+	}
+	
+	
 	@Test
 	void insertTest() {
 		person.setFirstName("Newbie");
 		
-		boolean isInserted = personDao.insert(person);
+		personDao.insert(person);
 		persons = personDao.getAll();
 		
-		assertTrue(isInserted);
 		assertEquals("Newbie",persons.get(persons.size()-1).getFirstName());
 	}
 	
@@ -48,10 +55,9 @@ class PersonDaoTest {
 		person.setLastName("Boyd");
 		
 		person.setCity("Paris");
-		boolean isUpdated = personDao.update(person);
+		personDao.update(person);
 		persons = personDao.getAll();
 		
-		assertTrue(isUpdated);
 		assertEquals("Paris", persons.get(0).getCity());
 	}
 	
@@ -60,14 +66,13 @@ class PersonDaoTest {
 		person.setFirstName("John");
 		person.setLastName("Boyd");
 		
-		boolean isDeleted = personDao.delete(person);
+		boolean isDeleted = personDao.delete(person.getFirstName()+person.getLastName());
 		persons = personDao.getAll();
 		
 		assertTrue(isDeleted);
 		assertNotEquals("John", persons.get(0).getFirstName());
-		
 	}
 
-*/
+
 	
 }

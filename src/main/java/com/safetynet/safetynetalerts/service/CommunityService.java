@@ -30,6 +30,13 @@ public class CommunityService {
 	@Autowired
 	private LinkedFireStationDao linkedFireStationDao;
 
+	
+	/**
+	 * Retrieves a emails list of the specified city inhabitants
+	 * mapped from a Person database filtered stream by the city's name provided.
+	 * @param city's name as a String.
+	 * @return a {@link List} of String.
+	 */
 	public List<String> getCommunityEmails(String city) {
 		return  personDao.getAll().stream()
 				.filter(p -> p.getCity().equals(city))

@@ -23,7 +23,7 @@ class DataContainerTest {
 	}
 
 	@Test
-	void containsPersonDataTest() {
+	void isContainingAllPersonDataTest() {
 		arrayNode = dataContainer.getPersonsData();
 		assertNotNull(arrayNode);
 		assertTrue(arrayNode.isContainerNode());
@@ -31,7 +31,7 @@ class DataContainerTest {
 	}
 
 	@Test
-	void containsMedicalRecordsDataTest() {
+	void isContainingAllMedicalRecordsDataTest() {
 		arrayNode = dataContainer.getMedicalRecordsData();
 		assertNotNull(arrayNode);
 		assertTrue(arrayNode.isContainerNode());
@@ -39,7 +39,7 @@ class DataContainerTest {
 	}
 	
 	@Test
-	void containsFireStationsDataTest() {
+	void isContainingAllFireStationsDataTest() {
 		arrayNode = dataContainer.getLinkedFireStationsData();
 		assertNotNull(arrayNode);
 		assertTrue(arrayNode.isContainerNode());
