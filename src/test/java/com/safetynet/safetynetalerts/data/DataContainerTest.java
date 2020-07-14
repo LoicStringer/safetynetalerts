@@ -5,12 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-
+@Tag("DataContainerTests")
+@DisplayName("Import data from Json file")
 class DataContainerTest {
 
 	private ArrayNode arrayNode;

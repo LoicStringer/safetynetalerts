@@ -2,27 +2,32 @@ package com.safetynet.safetynetalerts.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 
+
+@Tag("MedicalRecordDaoTests")
+@DisplayName("MedicalRecordDao CRUD operations tests")
 class MedicalRecordDaoTest {
 
 	MedicalRecordDao medicalRecordDao;
 	MedicalRecord medicalRecord;
 	List<MedicalRecord> medicalRecords;
+	String identifier;
 
 	@BeforeEach
 	void setUp() {
 		medicalRecordDao = new MedicalRecordDao();
 		medicalRecord = new MedicalRecord();
 		medicalRecords = new ArrayList<MedicalRecord>();
+		identifier = "JohnBoyd";
 	}
 
 	@Test
@@ -31,6 +36,12 @@ class MedicalRecordDaoTest {
 		assertEquals(23, medicalRecords.size());
 	}
 
+	@Test
+	void getOneTest() {
+		MedicalRecord medicalRecordToGet = medicalRecordDao.getOne(identifier);
+		assertEquals(identifier,medicalRecordToGet.getFirstName()+medicalRecordToGet.getLastName());
+	}
+	
 	@Test
 	void insertTest() {
 		medicalRecord.setFirstName("Newbie");
@@ -46,11 +57,11 @@ class MedicalRecordDaoTest {
 		medicalRecord.setFirstName("John");
 		medicalRecord.setLastName("Boyd");
 		
-		medicalRecord.setBirthdate("01/04/1978");
+		medicalRecord.setBirthdate("04/01/1978");
 		medicalRecordDao.update(medicalRecord);
 		medicalRecords = medicalRecordDao.getAll();
 		
-		assertEquals("01/04/1978", medicalRecords.get(0).getBirthdate());
+		assertEquals("04/01/1978", medicalRecords.get(0).getBirthdate());
 	}
 	
 	@Test
@@ -58,10 +69,9 @@ class MedicalRecordDaoTest {
 		medicalRecord.setFirstName("John");
 		medicalRecord.setLastName("Boyd");
 		
-		boolean isDeleted = medicalRecordDao.delete(medicalRecord.getFirstName()+medicalRecord.getLastName());
+		medicalRecordDao.delete(medicalRecord);
 		medicalRecords = medicalRecordDao.getAll();
 		
-		assertTrue(isDeleted);
 		assertNotEquals("John", medicalRecords.get(0).getFirstName());
 	}
 	

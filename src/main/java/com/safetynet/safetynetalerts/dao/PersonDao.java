@@ -73,22 +73,17 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 	}
 
 	@Override
-	public boolean delete(String identifier) {
-		boolean isDeleted = false;
-		
+	public Person delete(Person person) {		
 		List<Person> persons = this.getAll();
-		int size = persons.size();
-		Person personToDelete = this.getOne(identifier);
+	
+		Person personToDelete = this.getOne(person.getFirstName()+person.getLastName());
 		int index = persons.indexOf(personToDelete);
 		persons.remove(index);
-
-		if (persons.size() == (size - 1))
-			isDeleted = true;
 
 		ArrayNode newPersonsData = getObjectMapper().valueToTree(persons);
 		getDataContainer().setPersonsData(newPersonsData);
 
-		return isDeleted;
+		return person;
 	}
 
 	

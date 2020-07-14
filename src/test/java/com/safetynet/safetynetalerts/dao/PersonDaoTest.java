@@ -3,27 +3,32 @@ package com.safetynet.safetynetalerts.dao;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.safetynet.safetynetalerts.model.Person;
 
+@Tag("PersonDaoTests")
+@DisplayName("PersonDao CRUD operations tests")
 class PersonDaoTest {
 
 	PersonDao personDao;
 	Person person;
 	List<Person> persons;
-
+	String identifier;
+	
 	@BeforeEach
 	void setUp() {
 		personDao = new PersonDao();
 		person = new Person();
 		persons = new ArrayList<Person>();
+		identifier = "JohnBoyd";
 	}
 
 	@Test
@@ -35,9 +40,9 @@ class PersonDaoTest {
 
 	@Test
 	void getOneTest() {
-		
+		Person personToget = personDao.getOne(identifier);
+		assertEquals(identifier,personToget.getFirstName()+personToget.getLastName());
 	}
-	
 	
 	@Test
 	void insertTest() {
@@ -66,10 +71,9 @@ class PersonDaoTest {
 		person.setFirstName("John");
 		person.setLastName("Boyd");
 		
-		boolean isDeleted = personDao.delete(person.getFirstName()+person.getLastName());
+		personDao.delete(person);
 		persons = personDao.getAll();
-		
-		assertTrue(isDeleted);
+	
 		assertNotEquals("John", persons.get(0).getFirstName());
 	}
 

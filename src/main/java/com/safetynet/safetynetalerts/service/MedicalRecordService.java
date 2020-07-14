@@ -30,8 +30,8 @@ public class MedicalRecordService {
 		return medicalRecordDao.update(medicalRecord) ;
 	}
 	
-	public boolean deletePerson(String identifier) {
-		return medicalRecordDao.delete(identifier);
+	public MedicalRecord deletePerson(MedicalRecord medicalRecord) {
+		return medicalRecordDao.delete(medicalRecord);
 	}
 	
 	

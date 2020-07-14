@@ -15,6 +15,6 @@ public interface IDao<T> {
 	List<T> getAll();
 	T insert(T t);
 	T update(T t);
-	boolean delete (String s);
+	T delete (T t);
 	T getOne(String s);
 }

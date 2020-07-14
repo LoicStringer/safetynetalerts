@@ -74,22 +74,17 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	}
 
 	@Override
-	public boolean delete(String identifier) {
-		boolean isDeleted = false;
-		
+	public MedicalRecord delete(MedicalRecord medicalRecord) {
 		List<MedicalRecord> medicalRecords = this.getAll();
-		int size = medicalRecords.size();
-		MedicalRecord medicalRecordToDelete = this.getOne(identifier);
+		
+		MedicalRecord medicalRecordToDelete = this.getOne(medicalRecord.getFirstName()+medicalRecord.getLastName());
 		int index = medicalRecords.indexOf(medicalRecordToDelete);
 		medicalRecords.remove(index);
-		
-		if(medicalRecords.size() == (size-1))
-			isDeleted = true;
 		
 		ArrayNode newMedicalRecordsData = getObjectMapper().valueToTree(medicalRecords);
 		getDataContainer().setMedicalRecordsData(newMedicalRecordsData);
 		
-		return isDeleted;
+		return medicalRecord;
 	}
 
 	

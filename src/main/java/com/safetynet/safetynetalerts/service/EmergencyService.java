@@ -15,6 +15,7 @@ import com.safetynet.safetynetalerts.responseentity.EmergencyChildAlert;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFireAddressInfos;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos.HomeInfo;
+import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos.StationInfos;
 import com.safetynet.safetynetalerts.responseentity.InhabitantInfos;
 
 @Service
@@ -68,7 +69,7 @@ public class EmergencyService {
 		EmergencyFloodInfos emergencyFloodInfos = new EmergencyFloodInfos();
 				
 		stationNumbers.stream()
-		.forEach(sn -> emergencyFloodInfos.getCoveredHomesMap().put("stationNumber: "+sn,getHomesInfos(getAdressesCoveredByFirestation(sn))));
+		.forEach(sn -> emergencyFloodInfos.addStationInfos(sn,getHomesInfos(getAdressesCoveredByFirestation(sn))));
 
 		return emergencyFloodInfos;
 	}

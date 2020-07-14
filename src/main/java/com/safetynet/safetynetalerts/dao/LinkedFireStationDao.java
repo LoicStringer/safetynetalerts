@@ -74,23 +74,17 @@ public class LinkedFireStationDao  extends DataProvider implements IDao<LinkedFi
 	}
 
 	@Override
-	public boolean delete(String address) {
-		boolean isDeleted = false;
-
+	public LinkedFireStation delete(LinkedFireStation linkedFireStation) {
 		List<LinkedFireStation> linkedFireStations = this.getAll();
-		int size = linkedFireStations.size();
 		
-		LinkedFireStation linkedStationToUpdate = this.getOne(address);
+		LinkedFireStation linkedStationToUpdate = this.getOne(linkedFireStation.getAddress());
 		int index = linkedFireStations.indexOf(linkedStationToUpdate);
 		linkedFireStations.remove(index);
-		
-		if(linkedFireStations.size() == (size-1))
-			isDeleted = true;
 		
 		ArrayNode newLinkedFireStationsData = getObjectMapper().valueToTree(linkedFireStations);
 		getDataContainer().setLinkedFireStationsData(newLinkedFireStationsData);
 		
-		return isDeleted;
+		return linkedFireStation;
 	}
 
 	

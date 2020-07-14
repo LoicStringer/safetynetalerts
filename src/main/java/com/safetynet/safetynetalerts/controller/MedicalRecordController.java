@@ -1,12 +1,8 @@
 package com.safetynet.safetynetalerts.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,18 +19,7 @@ public class MedicalRecordController {
 	
 	@Autowired
 	private MedicalRecordService medicalRecordService;
-	
-	
-	@GetMapping("")
-	public ResponseEntity<List<MedicalRecord>> getAllMedicalRecords(){
-		return ResponseEntity.ok(medicalRecordService.getAllMedicalRecords());
-	}
-	
-	@GetMapping("/{identifier}")
-	public ResponseEntity<MedicalRecord> getOneMedicalRecord(@PathVariable("identifier") String identifier){
-		return ResponseEntity.ok(medicalRecordService.getOneMedicalRecord(identifier));
-	}
-	
+		
 	@PostMapping("")
 	public ResponseEntity<MedicalRecord> insertMedicalRecord(@RequestBody MedicalRecord medicalRecord){
 		
@@ -48,9 +33,9 @@ public class MedicalRecordController {
 		return ResponseEntity.ok(medicalRecordService.updateMedicalRecord(medicalRecord));	
 	}
 	
-	@DeleteMapping("/{identifier}")
-	public ResponseEntity<Boolean> deleteMedicalRecord(@PathVariable("identifier") String identifier){
-		return ResponseEntity.ok(medicalRecordService.deletePerson(identifier));
+	@DeleteMapping("")
+	public ResponseEntity<MedicalRecord> deleteMedicalRecord(@RequestBody MedicalRecord medicalRecord){
+		return ResponseEntity.ok(medicalRecordService.deletePerson(medicalRecord));
 	}
 	
 	

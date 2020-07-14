@@ -31,8 +31,8 @@ public class LinkedFireStationService {
 		return linkedFireStationDao.update(linkedFireStation) ;
 	}
 	
-	public boolean deleteLinkedFireStation(String address) {
-		return linkedFireStationDao.delete(address);
+	public LinkedFireStation deleteLinkedFireStation(LinkedFireStation linkedFireStation) {
+		return linkedFireStationDao.delete(linkedFireStation);
 	}
 	
 	

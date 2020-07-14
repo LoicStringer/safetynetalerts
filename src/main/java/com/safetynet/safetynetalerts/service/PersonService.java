@@ -30,8 +30,8 @@ public class PersonService {
 		return personDao.update(person) ;
 	}
 	
-	public boolean deletePerson(String identifier) {
-		return personDao.delete(identifier);
+	public Person deletePerson(Person person) {
+		return personDao.delete(person);
 	}
 	
 	

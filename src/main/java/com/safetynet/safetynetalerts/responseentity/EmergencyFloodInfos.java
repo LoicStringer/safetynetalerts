@@ -1,24 +1,68 @@
 package com.safetynet.safetynetalerts.responseentity;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 public class EmergencyFloodInfos {
 
-	private LinkedHashMap<String,List<HomeInfo>>coveredHomesMap;
-
+	private List<StationInfos>coveredHomesList;
+	
+	
 	public EmergencyFloodInfos() {
-		this.coveredHomesMap = new LinkedHashMap<String,List<HomeInfo>>();
+		
+		this.coveredHomesList = new ArrayList<StationInfos>();
 	}
 
-	public LinkedHashMap<String, List<HomeInfo>> getCoveredHomesMap() {
-		return coveredHomesMap;
+
+	public void addStationInfos(String stationNumber, List<HomeInfo> homesInfos) {
+		this.coveredHomesList.add(new StationInfos(stationNumber, homesInfos));
+	}
+	
+	
+	public List<StationInfos> getCoveredHomesList() {
+		return coveredHomesList;
 	}
 
-	public void setCoveredHomesMap(LinkedHashMap<String, List<HomeInfo>> coveredHomesMap) {
-		this.coveredHomesMap = coveredHomesMap;
+
+	public void setCoveredHomesList(List<StationInfos> coveredHomesList) {
+		this.coveredHomesList = coveredHomesList;
 	}
 
+
+
+
+	public class StationInfos{
+		private String stationNumber;
+		private List<HomeInfo> homesInfos;
+		
+		
+		public StationInfos(String stationNumber, List<HomeInfo> homesInfos) {
+			this.stationNumber=stationNumber;
+			this.homesInfos=homesInfos;
+			
+		}
+
+		public String getStationNumber() {
+			return stationNumber;
+		}
+
+
+		public void setStationNumber(String stationNumber) {
+			this.stationNumber = stationNumber;
+		}
+
+		public List<HomeInfo> getHomesInfos() {
+			return homesInfos;
+		}
+
+		public void setHomesInfos(List<HomeInfo> homesInfos) {
+			this.homesInfos = homesInfos;
+		}
+
+	}
+
+	
 	public class HomeInfo {
 		
 		private String address;
