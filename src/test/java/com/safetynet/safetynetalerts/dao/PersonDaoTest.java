@@ -42,6 +42,7 @@ class PersonDaoTest {
 	void getOneTest() {
 		Person personToget = personDao.getOne(identifier);
 		assertEquals(identifier,personToget.getFirstName()+personToget.getLastName());
+		assertEquals(personToget.getAddress(), "1509 Culver St");
 	}
 	
 	@Test

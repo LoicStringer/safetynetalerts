@@ -57,7 +57,7 @@ public class CommunityController {
 	}
 	
 	/**
-	 * Call to the {@link CommunityService#getPersonsCoveredByFireStation(String)
+	 * Call to the {@link CommunityService#getPersonsCoveredByFireStation(String)}
 	 * retrieving a list of the persons covered by the specified fire station,
 	 * identified by its ("id") number.
 	 * @param a LinkedFireStation stationNumber as int 

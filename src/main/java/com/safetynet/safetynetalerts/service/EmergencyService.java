@@ -1,9 +1,13 @@
 package com.safetynet.safetynetalerts.service;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Service;
 
 import com.safetynet.safetynetalerts.dao.LinkedFireStationDao;
@@ -15,7 +19,6 @@ import com.safetynet.safetynetalerts.responseentity.EmergencyChildAlert;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFireAddressInfos;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos.HomeInfo;
-import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos.StationInfos;
 import com.safetynet.safetynetalerts.responseentity.InhabitantInfos;
 
 @Service
@@ -74,15 +77,17 @@ public class EmergencyService {
 		return emergencyFloodInfos;
 	}
 	
-	public List<Person> getPersonsThere(String address){
-		return personDao.getAll().stream()
+	private List<Person> getPersonsThere(String address){
+		List<Person> persons = personDao.getAll(); 
+		List<Person> personsThere = persons.stream()
 				.filter(p -> p.getAddress().equals(address))
 				.collect(Collectors.toList());
+		return personsThere;
 	}
 	
 	private int getPersonAge(Person p) {
 		String birthDate = medicalRecordDao.getOne(p.getFirstName()+p.getLastName()).getBirthdate();
-		return communityService.getAgeFromBirthDate(birthDate);
+		return this.getAgeFromBirthDate(birthDate);
 	}
 
 	private List<String> getAdressesCoveredByFirestation(String stationNumber) {
@@ -92,34 +97,34 @@ public class EmergencyService {
 				.collect(Collectors.toList());
 	}
 		
-	public String getStationNumberCoveringAddress(String address) {
+	private String getStationNumberCoveringAddress(String address) {
 		return linkedFireStationDao.getAll().stream()
 				.filter(lfs -> lfs.getAddress().equals(address))
 				.map(lfs -> lfs.getStation())
 				.findAny().get();
 	}
 	
-	public String getPhoneNumber(String identifier) {
+	private String getPhoneNumber(String identifier) {
 		return personDao.getAll().stream()
 				.filter(p -> (p.getFirstName()+p.getLastName()).equals(identifier))
 				.map(p -> p.getPhone())
 				.findAny().get();
 	}
 	
-	public List<String> getPersonIdentifiers(List<Person> personsThere){
+	private List<String> getPersonIdentifiers(List<Person> personsThere){
 		return personsThere.stream()
 				.map(p -> p.getFirstName()+p.getLastName())
 				.collect(Collectors.toList());
 	}
 	
-	public List<InhabitantInfos> getInhabitantInfos(List<String> identifiers){
+	private List<InhabitantInfos> getInhabitantInfos(List<String> identifiers){
 		return medicalRecordDao.getAll().stream()
 				.filter(mr -> identifiers.contains(mr.getFirstName()+mr.getLastName()))
 				.map(temp ->{
 					InhabitantInfos inhabitantThere = new InhabitantInfos();
 					inhabitantThere.setFirstName(temp.getFirstName());
 					inhabitantThere.setLastName(temp.getLastName());
-					inhabitantThere.setAge(Integer.valueOf(communityService.getAgeFromBirthDate(temp.getBirthdate())));
+					inhabitantThere.setAge(Integer.valueOf(this.getAgeFromBirthDate(temp.getBirthdate())));
 					inhabitantThere.setPhoneNumber(getPhoneNumber(temp.getFirstName()+temp.getLastName()));
 					inhabitantThere.setMedications(temp.getMedications());
 					inhabitantThere.setAllergies(temp.getAllergies());
@@ -127,7 +132,7 @@ public class EmergencyService {
 				}).collect(Collectors.toList());
 	}
 	
-	public List<HomeInfo> getHomesInfos (List<String> addresses){
+	private List<HomeInfo> getHomesInfos (List<String> addresses){
 		return addresses.stream()
 				.map(ad -> {
 					HomeInfo homeInfo = new EmergencyFloodInfos().new HomeInfo();
@@ -136,5 +141,9 @@ public class EmergencyService {
 					return homeInfo;
 				}).collect(Collectors.toList());
 	}
-	
+	private int getAgeFromBirthDate(String birthDate) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+		LocalDate birthDateToDate = LocalDate.parse(birthDate, formatter);
+		 return Period.between(birthDateToDate, LocalDate.now()).getYears();	
+	}
 }

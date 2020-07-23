@@ -40,6 +40,7 @@ class MedicalRecordDaoTest {
 	void getOneTest() {
 		MedicalRecord medicalRecordToGet = medicalRecordDao.getOne(identifier);
 		assertEquals(identifier,medicalRecordToGet.getFirstName()+medicalRecordToGet.getLastName());
+		assertEquals(medicalRecordToGet.getBirthdate(), "03/06/1984");
 	}
 	
 	@Test

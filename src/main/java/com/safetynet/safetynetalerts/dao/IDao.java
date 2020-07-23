@@ -2,6 +2,8 @@ package com.safetynet.safetynetalerts.dao;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 
 
 /**
@@ -10,6 +12,8 @@ import java.util.List;
  *
  * @param <T>
  */
+
+@Component
 public interface IDao<T> {
 
 	List<T> getAll();

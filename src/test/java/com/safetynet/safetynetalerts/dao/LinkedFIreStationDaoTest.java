@@ -40,6 +40,7 @@ class LinkedFIreStationDaoTest {
 	void getOneTest() {
 		LinkedFireStation linkedFireStationToGet = linkedFireStationDao.getOne(address);
 		assertEquals(address, linkedFireStationToGet.getAddress());
+		assertEquals(linkedFireStationToGet.getStation(),"3");
 	}
 
 	@Test
