@@ -2,6 +2,11 @@ package com.safetynet.safetynetalerts.model;
 
 import java.util.Arrays;
 
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 /**
  * A person's medical record representation.</br>
  * Constructed of <code>String</code> attributes 
@@ -11,6 +16,7 @@ import java.util.Arrays;
  * @author newbie
  *
  */
+@Component
 public class MedicalRecord {
 
 	private String firstName;

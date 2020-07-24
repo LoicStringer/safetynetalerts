@@ -1,5 +1,11 @@
 package com.safetynet.safetynetalerts.model;
 
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 /**
  * Retrieves the link between an address and a fire station.</br>
  * Constructed of two <code>String</code> attributes, an address and a fire station id,
@@ -8,6 +14,7 @@ package com.safetynet.safetynetalerts.model;
  * @author newbie
  *
  */
+@Component
 public class LinkedFireStation {
 
 	private String address;

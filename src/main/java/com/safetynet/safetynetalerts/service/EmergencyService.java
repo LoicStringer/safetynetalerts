@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Service;
 
 import com.safetynet.safetynetalerts.dao.LinkedFireStationDao;
@@ -33,8 +32,7 @@ public class EmergencyService {
 	@Autowired
 	private MedicalRecordDao medicalRecordDao;
 
-	@Autowired
-	private CommunityService communityService;
+	
 
 	public EmergencyChildAlert getChildrenThere(String address) {
 		EmergencyChildAlert childrenThere = new EmergencyChildAlert();
@@ -80,7 +78,7 @@ public class EmergencyService {
 	private List<Person> getPersonsThere(String address){
 		List<Person> persons = personDao.getAll(); 
 		List<Person> personsThere = persons.stream()
-				.filter(p -> p.getAddress().equals(address))
+				.filter(p -> p.getAddress().equalsIgnoreCase(address))
 				.collect(Collectors.toList());
 		return personsThere;
 	}
@@ -92,21 +90,21 @@ public class EmergencyService {
 
 	private List<String> getAdressesCoveredByFirestation(String stationNumber) {
 		return linkedFireStationDao.getAll().stream()
-				.filter(ad -> ad.getStation().equals(stationNumber))
+				.filter(ad -> ad.getStation().equalsIgnoreCase(stationNumber))
 				.map(LinkedFireStation::getAddress)
 				.collect(Collectors.toList());
 	}
 		
 	private String getStationNumberCoveringAddress(String address) {
 		return linkedFireStationDao.getAll().stream()
-				.filter(lfs -> lfs.getAddress().equals(address))
+				.filter(lfs -> lfs.getAddress().equalsIgnoreCase(address))
 				.map(lfs -> lfs.getStation())
 				.findAny().get();
 	}
 	
 	private String getPhoneNumber(String identifier) {
 		return personDao.getAll().stream()
-				.filter(p -> (p.getFirstName()+p.getLastName()).equals(identifier))
+				.filter(p -> (p.getFirstName()+p.getLastName()).equalsIgnoreCase(identifier))
 				.map(p -> p.getPhone())
 				.findAny().get();
 	}

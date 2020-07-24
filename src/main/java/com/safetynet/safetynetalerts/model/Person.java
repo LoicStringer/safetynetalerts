@@ -2,6 +2,10 @@ package com.safetynet.safetynetalerts.model;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 /**
  * Representation of a person.</br>
  * Constructed of <code>String</code> attributes 
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
+@JsonNaming(value = PropertyNamingStrategy.LowerCaseStrategy.class)
 public class Person {
 
 	private String firstName;

@@ -38,7 +38,7 @@ public class LinkedFireStationDao  extends DataProvider implements IDao<LinkedFi
 		while (elements.hasNext()) {
 			JsonNode linkedFireStationNode = elements.next();
 			String adressToGet = linkedFireStationNode.findValue("address").asText();
-			if(adressToGet.equals(address)) {
+			if(adressToGet.equalsIgnoreCase(address)) {
 				linkedFireStationToGet = getObjectMapper().convertValue(linkedFireStationNode, LinkedFireStation.class);
 				break;
 			}

@@ -39,7 +39,7 @@ public class CommunityService {
 	 */
 	public List<String> getCommunityEmails(String city) {
 		return  personDao.getAll().stream()
-				.filter(p -> p.getCity().equals(city))
+				.filter(p -> p.getCity().equalsIgnoreCase(city))
 				.map(p -> p.getEmail())
 				.collect(Collectors.toList());
 	}
@@ -87,7 +87,7 @@ public class CommunityService {
 
 	private List<String> getAdressesCoveredByFirestation(String stationNumber) {
 		return linkedFireStationDao.getAll().stream()
-				.filter(ad -> ad.getStation().equals(stationNumber))
+				.filter(ad -> ad.getStation().equalsIgnoreCase(stationNumber))
 				.map(LinkedFireStation::getAddress)
 				.collect(Collectors.toList());
 	}
