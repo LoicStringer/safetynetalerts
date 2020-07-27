@@ -14,11 +14,11 @@ public class PersonService {
 	@Autowired
 	private PersonDao personDao;
 	
-	public List<Person> getAllPersons(){
+	public List<Person> getAllPersons() {
 		return personDao.getAll();
 	}
 	
-	public Person getOnePerson(String identifier) {
+	public Person getOnePerson(String identifier)  {
 		return personDao.getOne(identifier);
 	}
 	

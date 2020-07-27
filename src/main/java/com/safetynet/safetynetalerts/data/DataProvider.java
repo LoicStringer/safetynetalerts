@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 @Component
 public abstract class DataProvider {
 
-	
 	private ObjectMapper objectMapper = new ObjectMapper();
 	private DataAccessor dataAccessor = new DataAccessor();
 	private DataContainer dataContainer = new DataContainer();

@@ -30,7 +30,7 @@ public class MedicalRecordService {
 		return medicalRecordDao.update(medicalRecord) ;
 	}
 	
-	public MedicalRecord deletePerson(MedicalRecord medicalRecord) {
+	public MedicalRecord deleteMedicalRecord(MedicalRecord medicalRecord) {
 		return medicalRecordDao.delete(medicalRecord);
 	}
 	

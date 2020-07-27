@@ -24,40 +24,42 @@ public class DataContainer  {
 				personsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFiletpath()))
 						.get(dataAccessor.getPersonsNode());
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
+				System.out.println("A problem occured while Json being parsed");
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				System.out.println("A problem occured while loading the Json file");
 				e.printStackTrace();
 			}
 		return personsData;
 	}
 	
+	@PostConstruct
 	public ArrayNode getMedicalRecordsData() {
 		if (medicalRecordsData == null)
 			try {
 				medicalRecordsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFiletpath()))
 						.get(dataAccessor.getMedicalRecordsNode());
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
+				System.out.println("A problem occured while Json being parsed");
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				System.out.println("A problem occured while loading the Json file");
 				e.printStackTrace();
 			}
 		return medicalRecordsData;
 	}
 
+	@PostConstruct
 	public ArrayNode getLinkedFireStationsData() {
 		if (linkedFireStationsData == null)
 			try {
 				linkedFireStationsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFiletpath()))
 						.get(dataAccessor.getLinkedFireStationsNode());
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
+				System.out.println("A problem occured while Json being parsed");
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				System.out.println("A problem occured while loading the Json file");
 				e.printStackTrace();
 			}
 		return linkedFireStationsData;

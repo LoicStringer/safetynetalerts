@@ -1,6 +1,7 @@
 package com.safetynet.safetynetalerts.data;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class DataAccessor extends Properties {
@@ -10,10 +11,10 @@ public class DataAccessor extends Properties {
 
 	public DataAccessor() {
 		super();
-		try {
-			this.load(getClass().getClassLoader().getResourceAsStream("data.properties"));
+		try (InputStream in = getClass().getClassLoader().getResourceAsStream("data.properties")){
+			this.load(in);
 		} catch (IOException e) {
-			System.out.println("Erreur lors du chargement du fichier");
+			System.out.println("A problem occured while loading the file");
 			e.printStackTrace();
 		}
 	}

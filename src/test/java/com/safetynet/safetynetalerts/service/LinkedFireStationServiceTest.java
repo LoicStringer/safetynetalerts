@@ -43,10 +43,10 @@ class LinkedFireStationServiceTest {
 	void getAllTest() {
 		when(linkedFireStationDao.getAll()).thenReturn(linkedFireStations);
 		
-		List<LinkedFireStation> linkedFireStations = linkedFireStationService.getAllLinkedFireStations();
+		List<LinkedFireStation> getAllFireStations = linkedFireStationService.getAllLinkedFireStations();
 		
-		assertEquals(linkedFireStations.size(),2);
-		assertEquals(linkedFireStations.get(0).getAddress(),"1509 Culver St");
+		assertEquals(getAllFireStations.size(),2);
+		assertEquals(getAllFireStations.get(0).getAddress(),"1509 Culver St");
 	}
 	
 	@Test
@@ -60,21 +60,25 @@ class LinkedFireStationServiceTest {
 	
 	@Test
 	void insertTest() {
-		LinkedFireStation linkedFireStationToInsert = new LinkedFireStation("85 Rue de Belleville","75020");
+		LinkedFireStation linkedFireStationToInsert = new LinkedFireStation("5 Rue Clavel","20");
 		when(linkedFireStationDao.insert(linkedFireStationToInsert)).thenReturn(linkedFireStationToInsert);
+		assertEquals(linkedFireStationService.insertLinkedFireStation(linkedFireStationToInsert).getStation(),"20");
 		
 	}
+	
 	@Test
 	void updateTest() {
-		LinkedFireStation updatedLinkedFireStation = linkedFireStationService.updateLinkedFireStation(new LinkedFireStation("892 Downing Ct","75020"));
-		when(linkedFireStationDao.update(updatedLinkedFireStation)).thenReturn(updatedLinkedFireStation);
-		assertEquals(linkedFireStations.get(1).getStation(), updatedLinkedFireStation.getStation());
+		LinkedFireStation linkedFireStationToUpdate = linkedFireStations.get(0);
+		linkedFireStationToUpdate.setStation("20");
+		when(linkedFireStationDao.update(linkedFireStationToUpdate)).thenReturn(linkedFireStationToUpdate);
+		assertEquals(linkedFireStationService.updateLinkedFireStation(linkedFireStationToUpdate).getStation(),"20");
 	}
 	
 	@Test
 	void deleteTest() {
-		when(linkedFireStationDao.getOne("892 Downing Ct")).thenReturn(linkedFireStations.get(1));
-		
+		LinkedFireStation linkedFireStationToDelete = linkedFireStations.get(0);
+		when(linkedFireStationDao.delete(linkedFireStationToDelete)).thenReturn(linkedFireStationToDelete);
+		assertEquals(linkedFireStationService.deleteLinkedFireStation(linkedFireStationToDelete).getStation(),"3");
 	}
 	
 	

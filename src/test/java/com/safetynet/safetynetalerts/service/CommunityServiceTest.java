@@ -107,7 +107,8 @@ class CommunityServiceTest {
 	void getPersonscoveredByFireStationsTest() {
 		when(personDao.getAll()).thenReturn(persons);
 		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
-
+		List<LinkedFireStation> linkedFireStations = new ArrayList<LinkedFireStation>();
+		
 		medicalRecords.add(new MedicalRecord("John", "Boyd", "03/06/1984",
 				new String[] { "aznol:350mg", "hydrapermazol:100mg" }, new String[] { "nillacilan" }));
 		medicalRecords.add(new MedicalRecord("Jacob", "Boyd", "03/06/1989",
@@ -125,6 +126,10 @@ class CommunityServiceTest {
 		medicalRecords
 				.add(new MedicalRecord("Zach", "Zemicks", "03/06/2017", new String[] { "" }, new String[] { "" }));
 		
+		linkedFireStations.add(new LinkedFireStation("1509 Culver St", "3"));
+		linkedFireStations.add(new LinkedFireStation("892 Downing Ct", "2"));
+
+		when(linkedFireStationDao.getAll()).thenReturn(linkedFireStations);
 		when(medicalRecordDao.getOne("JohnBoyd")).thenReturn(medicalRecords.get(0));
 		when(medicalRecordDao.getOne("JacobBoyd")).thenReturn(medicalRecords.get(1));
 		when(medicalRecordDao.getOne("TenleyBoyd")).thenReturn(medicalRecords.get(2));
@@ -134,18 +139,11 @@ class CommunityServiceTest {
 		when(medicalRecordDao.getOne("WarrenZemicks")).thenReturn(medicalRecords.get(6));
 		when(medicalRecordDao.getOne("ZachZemicks")).thenReturn(medicalRecords.get(7));
 		
-		
-		List<LinkedFireStation> linkedFireStations = new ArrayList<LinkedFireStation>();
-
-		linkedFireStations.add(new LinkedFireStation("1509 Culver St", "3"));
-		linkedFireStations.add(new LinkedFireStation("892 Downing Ct", "2"));
-
-		when(linkedFireStationDao.getAll()).thenReturn(linkedFireStations);
-		
 		CommunityPersonsCoveredByFireStation communityPersonsCoveredByFireStation = 
 				communityService.getPersonsCoveredByFireStation("3");
 		CommunityPersonsCoveredByFireStation communityPersonsCoveredByFireStation2 = 
 				communityService.getPersonsCoveredByFireStation("2");
+		
 		assertEquals(communityPersonsCoveredByFireStation.getAdultCount(), 3);
 		assertEquals(communityPersonsCoveredByFireStation2.getAdultCount(), 2);
 	}

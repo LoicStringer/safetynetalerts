@@ -35,7 +35,7 @@ public class MedicalRecordController {
 	
 	@DeleteMapping("")
 	public ResponseEntity<MedicalRecord> deleteMedicalRecord(@RequestBody MedicalRecord medicalRecord){
-		return ResponseEntity.ok(medicalRecordService.deletePerson(medicalRecord));
+		return ResponseEntity.ok(medicalRecordService.deleteMedicalRecord(medicalRecord));
 	}
 	
 	
