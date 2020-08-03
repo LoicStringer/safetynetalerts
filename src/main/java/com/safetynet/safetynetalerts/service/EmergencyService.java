@@ -3,6 +3,7 @@ package com.safetynet.safetynetalerts.service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +46,13 @@ public class EmergencyService {
 	}
 
 	public List<String> getCoveredPersonsPhoneNumbers(String stationNumber) {
-		List<String> addressesCovered = getAdressesCoveredByFirestation(stationNumber);
+		List<String> addressesCovered;
+		try {
+			addressesCovered = getAdressesCoveredByFirestation(stationNumber);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return new ArrayList<String>();
+		}
 		return personDao.getAll().stream()
 				.filter(p -> addressesCovered.contains(p.getAddress()))
 				.map(Person::getPhone)
@@ -70,8 +77,13 @@ public class EmergencyService {
 		EmergencyFloodInfos emergencyFloodInfos = new EmergencyFloodInfos();
 				
 		stationNumbers.stream()
-		.forEach(sn -> emergencyFloodInfos.addStationInfos(sn,getHomesInfos(getAdressesCoveredByFirestation(sn))));
-
+		.forEach(sn -> {
+			try {
+				emergencyFloodInfos.addStationInfos(sn,getHomesInfos(getAdressesCoveredByFirestation(sn)));
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		});
 		return emergencyFloodInfos;
 	}
 	
@@ -88,7 +100,10 @@ public class EmergencyService {
 		return this.getAgeFromBirthDate(birthDate);
 	}
 
-	private List<String> getAdressesCoveredByFirestation(String stationNumber) {
+	private List<String> getAdressesCoveredByFirestation(String stationNumber) throws Exception {
+		if(linkedFireStationDao.getOneByStationNumber(stationNumber).getStation()==null) {
+			throw new Exception("No fire station for this number : " + stationNumber);
+		}
 		return linkedFireStationDao.getAll().stream()
 				.filter(ad -> ad.getStation().equalsIgnoreCase(stationNumber))
 				.map(LinkedFireStation::getAddress)
@@ -130,7 +145,7 @@ public class EmergencyService {
 				}).collect(Collectors.toList());
 	}
 	
-	private List<HomeInfo> getHomesInfos (List<String> addresses){
+	private List<HomeInfo> getHomesInfos (List<String> addresses) {
 		return addresses.stream()
 				.map(ad -> {
 					HomeInfo homeInfo = new EmergencyFloodInfos().new HomeInfo();
@@ -139,6 +154,7 @@ public class EmergencyService {
 					return homeInfo;
 				}).collect(Collectors.toList());
 	}
+	
 	private int getAgeFromBirthDate(String birthDate) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 		LocalDate birthDateToDate = LocalDate.parse(birthDate, formatter);

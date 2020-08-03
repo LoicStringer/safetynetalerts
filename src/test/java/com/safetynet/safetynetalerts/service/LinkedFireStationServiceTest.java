@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,10 +30,10 @@ class LinkedFireStationServiceTest {
 	@InjectMocks
 	private LinkedFireStationService linkedFireStationService;
 	
-	List<LinkedFireStation> linkedFireStations;
+	private static List<LinkedFireStation> linkedFireStations;
 	
-	@BeforeEach
-	void setUp() {
+	@BeforeAll
+	static void setUp() {
 		linkedFireStations = new ArrayList<LinkedFireStation>();
 		
 		linkedFireStations.add(new LinkedFireStation("1509 Culver St","3"));

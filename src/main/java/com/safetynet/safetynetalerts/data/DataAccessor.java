@@ -33,6 +33,8 @@ public class DataAccessor extends Properties {
 
 	public String getLinkedFireStationsNode() {
 		return getProperty("json.linkedFireStationsNode");
-
 	}
+	
+	
+	
 }

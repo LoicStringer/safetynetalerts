@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,10 +27,10 @@ class MedicalRecordServiceTest {
 	@InjectMocks
 	private MedicalRecordService medicalRecordService;
 
-	List<MedicalRecord> medicalRecords;
+	private static List<MedicalRecord> medicalRecords;
 
-	@BeforeEach
-	void setUp() {
+	@BeforeAll
+	static void setUp() {
 		medicalRecords = new ArrayList<MedicalRecord>();
 
 		medicalRecords

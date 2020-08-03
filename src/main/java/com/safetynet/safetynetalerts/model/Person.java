@@ -1,5 +1,8 @@
 package com.safetynet.safetynetalerts.model;
 
+import javax.validation.constraints.NotNull;
+
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -20,8 +23,12 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @JsonNaming(value = PropertyNamingStrategy.LowerCaseStrategy.class)
 public class Person {
 
+	@NotNull
 	private String firstName;
+	
+	@NotNull
 	private String lastName;
+	
 	private String address;
 	private String city;
 	private String zip;
@@ -43,7 +50,7 @@ public class Person {
 		this.phone = phone;
 		this.email = email;
 	}
-
+	
 	public String getFirstName() {
 		return firstName;
 	}

@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.safetynet.safetynetalerts.exceptions.DaoException;
+
 
 
 /**
@@ -16,9 +18,9 @@ import org.springframework.stereotype.Component;
 @Component
 public interface IDao<T> {
 
-	List<T> getAll();
-	T insert(T t);
-	T update(T t);
-	T delete (T t);
-	T getOne(String s);
+	List<T> getAll() throws Exception;
+	T insert(T t) throws Exception ;
+	T update(T t) throws Exception ;
+	T delete (T t) throws Exception ;
+	T getOne(String s) throws Exception ;
 }

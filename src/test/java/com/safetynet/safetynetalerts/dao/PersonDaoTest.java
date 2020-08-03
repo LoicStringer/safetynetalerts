@@ -3,6 +3,8 @@ package com.safetynet.safetynetalerts.dao;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,72 +14,75 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import com.safetynet.safetynetalerts.exceptions.DaoException;
 import com.safetynet.safetynetalerts.model.Person;
 
 @Tag("PersonDaoTests")
 @DisplayName("PersonDao CRUD operations tests")
 class PersonDaoTest {
 
-	PersonDao personDao;
-	Person person;
-	List<Person> persons;
-	String identifier;
-	
+	private PersonDao personDao;
+
 	@BeforeEach
 	void setUp() {
 		personDao = new PersonDao();
-		person = new Person();
-		persons = new ArrayList<Person>();
-		identifier = "JohnBoyd";
 	}
 
 	@Test
-	void getAllTest() {
-		persons = personDao.getAll();
+	void getAllTest() throws DaoException {
+		
+		List<Person>persons = personDao.getAll();
+		
 		assertNotNull(persons);
 		assertEquals(23, persons.size());
 	}
 
 	@Test
-	void getOneTest() {
-		Person personToget = personDao.getOne(identifier);
-		assertEquals(identifier,personToget.getFirstName()+personToget.getLastName());
+	void getOneTest() throws DaoException {
+		
+		Person personToget = personDao.getOne("JohnBoyd");
+		
+		assertEquals("JohnBoyd",personToget.getFirstName()+personToget.getLastName());
 		assertEquals(personToget.getAddress(), "1509 Culver St");
 	}
 	
 	@Test
-	void insertTest() {
+	void insertTest() throws DaoException {
+		
+		Person person =new Person();
 		person.setFirstName("Newbie");
-		
+		person.setLastName("Noob");
+	
 		personDao.insert(person);
-		persons = personDao.getAll();
+		List<Person> persons = personDao.getAll();
 		
-		assertEquals("Newbie",persons.get(persons.size()-1).getFirstName());
+		assertEquals(persons.get(persons.size()-1).getFirstName(),"Newbie");
 	}
 	
 	@Test
-	void updateTest() {
+	void updateTest() throws DaoException {
+		
+		Person person = new Person();
 		person.setFirstName("John");
 		person.setLastName("Boyd");
-		
 		person.setCity("Paris");
+		
 		personDao.update(person);
-		persons = personDao.getAll();
+		List<Person >persons = personDao.getAll();
 		
 		assertEquals("Paris", persons.get(0).getCity());
 	}
 	
 	@Test
-	void deleteTest() {
+	void deleteTest() throws DaoException {
+		Person person = new Person();
 		person.setFirstName("John");
 		person.setLastName("Boyd");
 		
 		personDao.delete(person);
-		persons = personDao.getAll();
+		List<Person> persons = personDao.getAll();
 	
 		assertNotEquals("John", persons.get(0).getFirstName());
 	}
 
-
-	
 }
