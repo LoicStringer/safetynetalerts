@@ -7,81 +7,88 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.safetynet.safetynetalerts.dao.LinkedFireStationDao;
-import com.safetynet.safetynetalerts.exceptions.DaoException;
-import com.safetynet.safetynetalerts.exceptions.ModelException;
+import com.safetynet.safetynetalerts.exception.DuplicatedLinkedFireStationException;
+import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
+import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
+import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
+import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.LinkedFireStationNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.LinkedFireStationsDataNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
 
 @Service
 public class LinkedFireStationService {
 
-
 	@Autowired
 	private LinkedFireStationDao linkedFireStationDao;
-	
-	public List<LinkedFireStation> getAllLinkedFireStations() throws ModelException{
-		
+
+	public List<LinkedFireStation> getAllLinkedFireStations() throws LinkedFireStationsDataNotFoundException {
+
 		List<LinkedFireStation> linkedFireStations = new ArrayList<LinkedFireStation>();
-		
+
 		try {
 			linkedFireStations = linkedFireStationDao.getAll();
-		} catch (DaoException e) {
-			e.printStackTrace();
-			throw new ModelException("A problem occured while querying the fire stations mapping list", e);
-		}finally {
-			if(linkedFireStations==null||linkedFireStations.isEmpty())
-				throw new ModelException("Warning : data source may be null or empty!");
+		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data");
 		}
-		return linkedFireStations ;
+
+		return linkedFireStations;
 	}
-	
-	public LinkedFireStation getOneLinkedFireStation(String address) throws ModelException {
-		
+
+	public LinkedFireStation getOneLinkedFireStation(String address) throws LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException  {
+
 		LinkedFireStation linkedFireStationToGet = new LinkedFireStation();
-		
+
 		try {
 			linkedFireStationToGet = linkedFireStationDao.getOne(address);
-		} catch (DaoException e) {
-			e.printStackTrace();
-			throw new ModelException("A problem occured while querying the specified fire station mapping linked to "+ address,e);
-		}finally {
-			if(linkedFireStationToGet==null )
-				throw new ModelException("Fire station mapping linked to " + address + " has not been found");
+		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data");
+		} catch (ItemNotFoundException e) {
+			throw new LinkedFireStationNotFoundException("Fire station mapping identified by " + address + " has not been found");
 		}
+		
 		return linkedFireStationToGet;
 	}
-	
-	public LinkedFireStation insertLinkedFireStation(LinkedFireStation linkedFireStation) throws ModelException {
+
+	public LinkedFireStation insertLinkedFireStation(LinkedFireStation linkedFireStation) throws LinkedFireStationsDataNotFoundException, DuplicatedLinkedFireStationException  {
 
 		try {
 			linkedFireStationDao.insert(linkedFireStation);
-		} catch (DaoException e) {
-			e.printStackTrace();
-			throw new ModelException("A problem occured while inserting fire station mapping "+ linkedFireStation.toString(), e);
+		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data");
+		} catch (DuplicatedItemException e) {
+			throw new DuplicatedLinkedFireStationException("Warning : a fire station mapping identified by " + linkedFireStation.getAddress()
+					+ linkedFireStation.getStation() + " already exists");
 		}
+		
 		return linkedFireStation;
 	}
-	
-	public LinkedFireStation updateLinkedFireStation(LinkedFireStation linkedFireStation) throws ModelException {
-		
+
+	public LinkedFireStation updateLinkedFireStation(LinkedFireStation linkedFireStation) throws LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException {
+
 		try {
-			linkedFireStationDao.update(linkedFireStation) ;
-		} catch (DaoException e) {
-			e.printStackTrace();
-			throw new ModelException("A problem occured while updating fire station mapping " + linkedFireStation.toString(), e);
+			linkedFireStationDao.update(linkedFireStation);
+		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data");
+		} catch (ItemNotFoundException e) {
+			throw new LinkedFireStationNotFoundException("Fire station mapping " + linkedFireStation.toString() + " has not been found");
 		}
+		
 		return linkedFireStation;
 	}
-	
-	public LinkedFireStation deleteLinkedFireStation(LinkedFireStation linkedFireStation) throws ModelException {
-		
+
+	public LinkedFireStation deleteLinkedFireStation(LinkedFireStation linkedFireStation) throws LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException {
+
 		try {
 			linkedFireStationDao.delete(linkedFireStation);
-		} catch (DaoException e) {
-			e.printStackTrace();
-			throw new ModelException("A problem occured while deleting fire station mapping " + linkedFireStation.toString(), e);
+		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data");
+		} catch (ItemNotFoundException e) {
+			throw new LinkedFireStationNotFoundException("Fire station mapping " + linkedFireStation.toString() + " has not been found");
 		}
-		
+
 		return linkedFireStation;
 	}
-	
+
 }

@@ -7,8 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.safetynet.safetynetalerts.dao.MedicalRecordDao;
-import com.safetynet.safetynetalerts.exceptions.DaoException;
-import com.safetynet.safetynetalerts.exceptions.ModelException;
+import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
+import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
+import com.safetynet.safetynetalerts.exceptions.DuplicatedMedicalRecordException;
+import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
+import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.MedicalRecordNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.MedicalRecordsDataNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 
 @Service
@@ -17,71 +23,69 @@ public class MedicalRecordService {
 	@Autowired
 	private MedicalRecordDao medicalRecordDao;
 	
-	public List<MedicalRecord> getAllMedicalRecords() throws ModelException{
+	public List<MedicalRecord> getAllMedicalRecords() throws MedicalRecordsDataNotFoundException{
 		
 		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
 		
 		try {
 			medicalRecords = medicalRecordDao.getAll();
-		} catch (DaoException e) {
-			e.printStackTrace();
-			throw new ModelException("A problem occured while querying the Medical Records list", e);
-		}finally {
-			if(medicalRecords==null||medicalRecords.isEmpty())
-				throw new ModelException("Warning : data source may be null or empty!");
+		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+			throw new MedicalRecordsDataNotFoundException("A problem occured while retrieving medical records data");
 		}
 		
 		return medicalRecords;
 	}
 	
-	public MedicalRecord getOneMedicalRecord(String identifier) throws ModelException {
+	public MedicalRecord getOneMedicalRecord(String identifier) throws MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException {
 		
 		MedicalRecord medicalRecortToGet = new MedicalRecord();
 		
 		try {
-			medicalRecortToGet =  medicalRecordDao.getOne(identifier);
-		} catch (DaoException e) {
-			e.printStackTrace();
-			throw new ModelException("A problem occured while querying the specified Medical Record "+identifier,e);
-		}finally {
-			if(medicalRecortToGet==null )
-				throw new ModelException("Medical Record identified by "+identifier+" has not been found");
+			medicalRecortToGet = medicalRecordDao.getOne(identifier);
+		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data");
+		} catch (ItemNotFoundException e) {
+			throw new MedicalRecordNotFoundException("Medical record identified by " + identifier + " has not been found");
 		}
-		
+
 		return medicalRecortToGet;
 	}
 	
-	public MedicalRecord insertMedicalRecord(MedicalRecord medicalRecord) throws ModelException {
+	public MedicalRecord insertMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordsDataNotFoundException, DuplicatedMedicalRecordException  {
 		
 		try {
 			medicalRecordDao.insert(medicalRecord);
-		} catch (DaoException e) {
-			e.printStackTrace();
-			throw new ModelException("A problem occured while inserting Medical Record "+ medicalRecord.toString(), e);
+		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data");
+		} catch (DuplicatedItemException e) {
+			throw new DuplicatedMedicalRecordException("Warning : a medical record identified by " + medicalRecord.getFirstName()
+					+ medicalRecord.getLastName() + " already exists");
+		}
+
+		return medicalRecord;
+	}
+	
+	public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException  {
+		
+		try {
+			medicalRecordDao.update(medicalRecord);
+		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data");
+		} catch (ItemNotFoundException e) {
+			throw new MedicalRecordNotFoundException("Medical record " + medicalRecord.toString() + " has not been found");
 		}
 		
 		return medicalRecord;
 	}
 	
-	public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) throws ModelException {
+	public MedicalRecord deleteMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException  {
 		
 		try {
-			 medicalRecordDao.update(medicalRecord) ;
-		} catch (DaoException e) {
-			e.printStackTrace();
-			throw new ModelException("A problem occured while updating Medical Record " + medicalRecord.toString(), e);
-		}
-		
-		return medicalRecord;
-	}
-	
-	public MedicalRecord deleteMedicalRecord(MedicalRecord medicalRecord) throws ModelException {
-		
-		try {
-			 medicalRecordDao.delete(medicalRecord);
-		} catch (DaoException e) {
-			e.printStackTrace();
-			throw new ModelException("A problem occured while deleting Medical Record " + medicalRecord.toString(), e);
+			medicalRecordDao.delete(medicalRecord);
+		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data");
+		} catch (ItemNotFoundException e) {
+			throw new MedicalRecordNotFoundException("Medical record " + medicalRecord.toString() + " has not been found");
 		}
 		
 		return medicalRecord;

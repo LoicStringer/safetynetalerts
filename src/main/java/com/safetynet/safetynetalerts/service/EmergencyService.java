@@ -46,13 +46,16 @@ public class EmergencyService {
 	}
 
 	public List<String> getCoveredPersonsPhoneNumbers(String stationNumber) {
-		List<String> addressesCovered;
+		
+		List<String> addressesCovered = getAdressesCoveredByFirestation(stationNumber);
+		/*
 		try {
 			addressesCovered = getAdressesCoveredByFirestation(stationNumber);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return new ArrayList<String>();
 		}
+		*/
 		return personDao.getAll().stream()
 				.filter(p -> addressesCovered.contains(p.getAddress()))
 				.map(Person::getPhone)
@@ -100,10 +103,12 @@ public class EmergencyService {
 		return this.getAgeFromBirthDate(birthDate);
 	}
 
-	private List<String> getAdressesCoveredByFirestation(String stationNumber) throws Exception {
+	private List<String> getAdressesCoveredByFirestation(String stationNumber) {
+		/*
 		if(linkedFireStationDao.getOneByStationNumber(stationNumber).getStation()==null) {
 			throw new Exception("No fire station for this number : " + stationNumber);
 		}
+		*/
 		return linkedFireStationDao.getAll().stream()
 				.filter(ad -> ad.getStation().equalsIgnoreCase(stationNumber))
 				.map(LinkedFireStation::getAddress)

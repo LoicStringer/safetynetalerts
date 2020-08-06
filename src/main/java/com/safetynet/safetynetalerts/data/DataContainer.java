@@ -8,7 +8,9 @@ import javax.annotation.PostConstruct;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.safetynet.safetynetalerts.exceptions.DataContainerException;
+import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
+import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
+import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 
 public class DataContainer {
 
@@ -19,24 +21,21 @@ public class DataContainer {
 	private ArrayNode personsData;
 
 	@PostConstruct
-	public ArrayNode getPersonsData() throws DataContainerException  {
+	public ArrayNode getPersonsData() throws DataImportFailedException, UnavailableDataException, EmptyDataException  {
+		
 		if (personsData == null)
 			try {
 				personsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFiletpath()))
 						.get(dataAccessor.getPersonsNode());
 			} catch (JsonProcessingException e) {
-				System.out.println("A problem occured while Json file being parsed");
-				e.printStackTrace();
-				throw new DataContainerException("A problem occured while Json being parsed", e);
+				throw new DataImportFailedException("A problem occured while Json being parsed", e);
 			} catch (IOException e) {
-				System.out.println("A problem occured while reading the Json file");
-				e.printStackTrace();
-				throw new DataContainerException("A problem occured while reading the Json file", e);
+				throw new DataImportFailedException("A problem occured while reading the Json file", e);
 			}finally {
 				if (personsData==null) {
-					throw new DataContainerException("Warning : the data source or the file path is invalid !");
+					throw new UnavailableDataException("Warning : the data source or the file path is invalid !");
 				}else if (personsData.isEmpty()) {
-					throw new DataContainerException("Warning : the data source is empty !");
+					throw new EmptyDataException("Warning : the data source is empty !");
 				}
 			}
 
@@ -44,24 +43,21 @@ public class DataContainer {
 	}
 
 	@PostConstruct
-	public ArrayNode getMedicalRecordsData() throws DataContainerException {
+	public ArrayNode getMedicalRecordsData() throws DataImportFailedException, UnavailableDataException, EmptyDataException {
+		
 		if (medicalRecordsData == null)
 			try {
 				medicalRecordsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFiletpath()))
 						.get(dataAccessor.getMedicalRecordsNode());
 			} catch (JsonProcessingException e) {
-				System.out.println("A problem occured while Json file being parsed");
-				e.printStackTrace();
-				throw new DataContainerException("A problem occured while Json being parsed", e);
+				throw new DataImportFailedException("A problem occured while Json being parsed", e);
 			} catch (IOException e) {
-				System.out.println("A problem occured while reading the Json file");
-				e.printStackTrace();
-				throw new DataContainerException("A problem occured while reading the Json file", e);
+				throw new DataImportFailedException("A problem occured while reading the Json file", e);
 			}finally {
 				if (medicalRecordsData==null) {
-					throw new DataContainerException("Warning : the data source or the file path is invalid !");
+					throw new UnavailableDataException("Warning : the data source or the file path is invalid !");
 				}else if(medicalRecordsData.isEmpty()){
-					throw new DataContainerException("Warning : the data source is empty !");
+					throw new EmptyDataException("Warning : the data source is empty !");
 				}
 			}
 
@@ -69,24 +65,21 @@ public class DataContainer {
 	}
 
 	@PostConstruct
-	public ArrayNode getLinkedFireStationsData() throws DataContainerException {
+	public ArrayNode getLinkedFireStationsData() throws DataImportFailedException, UnavailableDataException, EmptyDataException {
+		
 		if (linkedFireStationsData == null)
 			try {
 				linkedFireStationsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFiletpath()))
 						.get(dataAccessor.getLinkedFireStationsNode());
 			} catch (JsonProcessingException e) {
-				System.out.println("A problem occured while Json being parsed");
-				e.printStackTrace();
-				throw new DataContainerException("A problem occured while Json file being parsed", e);
+				throw new DataImportFailedException("A problem occured while Json file being parsed", e);
 			} catch (IOException e) {
-				System.out.println("A problem occured while reading the Json file");
-				e.printStackTrace();
-				throw new DataContainerException("A problem occured while reading the Json file", e);
+				throw new DataImportFailedException("A problem occured while reading the Json file", e);
 			} finally {
 				if (linkedFireStationsData==null) {
-					throw new DataContainerException("Warning : the data source or file path is invalid !");
+					throw new UnavailableDataException("Warning : the data source or file path is invalid !");
 				}else if (linkedFireStationsData.isEmpty()) {
-					throw new DataContainerException("Warning : the data source is empty !");
+					throw new EmptyDataException("Warning : the data source is empty !");
 				}
 			}
 		

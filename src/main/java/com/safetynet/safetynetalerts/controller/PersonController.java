@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.safetynet.safetynetalerts.exceptions.PersonDaoException;
+import com.safetynet.safetynetalerts.exceptions.ServiceException;
 import com.safetynet.safetynetalerts.model.Person;
 import com.safetynet.safetynetalerts.service.PersonService;
 
@@ -22,7 +24,14 @@ public class PersonController {
 	@PostMapping("")
 	public ResponseEntity<Person> insertPerson(@RequestBody Person person){
 		
-		personService.insertPerson(person);
+		try {
+			personService.insertPerson(person);
+		} catch (ServiceException e) {
+			return ResponseEntity.badRequest().build();
+		} catch (PersonDaoException e) {
+			
+			e.printStackTrace();
+		}
 		
 		return ResponseEntity.ok(person);
 	}

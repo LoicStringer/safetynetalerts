@@ -16,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.safetynet.safetynetalerts.exceptions.DataContainerException;
+import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
+import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
+import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 
 @Tag("DataContainerTests")
 @DisplayName("Import data from Json file")
@@ -39,7 +41,7 @@ class DataContainerTest {
 	}
 
 	@Test
-	void isContainingAllPersonDataTest() throws DataContainerException {
+	void isContainingAllPersonDataTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException {
 		when(dataAccessor.getPersonsNode()).thenReturn("persons");
 		arrayNode = dataContainer.getPersonsData();
 		
@@ -49,7 +51,7 @@ class DataContainerTest {
 	}
 
 	@Test
-	void isContainingAllMedicalRecordsDataTest() throws DataContainerException {
+	void isContainingAllMedicalRecordsDataTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException {
 		when(dataAccessor.getMedicalRecordsNode()).thenReturn("medicalrecords");
 		arrayNode = dataContainer.getMedicalRecordsData();
 		
@@ -59,7 +61,7 @@ class DataContainerTest {
 	}
 
 	@Test
-	void isContainingAllFireStationsDataTest() throws DataContainerException {
+	void isContainingAllFireStationsDataTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException {
 		when(dataAccessor.getLinkedFireStationsNode()).thenReturn("firestations");
 		arrayNode = dataContainer.getLinkedFireStationsData();
 		
@@ -69,23 +71,23 @@ class DataContainerTest {
 	}
 
 	@Test
-	void isThrowingExpectedExceptionWhenJsonIsEmpty() throws DataContainerException {
+	void isThrowingExpectedExceptionWhenJsonIsEmpty() throws DataImportFailedException {
 		
 		when(dataAccessor.getFiletpath()).thenReturn("src/main/resources/testFile.json");
 		when(dataAccessor.getPersonsNode()).thenReturn("persons");
 		
-		Exception expectedException = assertThrows(DataContainerException.class, ()-> dataContainer.getPersonsData());
+		Exception expectedException = assertThrows(EmptyDataException.class, ()-> dataContainer.getPersonsData());
 		
 		assertEquals(expectedException.getMessage(),"Warning : the data source is empty !");
 	}
 	
 	@Test
-	void isThrowingExpectedExceptionWhenJsonIsInvalid() throws DataContainerException {
+	void isThrowingExpectedExceptionWhenJsonIsInvalid() throws DataImportFailedException {
 		
 		when(dataAccessor.getFiletpath()).thenReturn("src/main/resources/testFile.json");
 		when(dataAccessor.getPersonsNode()).thenReturn(null);
 		
-		Exception expectedException = assertThrows(DataContainerException.class, ()-> dataContainer.getPersonsData());
+		Exception expectedException = assertThrows(UnavailableDataException.class, ()-> dataContainer.getPersonsData());
 		
 		assertEquals(expectedException.getMessage(),"Warning : the data source or the file path is invalid !");		
 	}
