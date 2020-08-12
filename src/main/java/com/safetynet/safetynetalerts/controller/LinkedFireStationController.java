@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.safetynet.safetynetalerts.exceptions.DuplicatedLinkedFireStationException;
+import com.safetynet.safetynetalerts.exceptions.LinkedFireStationNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.LinkedFireStationsDataNotFoundException;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
 import com.safetynet.safetynetalerts.service.LinkedFireStationService;
 
@@ -21,20 +24,20 @@ public class LinkedFireStationController {
 		
 	@PostMapping
 	public ResponseEntity<LinkedFireStation> insertLinkedFireStation
-	(@RequestBody LinkedFireStation linkedFireStation){	
+	(@RequestBody LinkedFireStation linkedFireStation) throws LinkedFireStationsDataNotFoundException, DuplicatedLinkedFireStationException{	
 		linkedFireStationService.insertLinkedFireStation(linkedFireStation);
 		return ResponseEntity.ok(linkedFireStation);
 	}
 	
 	@PutMapping("")
 	public ResponseEntity<LinkedFireStation> updateLinkedFireStation
-	(@RequestBody LinkedFireStation linkedFireStation) {
+	(@RequestBody LinkedFireStation linkedFireStation) throws LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException {
 		return ResponseEntity.ok(linkedFireStationService.updateLinkedFireStation(linkedFireStation));
 	}
 	
 	@DeleteMapping("")
 	public ResponseEntity<LinkedFireStation> deleteLinkedFireStation
-	(@RequestBody LinkedFireStation linkedFireStation) {
+	(@RequestBody LinkedFireStation linkedFireStation) throws LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException {
 		return ResponseEntity.ok(linkedFireStationService.deleteLinkedFireStation(linkedFireStation));
 		
 	}

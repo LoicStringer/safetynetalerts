@@ -1,9 +1,13 @@
 package com.safetynet.safetynetalerts.model;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseStrategy;
@@ -20,19 +24,20 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
  */
 
 @Component
-@JsonNaming(value = PropertyNamingStrategy.LowerCaseStrategy.class)
 public class Person {
 
-	@NotNull
+	@NotEmpty(message = "Empty message")
 	private String firstName;
 	
-	@NotNull
+	@NotBlank(message="Blank message")
 	private String lastName;
 	
 	private String address;
 	private String city;
 	private String zip;
 	private String phone;
+	
+	@Email(message="C'est pas un email")
 	private String email;
 
 	public Person() {

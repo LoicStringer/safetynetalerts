@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -15,6 +18,8 @@ import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
 import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 import com.safetynet.safetynetalerts.model.Person;
+
+
 
 @Component
 public class PersonDao extends DataProvider implements IDao<Person> {

@@ -2,8 +2,11 @@ package com.safetynet.safetynetalerts.model;
 
 import java.util.Arrays;
 
+import javax.validation.constraints.NotEmpty;
+
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
@@ -19,8 +22,12 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @Component
 public class MedicalRecord {
 
+	@NotEmpty
 	private String firstName;
+	
+	@NotEmpty
 	private String lastName;
+	
 	private String birthdate;
 	private String[] medications;
 	private String[] allergies;

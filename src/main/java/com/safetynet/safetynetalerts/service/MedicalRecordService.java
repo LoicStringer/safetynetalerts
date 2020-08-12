@@ -38,17 +38,17 @@ public class MedicalRecordService {
 	
 	public MedicalRecord getOneMedicalRecord(String identifier) throws MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException {
 		
-		MedicalRecord medicalRecortToGet = new MedicalRecord();
+		MedicalRecord medicalRecordToGet = new MedicalRecord();
 		
 		try {
-			medicalRecortToGet = medicalRecordDao.getOne(identifier);
+			medicalRecordToGet = medicalRecordDao.getOne(identifier);
 		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
 			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data");
 		} catch (ItemNotFoundException e) {
-			throw new MedicalRecordNotFoundException("Medical record identified by " + identifier + " has not been found");
+			throw new MedicalRecordNotFoundException("Medical record identified by " + medicalRecordToGet.getFirstName()+" "+medicalRecordToGet.getLastName() + " has not been found");
 		}
 
-		return medicalRecortToGet;
+		return medicalRecordToGet;
 	}
 	
 	public MedicalRecord insertMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordsDataNotFoundException, DuplicatedMedicalRecordException  {
@@ -58,7 +58,7 @@ public class MedicalRecordService {
 		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
 			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data");
 		} catch (DuplicatedItemException e) {
-			throw new DuplicatedMedicalRecordException("Warning : a medical record identified by " + medicalRecord.getFirstName()
+			throw new DuplicatedMedicalRecordException("Warning : a medical record identified by " + medicalRecord.getFirstName()+" "
 					+ medicalRecord.getLastName() + " already exists");
 		}
 

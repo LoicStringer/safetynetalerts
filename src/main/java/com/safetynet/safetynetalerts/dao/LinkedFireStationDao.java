@@ -76,11 +76,10 @@ public class LinkedFireStationDao extends DataProvider implements IDao<LinkedFir
 			}
 		}
 
-		if (linkedFireStationToGet.getAddress() == null && linkedFireStationToGet.getStation() == null)
+		if (linkedFireStationToGet.getAddress() == null)
 			throw new ItemNotFoundException("No fire station mapping found for address " + address);
 
 		return linkedFireStationToGet;
-
 	}
 
 	/*

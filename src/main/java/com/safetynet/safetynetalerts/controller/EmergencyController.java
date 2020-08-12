@@ -2,12 +2,19 @@ package com.safetynet.safetynetalerts.controller;
 
 import java.util.List;
 
+import javax.validation.constraints.NotEmpty;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.safetynet.safetynetalerts.exceptions.LinkedFireStationNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.LinkedFireStationsDataNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.MedicalRecordNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.MedicalRecordsDataNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
 import com.safetynet.safetynetalerts.responseentity.EmergencyChildAlert;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFireAddressInfos;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos;
@@ -26,7 +33,7 @@ public class EmergencyController {
 	
 	@GetMapping("/childAlert")
 	public ResponseEntity<EmergencyChildAlert> getChildren
-	(@RequestParam("address")String address){
+	(@RequestParam ("address") String address) throws PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException{
 		
 		EmergencyChildAlert anyChildThere = emergencyService.getChildrenThere(address);
 		
@@ -35,7 +42,7 @@ public class EmergencyController {
 	
 	@GetMapping("/phoneAlert")
 	public List<String> getPhoneNumbers
-	(@RequestParam("firestation")String stationNumber){
+	(@RequestParam("firestation") String stationNumber) throws PersonsDataNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException{
 		
 		List<String> phoneNumbers = emergencyService.getCoveredPersonsPhoneNumbers(stationNumber);
 		
@@ -44,7 +51,7 @@ public class EmergencyController {
 	
 	@GetMapping("/fire")
 	public  ResponseEntity<EmergencyFireAddressInfos> getInhabitants
-	(@RequestParam("address")String address){
+	(@RequestParam("address")@NotEmpty String address) throws LinkedFireStationsDataNotFoundException, PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, LinkedFireStationNotFoundException{
 		
 		EmergencyFireAddressInfos inhabitantsThere = emergencyService.getPersonsThereInfos(address);
 		
@@ -53,7 +60,7 @@ public class EmergencyController {
 	
 	@GetMapping("/flood/stations")
 	public ResponseEntity<EmergencyFloodInfos> getHomesInfo
-	(@RequestParam("stations")List<String> stationNumbers){
+	(@RequestParam("stations")  List<String> stationNumbers) throws MedicalRecordsDataNotFoundException, PersonsDataNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException{
 		
 		EmergencyFloodInfos emergencyFloodInfos = emergencyService.getCoveredHomesInfos(stationNumbers);
 		

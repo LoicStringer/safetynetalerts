@@ -2,12 +2,20 @@ package com.safetynet.safetynetalerts.controller;
 
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.safetynet.safetynetalerts.exceptions.LinkedFireStationNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.LinkedFireStationsDataNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.MedicalRecordNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.MedicalRecordsDataNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.PersonNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
 import com.safetynet.safetynetalerts.responseentity.CommunityPersonInfo;
 import com.safetynet.safetynetalerts.responseentity.CommunityPersonsCoveredByFireStation;
 import com.safetynet.safetynetalerts.service.CommunityService;
@@ -30,10 +38,11 @@ public class CommunityController {
 	 * retrieving the emails' list of all the specified city's inhabitants.
 	 * @param String city's name.
 	 * @return a {@link List} of emails as String.
+	 * @throws PersonsDataNotFoundException 
 	 * @see CommunityService
 	 */
 	@GetMapping("/communityEmail")
-	public ResponseEntity<List<String>> communityEmails (@RequestParam("city")String city){
+	public ResponseEntity<List<String>> communityEmails (@RequestParam("city") @NotBlank String city) throws PersonsDataNotFoundException{
 		List<String> communityEmails = communityService.getCommunityEmails(city);
 		return ResponseEntity.ok(communityEmails);
 	}
@@ -45,13 +54,17 @@ public class CommunityController {
 	 * @param Person's last name, the "lastName" attribute's value.
 	 * @return a {@link CommunityPersonInfo} custom object 
 	 * containing the required person informations. 
+	 * @throws MedicalRecordNotFoundException 
+	 * @throws MedicalRecordsDataNotFoundException 
+	 * @throws PersonsDataNotFoundException 
+	 * @throws PersonNotFoundException 
 	 * @see CommunityPersonInfo
 	 * @see Person
 	 * @see MedicalRecord
 	 */
 	@GetMapping("/personInfo")
 	public ResponseEntity<CommunityPersonInfo> personInfo 
-	(@RequestParam("firstName")String firstName, @RequestParam("lastName")String lastName){		
+	(@RequestParam("firstName")String firstName, @RequestParam("lastName")String lastName) throws PersonNotFoundException, PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException{		
 		CommunityPersonInfo communityPersonInfo = communityService.getPersonInfo(firstName + lastName);
 		return ResponseEntity.ok(communityPersonInfo);
 	}
@@ -63,11 +76,16 @@ public class CommunityController {
 	 * @param a LinkedFireStation stationNumber as int 
 	 * @return a {@link CommunityPersonsCoveredByFireStation} custom object
 	 * containing all persons' informations.
+	 * @throws MedicalRecordNotFoundException 
+	 * @throws MedicalRecordsDataNotFoundException 
+	 * @throws PersonsDataNotFoundException 
+	 * @throws LinkedFireStationsDataNotFoundException 
+	 * @throws LinkedFireStationNotFoundException 
 	 * @see CommunityPersonsCoveredByFireStation
 	 */
 	@GetMapping("/firestation")
 	public ResponseEntity<CommunityPersonsCoveredByFireStation> personsCoveredByFireStation
-	(@RequestParam("stationNumber")String stationNumber){
+	(@RequestParam("stationNumber")String stationNumber) throws LinkedFireStationsDataNotFoundException, PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException, LinkedFireStationNotFoundException{
 		CommunityPersonsCoveredByFireStation personsCovered = communityService.getPersonsCoveredByFireStation(stationNumber);
 		return ResponseEntity.ok(personsCovered);	
 	}

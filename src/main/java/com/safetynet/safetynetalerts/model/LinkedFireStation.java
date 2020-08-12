@@ -1,5 +1,7 @@
 package com.safetynet.safetynetalerts.model;
 
+import javax.validation.constraints.NotEmpty;
+
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -17,7 +19,10 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @Component
 public class LinkedFireStation {
 
+	@NotEmpty
 	private String address;
+	
+	@NotEmpty
 	private String station;
 
 	public LinkedFireStation() {

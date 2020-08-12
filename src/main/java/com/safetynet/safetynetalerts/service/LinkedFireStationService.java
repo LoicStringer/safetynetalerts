@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.safetynet.safetynetalerts.dao.LinkedFireStationDao;
-import com.safetynet.safetynetalerts.exception.DuplicatedLinkedFireStationException;
 import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
+import com.safetynet.safetynetalerts.exceptions.DuplicatedLinkedFireStationException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
 import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.LinkedFireStationNotFoundException;
