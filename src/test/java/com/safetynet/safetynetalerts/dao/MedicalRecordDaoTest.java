@@ -2,6 +2,7 @@ package com.safetynet.safetynetalerts.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
@@ -25,18 +26,13 @@ import com.safetynet.safetynetalerts.model.MedicalRecord;
 class MedicalRecordDaoTest {
 
 	MedicalRecordDao medicalRecordDao;
-	MedicalRecord medicalRecordForTests;
 	List<MedicalRecord> medicalRecords;
 
 	@BeforeEach
 	void setUp() {
 		
 		medicalRecordDao = new MedicalRecordDao();
-		medicalRecordForTests = new MedicalRecord();
 		medicalRecords = new ArrayList<MedicalRecord>();
-		medicalRecordForTests.setFirstName("John");
-		medicalRecordForTests.setLastName("Boyd");
-		
 	}
 
 	@Test
@@ -44,16 +40,17 @@ class MedicalRecordDaoTest {
 		
 		medicalRecords = medicalRecordDao.getAll();
 		
+		assertNotNull(medicalRecords);
 		assertEquals(23, medicalRecords.size());
 	}
 
 	@Test
 	void getOneTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException  {
 		
-		MedicalRecord medicalRecordToGet = medicalRecordDao.getOne("JohnBoyd");
+		MedicalRecord medicalRecordToGet = medicalRecordDao.getOne("FosterShepard");
 		
-		assertEquals("JohnBoyd",medicalRecordToGet.getFirstName()+medicalRecordToGet.getLastName());
-		assertEquals(medicalRecordToGet.getBirthdate(), "03/06/1984");
+		assertEquals(medicalRecordToGet.getFirstName()+medicalRecordToGet.getLastName(),"FosterShepard");
+		assertEquals(medicalRecordToGet.getBirthdate(), "01/08/1980");
 	}
 	
 	@Test
@@ -66,42 +63,58 @@ class MedicalRecordDaoTest {
 		medicalRecordDao.insert(medicalRecordToInsert);
 		medicalRecords = medicalRecordDao.getAll();
 		
-		assertEquals("Newbie",medicalRecords.get(medicalRecords.size()-1).getFirstName());
+		assertEquals(medicalRecords.get(medicalRecords.size()-1).getFirstName(),"Newbie");
 	}
 	
 	@Test
 	void updateTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException  {
 		
-		medicalRecordForTests.setBirthdate("04/01/1978");
-		medicalRecordDao.update(medicalRecordForTests);
+		medicalRecords = medicalRecordDao.getAll();
+		MedicalRecord medicalRecordToUpdate = medicalRecords.get(0);
+		
+		medicalRecordToUpdate.setBirthdate("04/01/1978");
+		medicalRecordDao.update(medicalRecordToUpdate);
 		medicalRecords = medicalRecordDao.getAll();
 		
-		assertEquals("04/01/1978", medicalRecords.get(0).getBirthdate());
+		assertEquals(medicalRecords.get(0).getBirthdate(),"04/01/1978");
 	}
 	
 	@Test
 	void deleteTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException  {
 		
-		medicalRecordDao.delete(medicalRecordForTests);
+		medicalRecords = medicalRecordDao.getAll();
+		MedicalRecord medicalRecordToDelete = medicalRecords.get(0);
+		
+		medicalRecordDao.delete(medicalRecordToDelete);
 		medicalRecords = medicalRecordDao.getAll();
 		
-		assertNotEquals("John", medicalRecords.get(0).getFirstName());
+		assertNotEquals(medicalRecords.get(0).getFirstName(),"John");
 	}
 	
 	@Test
 	void isThrowingExceptionWhenInsertingDuplicatedIdentifierMedicalRecordTest() {
 		
-		Exception exception = assertThrows(DuplicatedItemException.class, ()->medicalRecordDao.insert(medicalRecordForTests));
+
+		MedicalRecord medicalRecordToInsert = new MedicalRecord();
+		medicalRecordToInsert.setFirstName("Foster");
+		medicalRecordToInsert.setLastName("Shepard");
 		
-		assertEquals(exception.getMessage(),"Warning : a medical record with the same firstname and lastname already exists in data container");
+		Exception exception = assertThrows(DuplicatedItemException.class, ()->medicalRecordDao.insert(medicalRecordToInsert));
+		
+		assertEquals(exception.getMessage(),"Warning : a medical record with the same firstname and lastname "+medicalRecordToInsert.getFirstName()+" "+medicalRecordToInsert.getLastName()+" already exists in data container");
 	}
 	
 	@Test
 	void isThrowingExceptionWhenMedicalRecordIsNotFoundTest()  {
 	
-		Exception exception = assertThrows(ItemNotFoundException.class,()->medicalRecordDao.getOne("Toto"));
+		MedicalRecord medicalRecordToGet = new MedicalRecord();
+		medicalRecordToGet.setFirstName("Toto");
+		medicalRecordToGet.setLastName("Toto");
+		String identifier = medicalRecordToGet.getFirstName()+" "+medicalRecordToGet.getLastName();
 		
-		assertEquals(exception.getMessage(),"No medical record found for identifier Toto");
+		Exception exception = assertThrows(ItemNotFoundException.class,()->medicalRecordDao.getOne(identifier));
+		
+		assertEquals(exception.getMessage(),"No medical record found for identifier Toto Toto");
 	}
 	
 

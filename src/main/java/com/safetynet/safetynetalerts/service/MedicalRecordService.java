@@ -45,7 +45,7 @@ public class MedicalRecordService {
 		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
 			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data");
 		} catch (ItemNotFoundException e) {
-			throw new MedicalRecordNotFoundException("Medical record identified by " + medicalRecordToGet.getFirstName()+" "+medicalRecordToGet.getLastName() + " has not been found");
+			throw new MedicalRecordNotFoundException("Medical record identified by " + identifier + " has not been found");
 		}
 
 		return medicalRecordToGet;

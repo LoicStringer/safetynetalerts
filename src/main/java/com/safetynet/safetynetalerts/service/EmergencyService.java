@@ -16,6 +16,7 @@ import com.safetynet.safetynetalerts.exceptions.MedicalRecordNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.MedicalRecordsDataNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
+import com.safetynet.safetynetalerts.model.MedicalRecord;
 import com.safetynet.safetynetalerts.model.Person;
 import com.safetynet.safetynetalerts.responseentity.EmergencyChildAlert;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFireAddressInfos;
@@ -85,14 +86,6 @@ public class EmergencyService {
 					getHomesInfos(getAdressesCoveredByFirestation(stationNumber)));
 		}
 
-		/*
-		 * stationNumbers.stream() .forEach(sn -> {
-		 * 
-		 * emergencyFloodInfos.addStationInfos(sn,getHomesInfos(
-		 * getAdressesCoveredByFirestation(sn)));
-		 * 
-		 * });
-		 */
 		return emergencyFloodInfos;
 	}
 
@@ -153,24 +146,28 @@ public class EmergencyService {
 	}
 
 	private List<InhabitantInfos> getInhabitantInfos(List<String> identifiers)
-			throws MedicalRecordsDataNotFoundException {
+			throws MedicalRecordsDataNotFoundException, PersonsDataNotFoundException {
 
-		return medicalRecordService.getAllMedicalRecords().stream()
-				.filter(mr -> identifiers.contains(mr.getFirstName() + mr.getLastName())).map(temp -> {
-					InhabitantInfos inhabitantThere = new InhabitantInfos();
-					inhabitantThere.setFirstName(temp.getFirstName());
-					inhabitantThere.setLastName(temp.getLastName());
-					inhabitantThere.setAge(Integer.valueOf(this.getAgeFromBirthDate(temp.getBirthdate())));
-					try {
-						inhabitantThere.setPhoneNumber(getPhoneNumber(temp.getFirstName() + temp.getLastName()));
-					} catch (PersonsDataNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					inhabitantThere.setMedications(temp.getMedications());
-					inhabitantThere.setAllergies(temp.getAllergies());
-					return inhabitantThere;
-				}).collect(Collectors.toList());
+		List<InhabitantInfos> inhabitantInfos = new ArrayList<InhabitantInfos>();
+
+		List<MedicalRecord> medicalRecords = medicalRecordService.getAllMedicalRecords();
+
+		for (MedicalRecord medicalRecord : medicalRecords) {
+			if (identifiers.contains(medicalRecord.getFirstName() + medicalRecord.getLastName())) {
+				InhabitantInfos inhabitantThere = new InhabitantInfos();
+				inhabitantThere.setFirstName(medicalRecord.getFirstName());
+				inhabitantThere.setLastName(medicalRecord.getLastName());
+				inhabitantThere.setAge(Integer.valueOf(this.getAgeFromBirthDate(medicalRecord.getBirthdate())));
+				inhabitantThere
+						.setPhoneNumber(getPhoneNumber(medicalRecord.getFirstName() + medicalRecord.getLastName()));
+				inhabitantThere.setMedications(medicalRecord.getMedications());
+				inhabitantThere.setAllergies(medicalRecord.getAllergies());
+				inhabitantInfos.add(inhabitantThere);
+			}
+
+		}
+
+		return inhabitantInfos;
 	}
 
 	private List<HomeInfo> getHomesInfos(List<String> addresses)
@@ -184,18 +181,7 @@ public class EmergencyService {
 			homeInfo.setInhabitantsThere(getInhabitantInfos(getPersonIdentifiers(getPersonsThere(address))));
 			homesInfos.add(homeInfo);
 		}
-		/*
-		 * return addresses.stream() .map(ad -> { HomeInfo homeInfo = new
-		 * EmergencyFloodInfos().new HomeInfo(); homeInfo.setAddress(ad);
-		 * 
-		 * try { homeInfo.setInhabitantsThere(getInhabitantInfos(getPersonIdentifiers(
-		 * getPersonsThere(ad)))); } catch (MedicalRecordsDataNotFoundException |
-		 * PersonsDataNotFoundException e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); }
-		 * 
-		 * return homeInfo; }).collect(Collectors.toList());
-		 * 
-		 */
+
 		return homesInfos;
 	}
 

@@ -8,14 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import com.safetynet.safetynetalerts.exceptions.LinkedFireStationNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.LinkedFireStationsDataNotFoundException;
@@ -193,35 +190,4 @@ class EmergencyServiceTest {
 		assertEquals(exception.getMessage(), "This station number 5 is not registered");
 	}
 
-	@Test
-	void test() throws PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, LinkedFireStationsDataNotFoundException {
-		
-	
-		when(linkedFireStationService.getAllLinkedFireStations()).thenReturn(linkedFireStations);
-
-		Exception exception = assertThrows(LinkedFireStationNotFoundException.class,
-				() -> emergencyService.getPersonsThereInfos("10 Downing Street"));
-
-		assertEquals(exception.getMessage(), "There's no fire station mapping for this address 10 Downing Street");
-	}
-	
-	@Test
-	void test2() throws LinkedFireStationsDataNotFoundException, MedicalRecordsDataNotFoundException, PersonsDataNotFoundException, LinkedFireStationNotFoundException {
-		 
-		
-		when(personService.getAllPersons()).thenReturn(persons);
-		when(medicalRecordService.getAllMedicalRecords()).thenReturn(medicalRecords);
-		when(linkedFireStationService.getAllLinkedFireStations()).thenReturn(linkedFireStations);
-		
-		List<String> stationNumbers = new ArrayList<String>();
-		stationNumbers.add("2");
-		stationNumbers.add("5");
-		stationNumbers.add("3");
-		
-		
-		
-		Exception exception = assertThrows(LinkedFireStationNotFoundException.class,()-> emergencyService.getCoveredHomesInfos(stationNumbers));
-		
-		assertEquals(exception.getMessage(),"This station number 5 is not registered");
-	}
 }

@@ -2,7 +2,7 @@ package com.safetynet.safetynetalerts.controller;
 
 import java.util.List;
 
-import javax.validation.constraints.NotEmpty;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +51,7 @@ public class EmergencyController {
 	
 	@GetMapping("/fire")
 	public  ResponseEntity<EmergencyFireAddressInfos> getInhabitants
-	(@RequestParam("address")@NotEmpty String address) throws LinkedFireStationsDataNotFoundException, PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, LinkedFireStationNotFoundException{
+	(@RequestParam("address") String address) throws LinkedFireStationsDataNotFoundException, PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, LinkedFireStationNotFoundException{
 		
 		EmergencyFireAddressInfos inhabitantsThere = emergencyService.getPersonsThereInfos(address);
 		

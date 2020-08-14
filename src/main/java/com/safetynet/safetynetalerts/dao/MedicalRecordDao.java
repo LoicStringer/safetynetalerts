@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.safetynet.safetynetalerts.data.DataContainer;
 import com.safetynet.safetynetalerts.data.DataProvider;
 import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
@@ -23,10 +24,10 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	public List<MedicalRecord> getAll() throws DataImportFailedException, UnavailableDataException, EmptyDataException {
 
 		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
-		ArrayNode medicalRecordsNode;
+	
 
 		try {
-			medicalRecordsNode = getDataContainer().getMedicalRecordsData();
+			getDataContainer().getMedicalRecordsData();
 		} catch (DataImportFailedException e) {
 			throw new DataImportFailedException(
 					"A problem occured while querying medical records list from the data container", e);
@@ -36,7 +37,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 			throw new EmptyDataException("Medical records list is empty", e);
 		}
 
-		Iterator<JsonNode> elements = medicalRecordsNode.elements();
+		Iterator<JsonNode> elements = DataContainer.medicalRecordsData.elements();
 		while (elements.hasNext()) {
 			JsonNode medicalRecordNode = elements.next();
 			MedicalRecord medicalRecord = getObjectMapper().convertValue(medicalRecordNode, MedicalRecord.class);
@@ -50,31 +51,13 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	public MedicalRecord getOne(String identifier) throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
 		
 		MedicalRecord medicalRecordToGet = new MedicalRecord();
-
-		ArrayNode medicalRecordsData;
+		List<MedicalRecord> medicalRecords = this.getAll();
 		
-		try {
-			medicalRecordsData = getDataContainer().getMedicalRecordsData();
-		} catch (DataImportFailedException e) {
-			throw new DataImportFailedException("A problem occured while querying medical records list from the data container",
-					e);
-		} catch (UnavailableDataException e) {
-			throw new UnavailableDataException("Medical records list is null", e);
-		} catch (EmptyDataException e) {
-			throw new EmptyDataException("Medical records list is empty", e);
-		}
-
-		Iterator<JsonNode> elements = medicalRecordsData.elements();
-		while (elements.hasNext()) {
-			JsonNode medicalRecordNode = elements.next();
-			String identifierToFind = medicalRecordNode.get("firstName").asText()
-					+ medicalRecordNode.get("lastName").asText();
-			if (identifierToFind.equalsIgnoreCase(identifier)) {
-				medicalRecordToGet = getObjectMapper().convertValue(medicalRecordNode, MedicalRecord.class);
-				break;
-			}
-		}
-		if (medicalRecordToGet.getFirstName() == null && medicalRecordToGet.getLastName() == null)
+		medicalRecordToGet = medicalRecords.stream()
+				.filter(mr -> (mr.getFirstName()+mr.getLastName()).equalsIgnoreCase(identifier))
+				.findAny().orElse(null);
+		
+		if (medicalRecordToGet == null)
 			throw new ItemNotFoundException("No medical record found for identifier " + identifier);
 
 		return medicalRecordToGet;
@@ -84,39 +67,24 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	public MedicalRecord insert(MedicalRecord medicalRecord) throws DataImportFailedException, UnavailableDataException, EmptyDataException, DuplicatedItemException {
 
 		this.checkForDuplication(medicalRecord);
-
-		ArrayNode medicalRecordsData;
-		
-		try {
-			medicalRecordsData = getDataContainer().getMedicalRecordsData();
-		} catch (DataImportFailedException e) {
-			throw new DataImportFailedException("A problem occured while querying medical records list from the data container",
-					e);
-		} catch (UnavailableDataException e) {
-			throw new UnavailableDataException("Medical records list is null", e);
-		} catch (EmptyDataException e) {
-			throw new EmptyDataException("Medical records list is empty", e);
-		}
-		
+	
 		JsonNode medicalRecordNode = getObjectMapper().convertValue(medicalRecord, JsonNode.class);
-		medicalRecordsData.add(medicalRecordNode);
-		getDataContainer().setMedicalRecordsData(medicalRecordsData);
-
+		DataContainer.medicalRecordsData.add(medicalRecordNode);
+		
 		return medicalRecord;
 	}
 
 	@Override
 	public MedicalRecord update(MedicalRecord medicalRecord) throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
 
-		String identifier = medicalRecord.getFirstName() + medicalRecord.getLastName();
-
 		List<MedicalRecord> medicalrecords = this.getAll();
-		MedicalRecord medicalRecordToUpdate = this.getOne(identifier);
+		MedicalRecord medicalRecordToUpdate = this.getOne(medicalRecord.getFirstName()+medicalRecord.getLastName());
+		
 		int index = medicalrecords.indexOf(medicalRecordToUpdate);
 		medicalrecords.set(index, medicalRecord);
 
 		ArrayNode newMedicalRecordsData = getObjectMapper().valueToTree(medicalrecords);
-		getDataContainer().setMedicalRecordsData(newMedicalRecordsData);
+		DataContainer.medicalRecordsData = newMedicalRecordsData;
 
 		return medicalRecord;
 	}
@@ -125,13 +93,13 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	public MedicalRecord delete(MedicalRecord medicalRecord) throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
 
 		List<MedicalRecord> medicalRecords = this.getAll();
-
 		MedicalRecord medicalRecordToDelete = this.getOne(medicalRecord.getFirstName() + medicalRecord.getLastName());
+		
 		int index = medicalRecords.indexOf(medicalRecordToDelete);
 		medicalRecords.remove(index);
 
 		ArrayNode newMedicalRecordsData = getObjectMapper().valueToTree(medicalRecords);
-		getDataContainer().setMedicalRecordsData(newMedicalRecordsData);
+		DataContainer.medicalRecordsData = newMedicalRecordsData;
 
 		return medicalRecord;
 	}
@@ -140,7 +108,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 		if (this.getAll().stream().anyMatch(mr -> (mr.getFirstName() + mr.getLastName())
 				.equalsIgnoreCase(medicalRecord.getFirstName() + medicalRecord.getLastName())))
 			throw new DuplicatedItemException(
-					"Warning : a medical record with the same firstname and lastname already exists in data container");
+					"Warning : a medical record with the same firstname and lastname "+medicalRecord.getFirstName()+" "+medicalRecord.getLastName()+" already exists in data container");
 	}
 
 }

@@ -1,12 +1,8 @@
 package com.safetynet.safetynetalerts.model;
 
-import javax.validation.constraints.NotEmpty;
+
 
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 /**
  * Retrieves the link between an address and a fire station.</br>
@@ -19,10 +15,8 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @Component
 public class LinkedFireStation {
 
-	@NotEmpty
-	private String address;
 	
-	@NotEmpty
+	private String address;
 	private String station;
 
 	public LinkedFireStation() {

@@ -107,7 +107,7 @@ class MedicalRecordServiceTest {
 	class ExceptionsTests {
 
 		@Test
-		void isExpectedExceptionThrownWhenInsertingDuplicatedPersonTest() throws DuplicatedItemException,
+		void isExpectedExceptionThrownWhenInsertingDuplicatedMedicalRecordTest() throws DuplicatedItemException,
 				DataImportFailedException, UnavailableDataException, EmptyDataException {
 
 			MedicalRecord medicalRecortToInsert = new MedicalRecord();
@@ -117,11 +117,11 @@ class MedicalRecordServiceTest {
 					() -> medicalRecordService.insertMedicalRecord(medicalRecortToInsert));
 
 			assertEquals(exception.getMessage(), "Warning : a medical record identified by " + medicalRecortToInsert.getFirstName()
-					+ medicalRecortToInsert.getLastName() + " already exists");
+					+ " "+medicalRecortToInsert.getLastName() + " already exists");
 		}
 
 		@Test
-		void isExpectedExceptionThrownWhenTryingToFindUnknownPersonTest()
+		void isExpectedExceptionThrownWhenTryingToFindUnknownMedicalRecordTest()
 				throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
 
 			when(medicalRecordDao.getOne("Toto")).thenThrow(ItemNotFoundException.class);

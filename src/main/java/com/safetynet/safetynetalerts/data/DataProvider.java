@@ -1,10 +1,14 @@
 package com.safetynet.safetynetalerts.data;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
+import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
+import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 
 
 @Component
@@ -27,6 +31,7 @@ public abstract class DataProvider {
 	public DataContainer getDataContainer() {
 		return dataContainer;
 	}
+	
 	
 	
 	

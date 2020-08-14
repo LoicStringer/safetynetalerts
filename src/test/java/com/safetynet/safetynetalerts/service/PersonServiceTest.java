@@ -139,19 +139,24 @@ class PersonServiceTest {
 				DataImportFailedException, UnavailableDataException, EmptyDataException {
 
 			Person personToInsert = new Person();
+			personToInsert.setFirstName("Bruce");
+			personToInsert.setLastName("Willis");
+			
 			when(personDao.insert(personToInsert)).thenThrow(DuplicatedItemException.class);
 
 			Exception exception = assertThrows(DuplicatedPersonException.class,
 					() -> personService.insertPerson(personToInsert));
 
 			assertEquals(exception.getMessage(), "Warning : a person identified by " + personToInsert.getFirstName()
-					+ personToInsert.getLastName() + " already exists");
+					+" "+ personToInsert.getLastName() + " already exists");
 		}
 
 		@Test
 		void isExpectedExceptionThrownWhenTryingToFindUnknownPersonTest()
 				throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
 
+			
+			
 			when(personDao.getOne("Toto")).thenThrow(ItemNotFoundException.class);
 
 			Exception exception = assertThrows(PersonNotFoundException.class, () -> personService.getOnePerson("Toto"));

@@ -146,7 +146,7 @@ class CommunityServiceTest {
 		
 		Exception exception = assertThrows(PersonsDataNotFoundException.class, () -> communityService.getCommunityEmails("Paris"));
 
-		assertEquals(exception.getMessage(), "This city is not registered in persons data");
+		assertEquals(exception.getMessage(), "This city Paris is not registered in persons data");
 	}
 	
 	@Test
@@ -156,7 +156,7 @@ class CommunityServiceTest {
 		
 		Exception exception = assertThrows(LinkedFireStationNotFoundException.class, ()-> communityService.getPersonsCoveredByFireStation("5"));
 		
-		assertEquals(exception.getMessage(), "This station number is not registered in fire station mappings data");
+		assertEquals(exception.getMessage(), "This station number 5 is not registered in fire station mappings data");
 	}
 	
 }

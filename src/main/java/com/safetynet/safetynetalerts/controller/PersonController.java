@@ -1,10 +1,9 @@
 package com.safetynet.safetynetalerts.controller;
 
-import javax.validation.Valid;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,7 +25,7 @@ public class PersonController {
 	private PersonService personService;
 	
 	@PostMapping("")
-	public ResponseEntity<Person> insertPerson(@Valid @RequestBody Person person) throws DuplicatedPersonException, PersonsDataNotFoundException{
+	public ResponseEntity<Person> insertPerson(@RequestBody Person person) throws DuplicatedPersonException, PersonsDataNotFoundException{
 		
 		personService.insertPerson(person);
 		

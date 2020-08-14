@@ -2,7 +2,7 @@ package com.safetynet.safetynetalerts.controller;
 
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +42,7 @@ public class CommunityController {
 	 * @see CommunityService
 	 */
 	@GetMapping("/communityEmail")
-	public ResponseEntity<List<String>> communityEmails (@RequestParam("city") @NotBlank String city) throws PersonsDataNotFoundException{
+	public ResponseEntity<List<String>> communityEmails (@RequestParam("city")String city) throws PersonsDataNotFoundException{
 		List<String> communityEmails = communityService.getCommunityEmails(city);
 		return ResponseEntity.ok(communityEmails);
 	}

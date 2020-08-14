@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +47,7 @@ public class CommunityService {
 	public List<String> getCommunityEmails(String city) throws PersonsDataNotFoundException {
 		
 		if(!personService.getAllPersons().stream().anyMatch(p -> p.getCity().equalsIgnoreCase(city)))
-			throw new PersonsDataNotFoundException("This city is not registered in persons data");
+			throw new PersonsDataNotFoundException("This city "+city+" is not registered in persons data");
 	
 		List<String> communityEmails = new ArrayList<String>();
 
@@ -80,7 +80,7 @@ public class CommunityService {
 			throws LinkedFireStationNotFoundException, PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException, LinkedFireStationsDataNotFoundException {
 
 		if(!linkedFireStationService.getAllLinkedFireStations().stream().anyMatch(lfs -> lfs.getStation().equalsIgnoreCase(stationNumber)))
-			throw new LinkedFireStationNotFoundException("This station number is not registered in fire station mappings data");
+			throw new LinkedFireStationNotFoundException("This station number "+ stationNumber +" is not registered in fire station mappings data");
 		
 		CommunityPersonsCoveredByFireStation communityPersonsCoveredByFireStation = new CommunityPersonsCoveredByFireStation();
 

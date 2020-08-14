@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.springframework.stereotype.Component;
+
+
+@Component
 public class DataAccessor extends Properties {
 
 	
@@ -19,7 +23,7 @@ public class DataAccessor extends Properties {
 		}
 	}
 
-	public String getFiletpath() {
+	public String getFilePath() {
 		return getProperty("json.file");
 	}
 
@@ -35,6 +39,8 @@ public class DataAccessor extends Properties {
 		return getProperty("json.linkedFireStationsNode");
 	}
 	
-	
+	public String getTestFilePath() {
+		return getProperty("json.testFile");
+	}
 	
 }

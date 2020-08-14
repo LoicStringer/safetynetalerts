@@ -109,7 +109,7 @@ class LinkedFireStationServiceTest {
 	class ExceptionsTests {
 
 		@Test
-		void isExpectedExceptionThrownWhenInsertingDuplicatedPersonTest() throws DuplicatedItemException,
+		void isExpectedExceptionThrownWhenInsertingDuplicatedLinkedFireStationTest() throws DuplicatedItemException,
 				DataImportFailedException, UnavailableDataException, EmptyDataException {
 
 			LinkedFireStation linkedFireStationToInsert = new LinkedFireStation();
@@ -123,7 +123,7 @@ class LinkedFireStationServiceTest {
 		}
 
 		@Test
-		void isExpectedExceptionThrownWhenTryingToFindUnknownPersonTest()
+		void isExpectedExceptionThrownWhenTryingToFindUnknownLinkedFireStationTest()
 				throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
 
 			when(linkedFireStationDao.getOne("Toto")).thenThrow(ItemNotFoundException.class);

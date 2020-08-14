@@ -23,18 +23,15 @@ import com.safetynet.safetynetalerts.model.Person;
 @Tag("PersonDaoTests")
 @DisplayName("PersonDao CRUD operations tests")
 class PersonDaoTest {
-
+	
 	private PersonDao personDao;
-	private Person personForTests;
 	private List<Person> persons;
 
 	@BeforeEach
-	void setUp() {
+	void setUp() throws DataImportFailedException, UnavailableDataException, EmptyDataException {
+		
 		personDao = new PersonDao();
-		personForTests = new Person();
 		persons = new ArrayList<Person>();
-		personForTests.setFirstName("John");
-		personForTests.setLastName("Boyd");
 	}
 
 	@Test
@@ -51,7 +48,7 @@ class PersonDaoTest {
 		
 		Person personToget = personDao.getOne("JohnBoyd");
 		
-		assertEquals("JohnBoyd",personToget.getFirstName()+personToget.getLastName());
+		assertEquals(personToget.getFirstName()+personToget.getLastName(),"JohnBoyd");
 		assertEquals(personToget.getAddress(), "1509 Culver St");
 	}
 	
@@ -71,37 +68,51 @@ class PersonDaoTest {
 	@Test
 	void updateTest() throws  DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
 		
-		personForTests.setCity("Paris");
+		persons = personDao.getAll();
+		Person personToUpdate= persons.get(0);
 		
-		personDao.update(personForTests);
+		personToUpdate.setCity("Paris");
+		personDao.update(personToUpdate);
 		persons = personDao.getAll();
 		
-		assertEquals("Paris", persons.get(0).getCity());
+		assertEquals(persons.get(0).getCity(),"Paris");
 	}
 	
 	@Test
 	void deleteTest() throws UnavailableDataException, EmptyDataException, DataImportFailedException, ItemNotFoundException {
 		
-		personDao.delete(personForTests);
+		persons = personDao.getAll();
+		Person personToDelete = persons.get(0);
+		
+		personDao.delete(personToDelete);
 		persons = personDao.getAll();
 	
-		assertNotEquals("John", persons.get(0).getFirstName());
+		assertNotEquals(persons.get(0).getFirstName(),"John");
 	}
 	
 	@Test
 	void isThrowingExceptionWhenInsertingDuplicatedIdentifierPersonTest() {
 		
-		Exception exception = assertThrows(DuplicatedItemException.class, ()->personDao.insert(personForTests));
+		Person personToInsert = new Person();
+		personToInsert.setFirstName("Foster");
+		personToInsert.setLastName("Shepard");
 		
-		assertEquals(exception.getMessage(),"Warning : a person with the same firstname and lastname already exists in data container");
+		Exception exception = assertThrows(DuplicatedItemException.class, ()->personDao.insert(personToInsert));
+		
+		assertEquals(exception.getMessage(),"Warning : a person with the same firstname and lastname "+personToInsert.getFirstName()+" "+personToInsert.getLastName()+" already exists in data container");
 	}
 	
 	@Test
-	void isThrowingExceptionWhenPersonIsNotFoundTest()  {
+	void isThrowingExceptionWhenPersonIsNotFoundTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException  {
 	
-		Exception exception = assertThrows(ItemNotFoundException.class,()->personDao.getOne("Toto"));
+		Person personToGet = new Person();
+		personToGet.setFirstName("Toto");
+		personToGet.setLastName("Toto");
+		String identifier = personToGet.getFirstName()+" "+personToGet.getLastName();
 		
-		assertEquals(exception.getMessage(),"No person found for identifier Toto");
+		Exception exception = assertThrows(ItemNotFoundException.class,()->personDao.getOne(identifier));
+		
+		assertEquals(exception.getMessage(),"No person found for identifier Toto Toto");
 	}
 	
 	
