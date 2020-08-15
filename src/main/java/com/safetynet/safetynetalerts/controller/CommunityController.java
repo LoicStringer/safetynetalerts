@@ -54,7 +54,7 @@ public class CommunityController {
 	 * @param Person's last name, the "lastName" attribute's value.
 	 * @return a {@link CommunityPersonInfo} custom object 
 	 * containing the required person informations. 
-	 * @throws MedicalRecordNotFoundException 
+	 * @throws MedicalRecordNotFoundException
 	 * @throws MedicalRecordsDataNotFoundException 
 	 * @throws PersonsDataNotFoundException 
 	 * @throws PersonNotFoundException 
