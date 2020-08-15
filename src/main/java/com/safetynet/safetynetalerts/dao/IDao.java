@@ -2,6 +2,8 @@ package com.safetynet.safetynetalerts.dao;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 
 
 /**
@@ -10,11 +12,14 @@ import java.util.List;
  *
  * @param <T>
  */
+
+@Component
 public interface IDao<T> {
 
-	List<T> getAll();
-	T insert(T t);
-	T update(T t);
-	boolean delete (String s);
-	T getOne(String s);
+	List<T> getAll() throws Exception;
+	T insert(T t) throws Exception ;
+	T update(T t) throws Exception ;
+	T delete (T t) throws Exception ;
+	T getOne(String s) throws Exception ;
+	
 }

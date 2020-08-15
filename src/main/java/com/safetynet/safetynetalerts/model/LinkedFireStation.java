@@ -1,5 +1,9 @@
 package com.safetynet.safetynetalerts.model;
 
+
+
+import org.springframework.stereotype.Component;
+
 /**
  * Retrieves the link between an address and a fire station.</br>
  * Constructed of two <code>String</code> attributes, an address and a fire station id,
@@ -8,8 +12,10 @@ package com.safetynet.safetynetalerts.model;
  * @author newbie
  *
  */
+@Component
 public class LinkedFireStation {
 
+	
 	private String address;
 	private String station;
 

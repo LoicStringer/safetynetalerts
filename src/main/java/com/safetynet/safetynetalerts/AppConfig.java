@@ -13,6 +13,6 @@ public class AppConfig {
 	public HttpTraceRepository htttpTraceRepository(){
 	  return new InMemoryHttpTraceRepository();
 	}
-	
+
 
 }

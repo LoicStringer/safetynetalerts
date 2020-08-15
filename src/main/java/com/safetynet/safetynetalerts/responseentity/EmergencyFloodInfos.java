@@ -1,56 +1,88 @@
 package com.safetynet.safetynetalerts.responseentity;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmergencyFloodInfos {
 
-	private LinkedHashMap<String,List<HomeInfo>>coveredHomesMap;
+	private List<StationInfos> coveredHomesList;
 
 	public EmergencyFloodInfos() {
-		this.coveredHomesMap = new LinkedHashMap<String,List<HomeInfo>>();
+
+		this.coveredHomesList = new ArrayList<StationInfos>();
 	}
 
-	public LinkedHashMap<String, List<HomeInfo>> getCoveredHomesMap() {
-		return coveredHomesMap;
+	public void addStationInfos(String stationNumber, List<HomeInfo> homesInfos) {
+
+		this.coveredHomesList.add(new StationInfos(stationNumber, homesInfos));
 	}
 
-	public void setCoveredHomesMap(LinkedHashMap<String, List<HomeInfo>> coveredHomesMap) {
-		this.coveredHomesMap = coveredHomesMap;
+	public List<StationInfos> getCoveredHomesList() {
+		return coveredHomesList;
+	}
+
+	public void setCoveredHomesList(List<StationInfos> coveredHomesList) {
+		this.coveredHomesList = coveredHomesList;
+	}
+
+	public class StationInfos {
+		private String stationNumber;
+		private List<HomeInfo> homesInfos;
+
+		public StationInfos(String stationNumber, List<HomeInfo> homesInfos) {
+			this.stationNumber = stationNumber;
+			this.homesInfos = homesInfos;
+
+		}
+
+		public String getStationNumber() {
+			return stationNumber;
+		}
+
+		public void setStationNumber(String stationNumber) {
+			this.stationNumber = stationNumber;
+		}
+
+		public List<HomeInfo> getHomesInfos() {
+			return homesInfos;
+		}
+
+		public void setHomesInfos(List<HomeInfo> homesInfos) {
+			this.homesInfos = homesInfos;
+		}
+
 	}
 
 	public class HomeInfo {
-		
+
 		private String address;
 		private List<InhabitantInfos> inhabitantsThere;
-		
+
 		public HomeInfo() {
-		
+
 		}
 
 		public HomeInfo(String address, List<InhabitantInfos> inhabitantsThere) {
 			this.address = address;
 			this.inhabitantsThere = inhabitantsThere;
 		}
-		
+
 		public String getAddress() {
 			return address;
 		}
-		
+
 		public void setAddress(String address) {
 			this.address = address;
 		}
-		
+
 		public List<InhabitantInfos> getInhabitantsThere() {
 			return inhabitantsThere;
 		}
-		
+
 		public void setInhabitantsThere(List<InhabitantInfos> inhabitantsThere) {
 			this.inhabitantsThere = inhabitantsThere;
 		}
-		
-		
+
 	}
-	
-	
+
 }

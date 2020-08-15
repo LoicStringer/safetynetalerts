@@ -2,6 +2,10 @@ package com.safetynet.safetynetalerts.model;
 
 import java.util.Arrays;
 
+
+
+import org.springframework.stereotype.Component;
+
 /**
  * A person's medical record representation.</br>
  * Constructed of <code>String</code> attributes 
@@ -11,10 +15,12 @@ import java.util.Arrays;
  * @author newbie
  *
  */
+@Component
 public class MedicalRecord {
 
 	private String firstName;
 	private String lastName;
+	
 	private String birthdate;
 	private String[] medications;
 	private String[] allergies;

@@ -81,6 +81,48 @@ public class EmergencyChildAlert {
 		public void setAge(int age) {
 			this.age = age;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getEnclosingInstance().hashCode();
+			result = prime * result + age;
+			result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+			result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ChildThere other = (ChildThere) obj;
+			if (!getEnclosingInstance().equals(other.getEnclosingInstance()))
+				return false;
+			if (age != other.age)
+				return false;
+			if (firstName == null) {
+				if (other.firstName != null)
+					return false;
+			} else if (!firstName.equals(other.firstName))
+				return false;
+			if (lastName == null) {
+				if (other.lastName != null)
+					return false;
+			} else if (!lastName.equals(other.lastName))
+				return false;
+			return true;
+		}
+
+		private EmergencyChildAlert getEnclosingInstance() {
+			return EmergencyChildAlert.this;
+		}
+
 		
 	}
 	
@@ -125,10 +167,85 @@ public class EmergencyChildAlert {
 		public void setAge(int age) {
 			this.age = age;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getEnclosingInstance().hashCode();
+			result = prime * result + age;
+			result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+			result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			OtherPersonThere other = (OtherPersonThere) obj;
+			if (!getEnclosingInstance().equals(other.getEnclosingInstance()))
+				return false;
+			if (age != other.age)
+				return false;
+			if (firstName == null) {
+				if (other.firstName != null)
+					return false;
+			} else if (!firstName.equals(other.firstName))
+				return false;
+			if (lastName == null) {
+				if (other.lastName != null)
+					return false;
+			} else if (!lastName.equals(other.lastName))
+				return false;
+			return true;
+		}
+
+		private EmergencyChildAlert getEnclosingInstance() {
+			return EmergencyChildAlert.this;
+		}
+
 		
 		
 	}
-	
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((childrenThere == null) ? 0 : childrenThere.hashCode());
+		result = prime * result + ((otherPersonsThere == null) ? 0 : otherPersonsThere.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EmergencyChildAlert other = (EmergencyChildAlert) obj;
+		if (childrenThere == null) {
+			if (other.childrenThere != null)
+				return false;
+		} else if (!childrenThere.equals(other.childrenThere))
+			return false;
+		if (otherPersonsThere == null) {
+			if (other.otherPersonsThere != null)
+				return false;
+		} else if (!otherPersonsThere.equals(other.otherPersonsThere))
+			return false;
+		return true;
+	}
+
+
 	
 	
 }

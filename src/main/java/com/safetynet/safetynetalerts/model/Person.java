@@ -1,5 +1,9 @@
 package com.safetynet.safetynetalerts.model;
 
+
+
+import org.springframework.stereotype.Component;
+
 /**
  * Representation of a person.</br>
  * Constructed of <code>String</code> attributes 
@@ -9,10 +13,13 @@ package com.safetynet.safetynetalerts.model;
  * @author newbie
  *
  */
+
+@Component
 public class Person {
 
 	private String firstName;
 	private String lastName;
+	
 	private String address;
 	private String city;
 	private String zip;
@@ -34,7 +41,7 @@ public class Person {
 		this.phone = phone;
 		this.email = email;
 	}
-
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -158,7 +165,6 @@ public class Person {
 		return true;
 	}
 
-	
 	
 
 	
