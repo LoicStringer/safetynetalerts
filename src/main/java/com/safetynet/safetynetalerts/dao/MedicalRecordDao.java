@@ -10,33 +10,28 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.safetynet.safetynetalerts.data.DataContainer;
 import com.safetynet.safetynetalerts.data.DataProvider;
-import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
-import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
 import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 
 @Component
 public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord> {
 
 	@Override
-	public List<MedicalRecord> getAll() throws DataImportFailedException, UnavailableDataException, EmptyDataException {
-
-		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
-	
-
+	public List<MedicalRecord> getAll() throws UnavailableDataException, EmptyDataException  {
+		
 		try {
-			getDataContainer().getMedicalRecordsData();
-		} catch (DataImportFailedException e) {
-			throw new DataImportFailedException(
-					"A problem occured while querying medical records list from the data container", e);
+			getDataContainer().checkDataIntegrity(DataContainer.medicalRecordsData);
 		} catch (UnavailableDataException e) {
 			throw new UnavailableDataException("Medical records list is null", e);
 		} catch (EmptyDataException e) {
 			throw new EmptyDataException("Medical records list is empty", e);
 		}
-
+		
+		List<MedicalRecord> medicalRecords = new ArrayList<MedicalRecord>();
+		
 		Iterator<JsonNode> elements = DataContainer.medicalRecordsData.elements();
 		while (elements.hasNext()) {
 			JsonNode medicalRecordNode = elements.next();
@@ -48,7 +43,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	}
 
 	@Override
-	public MedicalRecord getOne(String identifier) throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
+	public MedicalRecord getOne(String identifier) throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
 		
 		MedicalRecord medicalRecordToGet = new MedicalRecord();
 		List<MedicalRecord> medicalRecords = this.getAll();
@@ -64,7 +59,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	}
 
 	@Override
-	public MedicalRecord insert(MedicalRecord medicalRecord) throws DataImportFailedException, UnavailableDataException, EmptyDataException, DuplicatedItemException {
+	public MedicalRecord insert(MedicalRecord medicalRecord) throws UnavailableDataException, EmptyDataException, DuplicatedItemException {
 
 		this.checkForDuplication(medicalRecord);
 	
@@ -75,7 +70,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	}
 
 	@Override
-	public MedicalRecord update(MedicalRecord medicalRecord) throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
+	public MedicalRecord update(MedicalRecord medicalRecord) throws  UnavailableDataException, EmptyDataException, ItemNotFoundException {
 
 		List<MedicalRecord> medicalrecords = this.getAll();
 		MedicalRecord medicalRecordToUpdate = this.getOne(medicalRecord.getFirstName()+medicalRecord.getLastName());
@@ -90,7 +85,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	}
 
 	@Override
-	public MedicalRecord delete(MedicalRecord medicalRecord) throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
+	public MedicalRecord delete(MedicalRecord medicalRecord) throws  UnavailableDataException, EmptyDataException, ItemNotFoundException {
 
 		List<MedicalRecord> medicalRecords = this.getAll();
 		MedicalRecord medicalRecordToDelete = this.getOne(medicalRecord.getFirstName() + medicalRecord.getLastName());
@@ -104,7 +99,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 		return medicalRecord;
 	}
 
-	private void checkForDuplication(MedicalRecord medicalRecord) throws DataImportFailedException, UnavailableDataException, EmptyDataException, DuplicatedItemException {
+	private void checkForDuplication(MedicalRecord medicalRecord) throws  UnavailableDataException, EmptyDataException, DuplicatedItemException {
 		if (this.getAll().stream().anyMatch(mr -> (mr.getFirstName() + mr.getLastName())
 				.equalsIgnoreCase(medicalRecord.getFirstName() + medicalRecord.getLastName())))
 			throw new DuplicatedItemException(

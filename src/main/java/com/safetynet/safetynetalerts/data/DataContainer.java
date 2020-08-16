@@ -15,101 +15,36 @@ import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 @Component
 public class DataContainer {
 
-	private ObjectMapper objectMapper = new ObjectMapper();
-	private DataAccessor dataAccessor = new DataAccessor();
+	private static ObjectMapper objectMapper = new ObjectMapper();
+	private static DataAccessor dataAccessor = new DataAccessor();
 
 	public static ArrayNode medicalRecordsData;
 	public static ArrayNode linkedFireStationsData;
 	public static ArrayNode personsData;
 
-	public ArrayNode getPersonsData() throws DataImportFailedException, UnavailableDataException, EmptyDataException {
+	static {
+		try {
+			personsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFilePath()))
+					.get(dataAccessor.getPersonsNode());
+			medicalRecordsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFilePath()))
+					.get(dataAccessor.getMedicalRecordsNode());
+			linkedFireStationsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFilePath()))
+					.get(dataAccessor.getLinkedFireStationsNode());
+		} catch (JsonProcessingException e) {
+			throw new DataImportFailedException("A problem occured while Json being parsed", e);
+		} catch (IOException e) {
+			throw new DataImportFailedException("A problem occured while reading the Json file", e);
+		}
+	}
 
-		ArrayNode extractedPersonsData = null;
+	public void checkDataIntegrity(ArrayNode arraynode) throws UnavailableDataException, EmptyDataException {
 
-		if (personsData == null) {
-			try {
-				extractedPersonsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFilePath()))
-						.get(dataAccessor.getPersonsNode());
-			} catch (JsonProcessingException e) {
-				throw new DataImportFailedException("A problem occured while Json being parsed", e);
-			} catch (IOException e) {
-				throw new DataImportFailedException("A problem occured while reading the Json file", e);
-			} finally {
-				if (extractedPersonsData == null) {
-					throw new UnavailableDataException("Warning : the data source or the file path is invalid !");
-				} else if (extractedPersonsData.isEmpty()) {
-					throw new EmptyDataException("Warning : the data source is empty !");
-				}
-			}
-
-			setPersonsData(extractedPersonsData);
+		if (arraynode == null) {
+			throw new UnavailableDataException("Warning : the data source or the file path is invalid !");
+		} else if (arraynode.isEmpty()) {
+			throw new EmptyDataException("Warning : the data source is empty !");
 		}
 
-		return personsData;
-	}
-
-	public ArrayNode getMedicalRecordsData()
-			throws DataImportFailedException, UnavailableDataException, EmptyDataException {
-
-		ArrayNode extractedMedicalRecordsData = null;
-		
-		if (medicalRecordsData == null) {
-			try {
-				extractedMedicalRecordsData = (ArrayNode) objectMapper
-						.readTree(new File(dataAccessor.getFilePath())).get(dataAccessor.getMedicalRecordsNode());
-			} catch (JsonProcessingException e) {
-				throw new DataImportFailedException("A problem occured while Json being parsed", e);
-			} catch (IOException e) {
-				throw new DataImportFailedException("A problem occured while reading the Json file", e);
-			} finally {
-				if (extractedMedicalRecordsData == null) {
-					throw new UnavailableDataException("Warning : the data source or the file path is invalid !");
-				} else if (extractedMedicalRecordsData.isEmpty()) {
-					throw new EmptyDataException("Warning : the data source is empty !");
-				}
-			}
-			setMedicalRecordsData(extractedMedicalRecordsData);
-		}
-
-		return medicalRecordsData;
-	}
-
-	public ArrayNode getLinkedFireStationsData()
-			throws DataImportFailedException, UnavailableDataException, EmptyDataException {
-
-		ArrayNode extractedLinkedFireStationsData = null;
-		
-		if(linkedFireStationsData==null) {
-			try {
-				extractedLinkedFireStationsData = (ArrayNode) objectMapper
-						.readTree(new File(dataAccessor.getFilePath())).get(dataAccessor.getLinkedFireStationsNode());
-			} catch (JsonProcessingException e) {
-				throw new DataImportFailedException("A problem occured while Json file being parsed", e);
-			} catch (IOException e) {
-				throw new DataImportFailedException("A problem occured while reading the Json file", e);
-			} finally {
-				if (extractedLinkedFireStationsData == null) {
-					throw new UnavailableDataException("Warning : the data source or file path is invalid !");
-				} else if (extractedLinkedFireStationsData.isEmpty()) {
-					throw new EmptyDataException("Warning : the data source is empty !");
-				}
-			}
-			setLinkedFireStationsData(extractedLinkedFireStationsData);
-		}
-	
-		return linkedFireStationsData;
-	}
-
-	public static void setMedicalRecordsData(ArrayNode medicalRecordsData) {
-		DataContainer.medicalRecordsData = medicalRecordsData;
-	}
-
-	public static void setLinkedFireStationsData(ArrayNode linkedFireStationsData) {
-		DataContainer.linkedFireStationsData = linkedFireStationsData;
-	}
-
-	public static void setPersonsData(ArrayNode personsData) {
-		DataContainer.personsData = personsData;
 	}
 
 }

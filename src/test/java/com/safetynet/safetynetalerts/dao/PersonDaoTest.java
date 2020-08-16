@@ -28,14 +28,14 @@ class PersonDaoTest {
 	private List<Person> persons;
 
 	@BeforeEach
-	void setUp() throws DataImportFailedException, UnavailableDataException, EmptyDataException {
+	void setUp() throws UnavailableDataException, EmptyDataException {
 		
 		personDao = new PersonDao();
 		persons = new ArrayList<Person>();
 	}
 
 	@Test
-	void getAllTest() throws  UnavailableDataException, EmptyDataException, DataImportFailedException {
+	void getAllTest() throws  UnavailableDataException, EmptyDataException{
 		
 		persons = personDao.getAll();
 		
@@ -44,7 +44,7 @@ class PersonDaoTest {
 	}
 
 	@Test
-	void getOneTest() throws  DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
+	void getOneTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
 		
 		Person personToget = personDao.getOne("JohnBoyd");
 		
@@ -53,7 +53,7 @@ class PersonDaoTest {
 	}
 	
 	@Test
-	void insertTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, DuplicatedItemException {
+	void insertTest() throws UnavailableDataException, EmptyDataException, DuplicatedItemException {
 		
 		Person personToInsert =new Person();
 		personToInsert.setFirstName("Newbie");
@@ -66,7 +66,7 @@ class PersonDaoTest {
 	}
 	
 	@Test
-	void updateTest() throws  DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
+	void updateTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
 		
 		persons = personDao.getAll();
 		Person personToUpdate= persons.get(0);
@@ -79,7 +79,7 @@ class PersonDaoTest {
 	}
 	
 	@Test
-	void deleteTest() throws UnavailableDataException, EmptyDataException, DataImportFailedException, ItemNotFoundException {
+	void deleteTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
 		
 		persons = personDao.getAll();
 		Person personToDelete = persons.get(0);
@@ -103,7 +103,7 @@ class PersonDaoTest {
 	}
 	
 	@Test
-	void isThrowingExceptionWhenPersonIsNotFoundTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException  {
+	void isThrowingExceptionWhenPersonIsNotFoundTest() throws UnavailableDataException, EmptyDataException  {
 	
 		Person personToGet = new Person();
 		personToGet.setFirstName("Toto");

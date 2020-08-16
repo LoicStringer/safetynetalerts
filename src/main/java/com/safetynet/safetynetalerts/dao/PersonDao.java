@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.safetynet.safetynetalerts.data.DataContainer;
 import com.safetynet.safetynetalerts.data.DataProvider;
-import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
 import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
@@ -23,21 +22,18 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 	
 	
 	@Override
-	public List<Person> getAll() throws DataImportFailedException, UnavailableDataException, EmptyDataException {
+	public List<Person> getAll() throws UnavailableDataException, EmptyDataException {
+		
+		try {
+			getDataContainer().checkDataIntegrity(DataContainer.personsData);
+		} catch (UnavailableDataException e) {
+			throw new UnavailableDataException("Persons list is null", e);
+		} catch (EmptyDataException e) {
+			throw new EmptyDataException("Persons list is empty", e);
+		}
 		
 		List<Person> persons = new ArrayList<Person>();
-
-			try {
-				getDataContainer().getPersonsData();
-			} catch (DataImportFailedException e) {
-				throw new DataImportFailedException(
-						"A problem occured while querying persons list from the data container", e);
-			} catch (UnavailableDataException e) {
-				throw new UnavailableDataException("Persons list is null", e);
-			} catch (EmptyDataException e) {
-				throw new EmptyDataException("Persons list is empty", e);
-			}
-
+		
 		Iterator<JsonNode> elements = DataContainer.personsData.elements();
 		while (elements.hasNext()) {
 			JsonNode personNode = elements.next();
@@ -49,8 +45,8 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 	}
 
 	@Override
-	public Person getOne(String identifier)
-			throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
+	public  Person getOne(String identifier)
+			throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
 
 		Person personToGet= new Person();
 		List<Person> persons  = this.getAll();
@@ -67,7 +63,7 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 
 	@Override
 	public Person insert(Person person)
-			throws DuplicatedItemException, DataImportFailedException, UnavailableDataException, EmptyDataException {
+			throws DuplicatedItemException, UnavailableDataException, EmptyDataException {
 
 		this.checkForDuplication(person);
 		
@@ -79,7 +75,7 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 
 	@Override
 	public Person update(Person personUpdated)
-			throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
+			throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
 
 		Person personToUpdate = this.getOne(personUpdated.getFirstName() + personUpdated.getLastName());
 		List<Person> persons = this.getAll();
@@ -95,7 +91,7 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 
 	@Override
 	public Person delete(Person person)
-			throws UnavailableDataException, EmptyDataException, DataImportFailedException, ItemNotFoundException {
+			throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
 
 		List<Person> persons = this.getAll();
 		Person personToDelete = this.getOne(person.getFirstName() + person.getLastName());
@@ -110,7 +106,7 @@ public class PersonDao extends DataProvider implements IDao<Person> {
 	}
 
 	private void checkForDuplication(Person person)
-			throws UnavailableDataException, EmptyDataException, DuplicatedItemException, DataImportFailedException {
+			throws UnavailableDataException, EmptyDataException, DuplicatedItemException {
 		if (this.getAll().stream().anyMatch(p -> (p.getFirstName() + p.getLastName())
 				.equalsIgnoreCase(person.getFirstName() + person.getLastName())))
 			throw new DuplicatedItemException(

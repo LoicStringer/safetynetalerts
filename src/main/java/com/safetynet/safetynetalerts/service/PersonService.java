@@ -29,7 +29,7 @@ public class PersonService {
 
 		try {
 			persons = personDao.getAll();
-		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+		} catch (UnavailableDataException | EmptyDataException e) {
 			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data");
 		}
 
@@ -42,7 +42,7 @@ public class PersonService {
 
 		try {
 			personToGet = personDao.getOne(identifier);
-		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+		} catch (UnavailableDataException | EmptyDataException e) {
 			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data");
 		} catch (ItemNotFoundException e) {
 			throw new PersonNotFoundException("Person identified by " + identifier + " has not been found");
@@ -55,7 +55,7 @@ public class PersonService {
 
 		try {
 			personDao.insert(person);
-		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+		} catch (UnavailableDataException | EmptyDataException e) {
 			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data");
 		} catch (DuplicatedItemException e) {
 			throw new DuplicatedPersonException("Warning : a person identified by " + person.getFirstName()+" "
@@ -69,7 +69,7 @@ public class PersonService {
 
 		try {
 			personDao.update(person);
-		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+		} catch (UnavailableDataException | EmptyDataException e) {
 			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data");
 		} catch (ItemNotFoundException e) {
 			throw new PersonNotFoundException("Person " + person.toString() + " has not been found");
@@ -82,7 +82,7 @@ public class PersonService {
 
 		try {
 			personDao.delete(person);
-		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
+		} catch (UnavailableDataException | EmptyDataException e) {
 			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data");
 		} catch (ItemNotFoundException e) {
 			throw new PersonNotFoundException("Person " + person.toString() + " has not been found");

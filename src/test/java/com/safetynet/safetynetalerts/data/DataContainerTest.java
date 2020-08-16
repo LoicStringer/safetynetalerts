@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
@@ -12,8 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,21 +23,11 @@ import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 @ExtendWith(MockitoExtension.class)
 class DataContainerTest {
 
+	private DataContainer dataContainer = new DataContainer();
 	
-	@Mock
-	private DataAccessor dataAccessor;
-
-	@InjectMocks
-	private DataContainer dataContainer;
-
 	@Test
 	void isContainingAllPersonDataTest()
 			throws DataImportFailedException, UnavailableDataException, EmptyDataException {
-
-		when(dataAccessor.getFilePath()).thenReturn("src/main/resources/data.json");
-		when(dataAccessor.getPersonsNode()).thenReturn("persons");
-
-		dataContainer.getPersonsData();
 
 		assertNotNull(DataContainer.personsData);
 		assertTrue(DataContainer.personsData.isContainerNode());
@@ -51,11 +38,6 @@ class DataContainerTest {
 	void isContainingAllMedicalRecordsDataTest()
 			throws DataImportFailedException, UnavailableDataException, EmptyDataException {
 
-		when(dataAccessor.getFilePath()).thenReturn("src/main/resources/data.json");
-		when(dataAccessor.getMedicalRecordsNode()).thenReturn("medicalrecords");
-
-		dataContainer.getMedicalRecordsData();
-
 		assertNotNull(DataContainer.medicalRecordsData);
 		assertTrue(DataContainer.medicalRecordsData.isContainerNode());
 		assertEquals(23, DataContainer.medicalRecordsData.size());
@@ -64,12 +46,7 @@ class DataContainerTest {
 	@Test
 	void isContainingAllFireStationsDataTest()
 			throws DataImportFailedException, UnavailableDataException, EmptyDataException {
-
-		when(dataAccessor.getFilePath()).thenReturn("src/main/resources/data.json");
-		when(dataAccessor.getLinkedFireStationsNode()).thenReturn("firestations");
-
-		dataContainer.getLinkedFireStationsData();
-
+		
 		assertNotNull(DataContainer.linkedFireStationsData);
 		assertTrue(DataContainer.linkedFireStationsData.isContainerNode());
 		assertEquals(13, DataContainer.linkedFireStationsData.size());
@@ -79,28 +56,19 @@ class DataContainerTest {
 	void isThrowingExpectedExceptionWhenJsonIsEmpty()
 			throws DataImportFailedException, JsonProcessingException, IOException {
 
-		DataContainer.personsData=null;
+		DataContainer.personsData.removeAll();
 		
-		when(dataAccessor.getFilePath()).thenReturn("src/main/resources/testFile.json");
-		when(dataAccessor.getPersonsNode()).thenReturn("persons");
-		
-
-		Exception expectedException = assertThrows(EmptyDataException.class, () -> dataContainer.getPersonsData());
-
+		Exception expectedException = assertThrows(EmptyDataException.class, () -> dataContainer.checkDataIntegrity(DataContainer.personsData));
 		assertEquals(expectedException.getMessage(), "Warning : the data source is empty !");
 	}
-
+		
 	@Test
-	void isThrowingExpectedExceptionWhenJsonIsInvalid() throws DataImportFailedException {
+	void isThrowingExpectedExceptionWhenJsonIsInvalid() {
 
 		DataContainer.personsData=null;
 		
-		when(dataAccessor.getFilePath()).thenReturn("src/main/resources/testFile.json");
-		when(dataAccessor.getPersonsNode()).thenReturn(null);
-
 		Exception expectedException = assertThrows(UnavailableDataException.class,
-				() -> dataContainer.getPersonsData());
-
+				() -> dataContainer.checkDataIntegrity(DataContainer.personsData));
 		assertEquals(expectedException.getMessage(), "Warning : the data source or the file path is invalid !");
 	}
 

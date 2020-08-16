@@ -1,6 +1,6 @@
 package com.safetynet.safetynetalerts.exceptions;
 
-public class DataImportFailedException extends Exception {
+public class DataImportFailedException extends RuntimeException {
 
 	/**
 	 * 

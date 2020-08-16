@@ -39,8 +39,5 @@ public class DataAccessor extends Properties {
 		return getProperty("json.linkedFireStationsNode");
 	}
 	
-	public String getTestFilePath() {
-		return getProperty("json.testFile");
-	}
 	
 }

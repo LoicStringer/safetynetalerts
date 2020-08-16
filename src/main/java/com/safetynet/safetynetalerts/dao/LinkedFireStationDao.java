@@ -10,31 +10,27 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.safetynet.safetynetalerts.data.DataContainer;
 import com.safetynet.safetynetalerts.data.DataProvider;
-import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
-import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
 import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
 
 @Component
 public class LinkedFireStationDao extends DataProvider implements IDao<LinkedFireStation> {
 
 	@Override
-	public List<LinkedFireStation> getAll() throws DataImportFailedException, UnavailableDataException, EmptyDataException {
-
-		List<LinkedFireStation> linkedFireStations = new ArrayList<LinkedFireStation>();
+	public List<LinkedFireStation> getAll() throws UnavailableDataException, EmptyDataException{
 
 		try {
-			getDataContainer().getLinkedFireStationsData();
-		} catch (DataImportFailedException e) {
-			throw new DataImportFailedException("A problem occured while querying fire station mappings list from the data container",
-					e);
+			getDataContainer().checkDataIntegrity(DataContainer.linkedFireStationsData);
 		} catch (UnavailableDataException e) {
 			throw new UnavailableDataException("Fire station mappings list is null", e);
 		} catch (EmptyDataException e) {
 			throw new EmptyDataException("Fire station mappings list is empty", e);
 		}
+		
+		List<LinkedFireStation> linkedFireStations = new ArrayList<LinkedFireStation>();
 
 		Iterator<JsonNode> elements = DataContainer.linkedFireStationsData.elements();
 		while (elements.hasNext()) {
@@ -48,7 +44,7 @@ public class LinkedFireStationDao extends DataProvider implements IDao<LinkedFir
 	}
 
 	@Override
-	public LinkedFireStation getOne(String address) throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
+	public LinkedFireStation getOne(String address) throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
 
 		LinkedFireStation linkedFireStationToGet = new LinkedFireStation();
 
@@ -65,7 +61,7 @@ public class LinkedFireStationDao extends DataProvider implements IDao<LinkedFir
 	}
 
 	@Override
-	public LinkedFireStation insert(LinkedFireStation linkedFireStation) throws DuplicatedItemException, DataImportFailedException, UnavailableDataException, EmptyDataException {
+	public LinkedFireStation insert(LinkedFireStation linkedFireStation) throws DuplicatedItemException, UnavailableDataException, EmptyDataException {
 
 		this.checkForDuplication(linkedFireStation);
 
@@ -76,7 +72,7 @@ public class LinkedFireStationDao extends DataProvider implements IDao<LinkedFir
 	}
 
 	@Override
-	public LinkedFireStation update(LinkedFireStation linkedFireStationUpdated) throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
+	public LinkedFireStation update(LinkedFireStation linkedFireStationUpdated) throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
 		
 		LinkedFireStation linkedStationToUpdate = this.getOne(linkedFireStationUpdated.getAddress());
 		List<LinkedFireStation> linkedFireStations = this.getAll();
@@ -91,7 +87,7 @@ public class LinkedFireStationDao extends DataProvider implements IDao<LinkedFir
 	}
 
 	@Override
-	public LinkedFireStation delete(LinkedFireStation linkedFireStation) throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
+	public LinkedFireStation delete(LinkedFireStation linkedFireStation) throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
 		
 		List<LinkedFireStation> linkedFireStations = this.getAll();
 		LinkedFireStation linkedStationToUpdate = this.getOne(linkedFireStation.getAddress());
@@ -105,7 +101,7 @@ public class LinkedFireStationDao extends DataProvider implements IDao<LinkedFir
 		return linkedFireStation;
 	}
 
-	private void checkForDuplication(LinkedFireStation linkedFireStation) throws DuplicatedItemException, DataImportFailedException, UnavailableDataException, EmptyDataException {
+	private void checkForDuplication(LinkedFireStation linkedFireStation) throws DuplicatedItemException, UnavailableDataException, EmptyDataException {
 		if (this.getAll().stream().anyMatch(lfs -> lfs.getAddress().equalsIgnoreCase(linkedFireStation.getAddress())))
 			throw new DuplicatedItemException(
 					"Warning : a fire station mapping with the same address already exists in data container");
