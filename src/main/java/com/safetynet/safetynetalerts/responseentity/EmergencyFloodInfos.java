@@ -51,6 +51,14 @@ public class EmergencyFloodInfos {
 			this.homesInfos = homesInfos;
 		}
 
+		@Override
+		public String toString() {
+			return "StationInfos [stationNumber=" + stationNumber + ", homesInfos=" + homesInfos + "]";
+		}
+
+		
+		
+		
 	}
 
 	public class HomeInfo {
@@ -83,6 +91,20 @@ public class EmergencyFloodInfos {
 			this.inhabitantsThere = inhabitantsThere;
 		}
 
+		@Override
+		public String toString() {
+			return "HomeInfo [address=" + address + ", inhabitantsThere=" + inhabitantsThere + "]";
+		}
+
+		
+		
 	}
 
+	@Override
+	public String toString() {
+		return "EmergencyFloodInfos [coveredHomesList=" + coveredHomesList + "]";
+	}
+
+	
+	
 }

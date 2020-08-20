@@ -2,8 +2,8 @@ package com.safetynet.safetynetalerts.controller;
 
 import java.util.List;
 
-
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +16,8 @@ import com.safetynet.safetynetalerts.exceptions.MedicalRecordNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.MedicalRecordsDataNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
+import com.safetynet.safetynetalerts.model.MedicalRecord;
+import com.safetynet.safetynetalerts.model.Person;
 import com.safetynet.safetynetalerts.responseentity.CommunityPersonInfo;
 import com.safetynet.safetynetalerts.responseentity.CommunityPersonsCoveredByFireStation;
 import com.safetynet.safetynetalerts.service.CommunityService;
@@ -30,6 +32,8 @@ import com.safetynet.safetynetalerts.service.CommunityService;
 @RestController
 public class CommunityController {
 
+	private Logger log =LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	private CommunityService communityService ;
 	
@@ -43,8 +47,13 @@ public class CommunityController {
 	 */
 	@GetMapping("/communityEmail")
 	public ResponseEntity<List<String>> communityEmails (@RequestParam("city")String city) throws PersonsDataNotFoundException{
+		
 		List<String> communityEmails = communityService.getCommunityEmails(city);
-		return ResponseEntity.ok(communityEmails);
+		
+		log.info(System.lineSeparator()+"User has entered \"/communityEmail\" endpoint (GET request) to get "+city+" inhabitants emails list."
+				+System.lineSeparator()+ "Request has returned :" +communityEmails);
+		
+		return ResponseEntity.ok(communityEmails);	
 	}
 
 	/**
@@ -65,7 +74,12 @@ public class CommunityController {
 	@GetMapping("/personInfo")
 	public ResponseEntity<CommunityPersonInfo> personInfo 
 	(@RequestParam("firstName")String firstName, @RequestParam("lastName")String lastName) throws PersonNotFoundException, PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException{		
+		
 		CommunityPersonInfo communityPersonInfo = communityService.getPersonInfo(firstName + lastName);
+		
+		log.info(System.lineSeparator()+"User has entered \"/personInfo\" endpoint (GET request) to get "+firstName +" "+ lastName+" infos."
+				+System.lineSeparator()+ "Request has returned :" +communityPersonInfo);
+		
 		return ResponseEntity.ok(communityPersonInfo);
 	}
 	
@@ -86,7 +100,12 @@ public class CommunityController {
 	@GetMapping("/firestation")
 	public ResponseEntity<CommunityPersonsCoveredByFireStation> personsCoveredByFireStation
 	(@RequestParam("stationNumber")String stationNumber) throws LinkedFireStationsDataNotFoundException, PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException, LinkedFireStationNotFoundException{
+		
 		CommunityPersonsCoveredByFireStation personsCovered = communityService.getPersonsCoveredByFireStation(stationNumber);
+		
+		log.info(System.lineSeparator()+"User has entered \"/firestation\" endpoint (GET request) to get persons infos covered by fire station number "+stationNumber+"."
+				+System.lineSeparator()+ "Request has returned :" +personsCovered.toString());
+		
 		return ResponseEntity.ok(personsCovered);	
 	}
 	

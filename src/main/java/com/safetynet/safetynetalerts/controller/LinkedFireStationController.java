@@ -1,5 +1,7 @@
 package com.safetynet.safetynetalerts.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,25 +21,38 @@ import com.safetynet.safetynetalerts.service.LinkedFireStationService;
 @RequestMapping("/firestation")
 public class LinkedFireStationController {
 	
+	private Logger log =LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	private LinkedFireStationService linkedFireStationService;
 		
 	@PostMapping
 	public ResponseEntity<LinkedFireStation> insertLinkedFireStation
 	(@RequestBody LinkedFireStation linkedFireStation) throws LinkedFireStationsDataNotFoundException, DuplicatedLinkedFireStationException{	
-		linkedFireStationService.insertLinkedFireStation(linkedFireStation);
-		return ResponseEntity.ok(linkedFireStation);
+	
+		log.info(System.lineSeparator()+"User has entered \"/firestation\" endpoint (POST request) to insert a new fire station mapping for address: "+linkedFireStation.getAddress()+" ."
+				+System.lineSeparator()+ "Request has returned :" +linkedFireStation.toString());
+		
+		return ResponseEntity.ok(linkedFireStationService.insertLinkedFireStation(linkedFireStation));
 	}
 	
 	@PutMapping("")
 	public ResponseEntity<LinkedFireStation> updateLinkedFireStation
-	(@RequestBody LinkedFireStation linkedFireStation) throws LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException {
+	(@RequestBody LinkedFireStation linkedFireStation) throws LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException, DuplicatedLinkedFireStationException {
+		
+		log.info(System.lineSeparator()+"User has entered \"/firestation\" endpoint (PUT request) to update fire station mapping for address: "+linkedFireStation.getAddress()+" ."
+				+System.lineSeparator()+ "Request has returned :" +linkedFireStation.toString());
+		
 		return ResponseEntity.ok(linkedFireStationService.updateLinkedFireStation(linkedFireStation));
 	}
 	
 	@DeleteMapping("")
 	public ResponseEntity<LinkedFireStation> deleteLinkedFireStation
-	(@RequestBody LinkedFireStation linkedFireStation) throws LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException {
+	(@RequestBody LinkedFireStation linkedFireStation) throws LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException, DuplicatedLinkedFireStationException {
+		
+		log.info(System.lineSeparator()+"User has entered \"/firestation\" endpoint (DELETE request) to delete fire station mapping for address: "+linkedFireStation.getAddress()+" ."
+				+System.lineSeparator()+ "Request has returned :" +linkedFireStation.toString());
+		
 		return ResponseEntity.ok(linkedFireStationService.deleteLinkedFireStation(linkedFireStation));
 		
 	}

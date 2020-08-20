@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.safetynet.safetynetalerts.dao.LinkedFireStationDao;
-import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedLinkedFireStationException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
@@ -54,7 +53,7 @@ class LinkedFireStationServiceTest {
 	class OperationsTests {
 
 		@Test
-		void getAllTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException,
+		void getAllTest() throws UnavailableDataException, EmptyDataException,
 				LinkedFireStationsDataNotFoundException {
 			when(linkedFireStationDao.getAll()).thenReturn(linkedFireStations);
 
@@ -65,7 +64,7 @@ class LinkedFireStationServiceTest {
 		}
 
 		@Test
-		void getOneTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException,
+		void getOneTest() throws UnavailableDataException, EmptyDataException,
 				ItemNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException {
 			when(linkedFireStationDao.getOne("892 Downing Ct")).thenReturn(linkedFireStations.get(1));
 
@@ -75,7 +74,7 @@ class LinkedFireStationServiceTest {
 		}
 
 		@Test
-		void insertTest() throws DuplicatedItemException, DataImportFailedException, UnavailableDataException,
+		void insertTest() throws DuplicatedItemException, UnavailableDataException,
 				EmptyDataException, LinkedFireStationsDataNotFoundException, DuplicatedLinkedFireStationException {
 			LinkedFireStation linkedFireStationToInsert = new LinkedFireStation("5 Rue Clavel", "20");
 			when(linkedFireStationDao.insert(linkedFireStationToInsert)).thenReturn(linkedFireStationToInsert);
@@ -84,8 +83,8 @@ class LinkedFireStationServiceTest {
 		}
 
 		@Test
-		void updateTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException,
-				ItemNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException {
+		void updateTest() throws UnavailableDataException, EmptyDataException,
+				ItemNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException, DuplicatedItemException, DuplicatedLinkedFireStationException {
 			LinkedFireStation linkedFireStationToUpdate = linkedFireStations.get(0);
 			linkedFireStationToUpdate.setStation("20");
 			when(linkedFireStationDao.update(linkedFireStationToUpdate)).thenReturn(linkedFireStationToUpdate);
@@ -94,8 +93,9 @@ class LinkedFireStationServiceTest {
 		}
 
 		@Test
-		void deleteTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException,
-				ItemNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException {
+		void deleteTest() throws UnavailableDataException, EmptyDataException,
+				ItemNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException,
+				DuplicatedItemException, DuplicatedLinkedFireStationException {
 			LinkedFireStation linkedFireStationToDelete = linkedFireStations.get(1);
 			when(linkedFireStationDao.delete(linkedFireStationToDelete)).thenReturn(linkedFireStationToDelete);
 			assertEquals(linkedFireStationService.deleteLinkedFireStation(linkedFireStationToDelete).getStation(), "2");
@@ -109,34 +109,20 @@ class LinkedFireStationServiceTest {
 	class ExceptionsTests {
 
 		@Test
-		void isExpectedExceptionThrownWhenInsertingDuplicatedLinkedFireStationTest() throws DuplicatedItemException,
-				DataImportFailedException, UnavailableDataException, EmptyDataException {
-
-			LinkedFireStation linkedFireStationToInsert = new LinkedFireStation();
-			when(linkedFireStationDao.insert(linkedFireStationToInsert)).thenThrow(DuplicatedItemException.class);
-
-			Exception exception = assertThrows(DuplicatedLinkedFireStationException.class,
-					() -> linkedFireStationService.insertLinkedFireStation(linkedFireStationToInsert));
-
-			assertEquals(exception.getMessage(), "Warning : a fire station mapping identified by " + linkedFireStationToInsert.getAddress()
-					+ linkedFireStationToInsert.getStation() + " already exists");
-		}
-
-		@Test
 		void isExpectedExceptionThrownWhenTryingToFindUnknownLinkedFireStationTest()
-				throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
+				throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
 
-			when(linkedFireStationDao.getOne("Toto")).thenThrow(ItemNotFoundException.class);
+			when(linkedFireStationDao.getOne("10, Downing Street")).thenThrow(ItemNotFoundException.class);
 
-			Exception exception = assertThrows(LinkedFireStationNotFoundException.class, () -> linkedFireStationService.getOneLinkedFireStation("Toto"));
+			Exception exception = assertThrows(LinkedFireStationNotFoundException.class, () -> linkedFireStationService.getOneLinkedFireStation("10, Downing Street"));
 
-			assertEquals(exception.getMessage(), "Fire station mapping identified by Toto has not been found");
+			assertEquals(exception.getMessage(), "Fire station mapping for address 10, Downing Street has not been found");
 
 		}
 
 		@Test
 		void isExpectedExceptionThrownWhenDataSourceIsCorruptedTest()
-				throws UnavailableDataException, EmptyDataException, DataImportFailedException {
+				throws UnavailableDataException, EmptyDataException {
 
 			when(linkedFireStationDao.getAll()).thenThrow(UnavailableDataException.class);
 

@@ -2,8 +2,8 @@ package com.safetynet.safetynetalerts.controller;
 
 import java.util.List;
 
-
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +28,8 @@ import com.safetynet.safetynetalerts.service.EmergencyService;
 @RestController
 public class EmergencyController {
 
+	private Logger log =LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	private EmergencyService emergencyService;
 	
@@ -36,6 +38,9 @@ public class EmergencyController {
 	(@RequestParam ("address") String address) throws PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException{
 		
 		EmergencyChildAlert anyChildThere = emergencyService.getChildrenThere(address);
+		
+		log.info(System.lineSeparator()+"User has entered \"/childAlert\" endpoint (GET request) to get informed about children living at "+address+"."
+				+System.lineSeparator()+ "Request has returned :" +anyChildThere);
 		
 		return ResponseEntity.ok(anyChildThere);
 	}
@@ -46,6 +51,9 @@ public class EmergencyController {
 		
 		List<String> phoneNumbers = emergencyService.getCoveredPersonsPhoneNumbers(stationNumber);
 		
+		log.info(System.lineSeparator()+"User has entered \"/phoneAlert\" endpoint (GET request) to get persons phone numbers list covered by fire station number "+stationNumber+"."
+				+System.lineSeparator()+ "Request has returned :" +phoneNumbers);
+		
 		return phoneNumbers;
 	}
 	
@@ -55,6 +63,9 @@ public class EmergencyController {
 		
 		EmergencyFireAddressInfos inhabitantsThere = emergencyService.getPersonsThereInfos(address);
 		
+		log.info(System.lineSeparator()+"User has entered \"/fire\" endpoint (GET request) to get persons infos living at "+address+"."
+				+System.lineSeparator()+ "Request has returned :" +inhabitantsThere);
+		
 		return ResponseEntity.ok(inhabitantsThere);
 	}
 	
@@ -63,6 +74,9 @@ public class EmergencyController {
 	(@RequestParam("stations")  List<String> stationNumbers) throws MedicalRecordsDataNotFoundException, PersonsDataNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException{
 		
 		EmergencyFloodInfos emergencyFloodInfos = emergencyService.getCoveredHomesInfos(stationNumbers);
+		
+		log.info(System.lineSeparator()+"User has entered \"/flood/stations\" endpoint (GET request) to get homes infos covered by fire station numbers list "+stationNumbers+"."
+				+System.lineSeparator()+ "Request has returned :" +emergencyFloodInfos);
 		
 		return ResponseEntity.ok(emergencyFloodInfos);
 	}

@@ -1,6 +1,10 @@
 package com.safetynet.safetynetalerts.exceptions;
 
-public class DataImportFailedException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.BAD_GATEWAY)
+public class DataImportFailedException extends RuntimeException{
 
 	/**
 	 * 
@@ -15,7 +19,6 @@ public class DataImportFailedException extends RuntimeException {
 		super(message);
 	}
 
-	
 	
 	
 }

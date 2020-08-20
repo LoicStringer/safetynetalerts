@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +22,13 @@ import com.safetynet.safetynetalerts.model.LinkedFireStation;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 import com.safetynet.safetynetalerts.model.Person;
 import com.safetynet.safetynetalerts.responseentity.CommunityPersonInfo;
+import com.safetynet.safetynetalerts.responseentity.CommunityPersonInfo.PersonInfo;
 import com.safetynet.safetynetalerts.responseentity.CommunityPersonsCoveredByFireStation;
 
 @Service
 public class CommunityService {
 
+	private Logger log =LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private PersonService personService;
@@ -54,6 +57,8 @@ public class CommunityService {
 		communityEmails = personService.getAllPersons().stream().filter(p -> p.getCity().equalsIgnoreCase(city))
 				.map(p -> p.getEmail()).collect(Collectors.toList());
 
+		log.debug(System.lineSeparator()+"Checking if city "+city +" exists, filtering through persons data, collecting matching ones.");
+		
 		return communityEmails;
 	}
 
@@ -62,17 +67,27 @@ public class CommunityService {
 
 		CommunityPersonInfo communityPersonInfo = new CommunityPersonInfo();
 
-		Person personToGetInfoFrom = personService.getOnePerson(identifier);
-		MedicalRecord medicalRecordToGetInfoFrom = medicalRecordService.getOneMedicalRecord(identifier);
+		List <Person> personsToGetInfoFrom = personService.getHomonymousPersons(identifier);
+		List <MedicalRecord> medicalRecordsToGetInfoFrom = medicalRecordService.getHomonymousMedicalRecords(identifier);
 
-		communityPersonInfo.setFirstName(personToGetInfoFrom.getFirstName());
-		communityPersonInfo.setLastName(personToGetInfoFrom.getLastName());
-		communityPersonInfo.setAge(this.getAgeFromBirthDate(medicalRecordToGetInfoFrom.getBirthdate()));
-		communityPersonInfo.setAddress(personToGetInfoFrom.getAddress());
-		communityPersonInfo.setEmail(personToGetInfoFrom.getEmail());
-		communityPersonInfo.setMedications(medicalRecordToGetInfoFrom.getMedications());
-		communityPersonInfo.setAllergies(medicalRecordToGetInfoFrom.getAllergies());
-
+		for(Person person:personsToGetInfoFrom)
+			for(MedicalRecord medicalRecord:medicalRecordsToGetInfoFrom) {
+				if((person.getFirstName()+person.getLastName()).equalsIgnoreCase((medicalRecord.getFirstName()+medicalRecord.getLastName()))) {
+					PersonInfo personInfo = new CommunityPersonInfo().new PersonInfo();
+					personInfo.setFirstName(person.getFirstName());
+					personInfo.setLastName(person.getLastName());
+					personInfo.setAge(this.getAgeFromBirthDate(medicalRecord.getBirthdate()));
+					personInfo.setAddress(person.getAddress());
+					personInfo.setEmail(person.getEmail());
+					personInfo.setMedications(medicalRecord.getMedications());
+					personInfo.setAllergies(medicalRecord.getAllergies());
+					communityPersonInfo.addPersonInfo(personInfo);
+				}
+			}
+	
+		log.debug(System.lineSeparator()+"Calling the person dao \"getHomonymousPersons\" method, that retrieves the persons list matching with the specified name, "
+		+System.lineSeparator()+"collecting infos by filtering through medical records data, building a specific CommunityPersonInfo object");
+		
 		return communityPersonInfo;
 	}
 
@@ -91,12 +106,9 @@ public class CommunityService {
 			communityPersonsCoveredByFireStation.addCoveredPerson(coveredPerson.getFirstName(), coveredPerson.getLastName(), coveredPerson.getAddress(),
 					coveredPerson.getPhone(), getPersonAge(coveredPerson));
 		
-		/*
-		personsCovered.stream().forEach(p -> {
-			communityPersonsCoveredByFireStation.addCoveredPerson(p.getFirstName(), p.getLastName(), p.getAddress(),
-					p.getPhone(), getPersonAge(p));
-		});
-		*/
+		log.debug(System.lineSeparator()+"Checking if station number "+stationNumber+" exists, "
+				+ System.lineSeparator()+"retrieving a specific CommunityPersonsCoveredByFireStation object conataining persons infos covered by this fire station.");
+		
 		return communityPersonsCoveredByFireStation;
 	}
 

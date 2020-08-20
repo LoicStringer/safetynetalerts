@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,8 @@ import com.safetynet.safetynetalerts.responseentity.InhabitantInfos;
 
 @Service
 public class EmergencyService {
+	
+	private Logger log =LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private PersonService personService;
@@ -46,6 +50,9 @@ public class EmergencyService {
 		for (Person person : personsThere)
 			childrenThere.addPerson(person.getFirstName(), person.getLastName(), getPersonAge(person));
 
+		log.debug(System.lineSeparator()+"Retrieving for the specified address "+address
+				+ System.lineSeparator()+", the number of children and other persons living there, and their infos");
+		
 		return childrenThere;
 	}
 
@@ -54,6 +61,8 @@ public class EmergencyService {
 
 		List<String> addressesCovered = getAdressesCoveredByFirestation(stationNumber);
 
+		log.debug(System.lineSeparator()+"Retrieving persons covered by the specified fire station "+stationNumber+" phone numbers list.");
+		
 		return personService.getAllPersons().stream().filter(p -> addressesCovered.contains(p.getAddress()))
 				.map(Person::getPhone).collect(Collectors.toList());
 	}
@@ -72,6 +81,9 @@ public class EmergencyService {
 
 		emergencyFireAddressInfos.setInhabitantsThere(inhabitantsThere);
 
+		log.debug(System.lineSeparator()+"Retrieving for the specified address "+address
+				+ System.lineSeparator()+" the station number that covers it and their inhabitants infos list.");
+		
 		return emergencyFireAddressInfos;
 	}
 
@@ -86,6 +98,9 @@ public class EmergencyService {
 					getHomesInfos(getAdressesCoveredByFirestation(stationNumber)));
 		}
 
+		log.debug(System.lineSeparator()+"Retrieving the whole homes inhabitants detailed infos list "
+				+ System.lineSeparator()+"covered by fire stations corresponding to the specified list of station numbers "+stationNumbers+" .");
+		
 		return emergencyFloodInfos;
 	}
 

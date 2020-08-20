@@ -18,9 +18,7 @@ public class SafetynetalertsApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SafetynetalertsApplication.class, args);
-		
-		
-		System.out.println(DataContainer.personsData);
+
 		
 	}
 

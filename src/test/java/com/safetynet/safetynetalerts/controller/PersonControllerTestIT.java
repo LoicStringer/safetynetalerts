@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.safetynetalerts.dao.PersonDao;
+import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
+import com.safetynet.safetynetalerts.exceptions.DuplicatedPersonException;
 import com.safetynet.safetynetalerts.model.Person;
 import com.safetynet.safetynetalerts.service.PersonService;
 
@@ -81,6 +83,6 @@ class PersonControllerTestIT {
 		assertNotEquals(personDao.getAll().get(0),personToDelete);
 	}
 	
-	
+
 	
 }

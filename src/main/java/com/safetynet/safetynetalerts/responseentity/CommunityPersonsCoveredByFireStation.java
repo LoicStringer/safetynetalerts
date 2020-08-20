@@ -107,6 +107,12 @@ public class CommunityPersonsCoveredByFireStation {
 		}
 		
 	}
+
+	@Override
+	public String toString() {
+		return "CommunityPersonsCoveredByFireStation [childCount=" + childCount + ", adultCount=" + adultCount
+				+ ", personsInfo=" + personsInfo + "]";
+	}
 	
 	
 }

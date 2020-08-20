@@ -13,7 +13,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
 import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
@@ -53,7 +52,7 @@ class PersonDaoTest {
 	}
 	
 	@Test
-	void insertTest() throws UnavailableDataException, EmptyDataException, DuplicatedItemException {
+	void insertTest() throws UnavailableDataException, EmptyDataException {
 		
 		Person personToInsert =new Person();
 		personToInsert.setFirstName("Newbie");
@@ -66,7 +65,7 @@ class PersonDaoTest {
 	}
 	
 	@Test
-	void updateTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
+	void updateTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException, DuplicatedItemException {
 		
 		persons = personDao.getAll();
 		Person personToUpdate= persons.get(0);
@@ -79,7 +78,7 @@ class PersonDaoTest {
 	}
 	
 	@Test
-	void deleteTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
+	void deleteTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException, DuplicatedItemException {
 		
 		persons = personDao.getAll();
 		Person personToDelete = persons.get(0);
@@ -88,18 +87,6 @@ class PersonDaoTest {
 		persons = personDao.getAll();
 	
 		assertNotEquals(persons.get(0).getFirstName(),"John");
-	}
-	
-	@Test
-	void isThrowingExceptionWhenInsertingDuplicatedIdentifierPersonTest() {
-		
-		Person personToInsert = new Person();
-		personToInsert.setFirstName("Foster");
-		personToInsert.setLastName("Shepard");
-		
-		Exception exception = assertThrows(DuplicatedItemException.class, ()->personDao.insert(personToInsert));
-		
-		assertEquals(exception.getMessage(),"Warning : a person with the same firstname and lastname "+personToInsert.getFirstName()+" "+personToInsert.getLastName()+" already exists in data container");
 	}
 	
 	@Test

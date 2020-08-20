@@ -57,7 +57,8 @@ class MedicalRecordServiceTest {
 	class OperationsTests {
 
 		@Test
-		void getAllTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, MedicalRecordsDataNotFoundException  {
+		void getAllTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException,
+				MedicalRecordsDataNotFoundException {
 			when(medicalRecordDao.getAll()).thenReturn(medicalRecords);
 
 			List<MedicalRecord> getAllMedicalRecords = medicalRecordService.getAllMedicalRecords();
@@ -67,7 +68,8 @@ class MedicalRecordServiceTest {
 		}
 
 		@Test
-		void getOneTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException  {
+		void getOneTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException,
+				ItemNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException {
 			when(medicalRecordDao.getOne("SophiaZemicks")).thenReturn(medicalRecords.get(1));
 
 			MedicalRecord medicalRecordToGet = medicalRecordService.getOneMedicalRecord("SophiaZemicks");
@@ -76,7 +78,8 @@ class MedicalRecordServiceTest {
 		}
 
 		@Test
-		void insertTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, DuplicatedItemException, MedicalRecordsDataNotFoundException, DuplicatedMedicalRecordException  {
+		void insertTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException,
+				DuplicatedItemException, MedicalRecordsDataNotFoundException, DuplicatedMedicalRecordException {
 			MedicalRecord medicalRecordToInsert = new MedicalRecord("Newbie", "Noob", "04/01/1978", new String[] { "" },
 					new String[] { "" });
 			when(medicalRecordDao.insert(medicalRecordToInsert)).thenReturn(medicalRecordToInsert);
@@ -84,7 +87,9 @@ class MedicalRecordServiceTest {
 		}
 
 		@Test
-		void updateTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException {
+		void updateTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException,
+				ItemNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException,
+				DuplicatedItemException, DuplicatedMedicalRecordException {
 			MedicalRecord medicalRecordToUpdate = medicalRecords.get(0);
 			medicalRecordToUpdate.setBirthdate("04/01/1978");
 			when(medicalRecordDao.update(medicalRecordToUpdate)).thenReturn(medicalRecordToUpdate);
@@ -92,7 +97,9 @@ class MedicalRecordServiceTest {
 		}
 
 		@Test
-		void deleteTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException  {
+		void deleteTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException,
+				ItemNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException,
+				DuplicatedItemException, DuplicatedMedicalRecordException {
 			MedicalRecord medicalRecordTodelete = medicalRecords.get(0);
 			when(medicalRecordDao.delete(medicalRecordTodelete)).thenReturn(medicalRecordTodelete);
 			assertEquals(medicalRecordService.deleteMedicalRecord(medicalRecordTodelete).getLastName(), "Marrack");
@@ -100,25 +107,10 @@ class MedicalRecordServiceTest {
 
 	}
 
-
 	@Nested
 	@Tag("ExceptionsTests")
 	@DisplayName("Exceptions Checking")
 	class ExceptionsTests {
-
-		@Test
-		void isExpectedExceptionThrownWhenInsertingDuplicatedMedicalRecordTest() throws DuplicatedItemException,
-				DataImportFailedException, UnavailableDataException, EmptyDataException {
-
-			MedicalRecord medicalRecortToInsert = new MedicalRecord();
-			when(medicalRecordDao.insert(medicalRecortToInsert)).thenThrow(DuplicatedItemException.class);
-
-			Exception exception = assertThrows(DuplicatedMedicalRecordException.class,
-					() -> medicalRecordService.insertMedicalRecord(medicalRecortToInsert));
-
-			assertEquals(exception.getMessage(), "Warning : a medical record identified by " + medicalRecortToInsert.getFirstName()
-					+ " "+medicalRecortToInsert.getLastName() + " already exists");
-		}
 
 		@Test
 		void isExpectedExceptionThrownWhenTryingToFindUnknownMedicalRecordTest()
@@ -126,7 +118,8 @@ class MedicalRecordServiceTest {
 
 			when(medicalRecordDao.getOne("Toto")).thenThrow(ItemNotFoundException.class);
 
-			Exception exception = assertThrows(MedicalRecordNotFoundException.class, () -> medicalRecordService.getOneMedicalRecord("Toto"));
+			Exception exception = assertThrows(MedicalRecordNotFoundException.class,
+					() -> medicalRecordService.getOneMedicalRecord("Toto"));
 
 			assertEquals(exception.getMessage(), "Medical record identified by Toto has not been found");
 
@@ -138,7 +131,8 @@ class MedicalRecordServiceTest {
 
 			when(medicalRecordDao.getAll()).thenThrow(UnavailableDataException.class);
 
-			Exception exception = assertThrows(MedicalRecordsDataNotFoundException.class, () -> medicalRecordService.getAllMedicalRecords());
+			Exception exception = assertThrows(MedicalRecordsDataNotFoundException.class,
+					() -> medicalRecordService.getAllMedicalRecords());
 
 			assertEquals(exception.getMessage(), "A problem occured while retrieving medical records data");
 		}

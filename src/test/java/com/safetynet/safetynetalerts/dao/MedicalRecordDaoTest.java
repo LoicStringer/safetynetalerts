@@ -13,7 +13,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
 import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
@@ -36,7 +35,7 @@ class MedicalRecordDaoTest {
 	}
 
 	@Test
-	void getAllTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException  {
+	void getAllTest() throws UnavailableDataException, EmptyDataException  {
 		
 		medicalRecords = medicalRecordDao.getAll();
 		
@@ -45,7 +44,7 @@ class MedicalRecordDaoTest {
 	}
 
 	@Test
-	void getOneTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException  {
+	void getOneTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException  {
 		
 		MedicalRecord medicalRecordToGet = medicalRecordDao.getOne("FosterShepard");
 		
@@ -54,7 +53,7 @@ class MedicalRecordDaoTest {
 	}
 	
 	@Test
-	void insertTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, DuplicatedItemException  {
+	void insertTest() throws UnavailableDataException, EmptyDataException, DuplicatedItemException  {
 		
 		MedicalRecord medicalRecordToInsert = new MedicalRecord(); 
 		medicalRecordToInsert.setFirstName("Newbie");
@@ -67,7 +66,7 @@ class MedicalRecordDaoTest {
 	}
 	
 	@Test
-	void updateTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException  {
+	void updateTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException, DuplicatedItemException  {
 		
 		medicalRecords = medicalRecordDao.getAll();
 		MedicalRecord medicalRecordToUpdate = medicalRecords.get(0);
@@ -80,7 +79,7 @@ class MedicalRecordDaoTest {
 	}
 	
 	@Test
-	void deleteTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException  {
+	void deleteTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException, DuplicatedItemException  {
 		
 		medicalRecords = medicalRecordDao.getAll();
 		MedicalRecord medicalRecordToDelete = medicalRecords.get(0);
@@ -89,19 +88,6 @@ class MedicalRecordDaoTest {
 		medicalRecords = medicalRecordDao.getAll();
 		
 		assertNotEquals(medicalRecords.get(0).getFirstName(),"John");
-	}
-	
-	@Test
-	void isThrowingExceptionWhenInsertingDuplicatedIdentifierMedicalRecordTest() {
-		
-
-		MedicalRecord medicalRecordToInsert = new MedicalRecord();
-		medicalRecordToInsert.setFirstName("Foster");
-		medicalRecordToInsert.setLastName("Shepard");
-		
-		Exception exception = assertThrows(DuplicatedItemException.class, ()->medicalRecordDao.insert(medicalRecordToInsert));
-		
-		assertEquals(exception.getMessage(),"Warning : a medical record with the same firstname and lastname "+medicalRecordToInsert.getFirstName()+" "+medicalRecordToInsert.getLastName()+" already exists in data container");
 	}
 	
 	@Test

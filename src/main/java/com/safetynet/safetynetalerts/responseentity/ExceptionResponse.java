@@ -52,6 +52,12 @@ public class ExceptionResponse {
 		this.causedBy = causedBy;
 	}
 
+	@Override
+	public String toString() {
+		return "ExceptionResponse [timestamp=" + timestamp + ", statusCode=" + statusCode + ", causedBy=" + causedBy
+				+ ", message=" + message + "]";
+	}
+
 
 	
 

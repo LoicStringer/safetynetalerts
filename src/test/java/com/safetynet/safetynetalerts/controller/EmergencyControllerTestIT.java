@@ -25,13 +25,13 @@ class EmergencyControllerTestIT {
 	@Test
 	void isEmergencyChildAlertUrlFunctionalTest() throws Exception{
 		
-		String address = "1509 Culver St";
+		String address = "947 E. Rose Dr";
 		
 		mockMvc.perform(get("/childAlert?address="+address))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").isNotEmpty())
-				.andExpect(jsonPath("$.childrenThere[0].firstName").value("Tenley"))
-				.andExpect(jsonPath("$.otherPersonsThere[0].firstName").value("John"));
+				.andExpect(jsonPath("$.childrenThere[0].firstName").value("Kendrik"))
+				.andExpect(jsonPath("$.otherPersonsThere[0].firstName").value("Brian"));
 	}
 
 	@Test
@@ -70,4 +70,5 @@ class EmergencyControllerTestIT {
 				.andExpect(jsonPath("$.coveredHomesList[0].homesInfos[0].address").value("644 Gershwin Cir"));
 				
 	}
+	
 }

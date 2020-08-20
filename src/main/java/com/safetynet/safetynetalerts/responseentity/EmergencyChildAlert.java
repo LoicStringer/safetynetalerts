@@ -3,12 +3,10 @@ package com.safetynet.safetynetalerts.responseentity;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class EmergencyChildAlert {
 
 	private List<ChildThere> childrenThere;
 	private List<OtherPersonThere> otherPersonsThere;
-	
 	
 	public EmergencyChildAlert() {
 		this.childrenThere = new ArrayList<ChildThere>();
@@ -39,7 +37,6 @@ public class EmergencyChildAlert {
 	public void setOtherPersonsThere(List<OtherPersonThere> otherPersonsThere) {
 		this.otherPersonsThere = otherPersonsThere;
 	}
-	
 	
 	public class ChildThere {
 		
@@ -123,9 +120,12 @@ public class EmergencyChildAlert {
 			return EmergencyChildAlert.this;
 		}
 
-		
+		@Override
+		public String toString() {
+			return "ChildThere [firstName=" + firstName + ", lastName=" + lastName + ", age=" + age + "]";
+		}
+
 	}
-	
 	
 	public class OtherPersonThere{
 		
@@ -209,43 +209,16 @@ public class EmergencyChildAlert {
 			return EmergencyChildAlert.this;
 		}
 
-		
-		
-	}
+		@Override
+		public String toString() {
+			return "OtherPersonThere [firstName=" + firstName + ", lastName=" + lastName + ", age=" + age + "]";
+		}
 
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((childrenThere == null) ? 0 : childrenThere.hashCode());
-		result = prime * result + ((otherPersonsThere == null) ? 0 : otherPersonsThere.hashCode());
-		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		EmergencyChildAlert other = (EmergencyChildAlert) obj;
-		if (childrenThere == null) {
-			if (other.childrenThere != null)
-				return false;
-		} else if (!childrenThere.equals(other.childrenThere))
-			return false;
-		if (otherPersonsThere == null) {
-			if (other.otherPersonsThere != null)
-				return false;
-		} else if (!otherPersonsThere.equals(other.otherPersonsThere))
-			return false;
-		return true;
+	public String toString() {
+		return "EmergencyChildAlert [childrenThere=" + childrenThere + ", otherPersonsThere=" + otherPersonsThere + "]";
 	}
 
-
-	
-	
 }

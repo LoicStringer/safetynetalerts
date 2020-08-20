@@ -113,7 +113,7 @@ class CommunityServiceTest {
 
 		CommunityPersonInfo communityPersonInfo = communityService.getPersonInfo("JohnBoyd");
 		
-		assertEquals(communityPersonInfo.getFirstName(), "John");
+		assertEquals(communityPersonInfo.getPersonsInfo().get(0).getFirstName(),"John");
 	}
 
 	@Test

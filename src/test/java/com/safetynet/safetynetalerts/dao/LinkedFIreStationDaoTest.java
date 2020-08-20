@@ -13,7 +13,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
 import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
@@ -36,7 +35,7 @@ class LinkedFIreStationDaoTest {
 	}
 
 	@Test
-	void getAllTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException  {
+	void getAllTest() throws UnavailableDataException, EmptyDataException  {
 		
 		linkedFireStations = linkedFireStationDao.getAll();
 		
@@ -45,7 +44,7 @@ class LinkedFIreStationDaoTest {
 	}
 	
 	@Test
-	void getOneTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException  {
+	void getOneTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException  {
 		
 		LinkedFireStation linkedFireStationToGet = linkedFireStationDao.getOne("1509 Culver St");
 		
@@ -54,7 +53,7 @@ class LinkedFIreStationDaoTest {
 	}
 
 	@Test
-	void insertTest() throws DuplicatedItemException, DataImportFailedException, UnavailableDataException, EmptyDataException  {
+	void insertTest() throws DuplicatedItemException, UnavailableDataException, EmptyDataException  {
 		
 		LinkedFireStation linkedFireStationToInsert = new LinkedFireStation();
 		linkedFireStationToInsert.setAddress("5, Rue Clavel");
@@ -67,7 +66,7 @@ class LinkedFIreStationDaoTest {
 	}
 	
 	@Test
-	void updateTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException  {
+	void updateTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException, DuplicatedItemException  {
 		
 		linkedFireStations = linkedFireStationDao.getAll();
 		LinkedFireStation linkedFireStationToUpdate = linkedFireStations.get(10);
@@ -80,7 +79,7 @@ class LinkedFIreStationDaoTest {
 	}
 	
 	@Test
-	void deleteTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
+	void deleteTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException, DuplicatedItemException {
 		
 		linkedFireStations = linkedFireStationDao.getAll();
 		LinkedFireStation linkedFireStationToDelete = linkedFireStations.get(0);
@@ -91,17 +90,6 @@ class LinkedFIreStationDaoTest {
 		assertNotEquals("1509 Culver St", linkedFireStations.get(0).getAddress());
 	}
 
-	@Test
-	void isThrowingExceptionWhenInsertingDuplicatedAddressTest() {
-		
-		LinkedFireStation linkedFireStationToInsert = new LinkedFireStation();
-		linkedFireStationToInsert.setAddress("1509 Culver St");
-		
-		Exception exception = assertThrows(DuplicatedItemException.class, ()->linkedFireStationDao.insert(linkedFireStationToInsert));
-		
-		assertEquals(exception.getMessage(),"Warning : a fire station mapping with the same address already exists in data container");
-	}
-	
 	@Test
 	void isThrowingExceptionWhenLinkedFireStationIsNotFoundTest()  {
 	

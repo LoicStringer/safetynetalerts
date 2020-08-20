@@ -2,6 +2,8 @@ package com.safetynet.safetynetalerts.controller;
 
 import java.time.LocalDateTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedLinkedFireStationException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedMedicalRecordException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedPersonException;
@@ -24,10 +27,24 @@ import com.safetynet.safetynetalerts.responseentity.ExceptionResponse;
 @RestControllerAdvice
 public class ExceptionsHandler extends ResponseEntityExceptionHandler{
 
+	private Logger log = LoggerFactory.getLogger(this.getClass());
+	
+	@ExceptionHandler(DataImportFailedException.class)
+	public ResponseEntity<ExceptionResponse> handleDataImportFailedException(DataImportFailedException ex){
+		
+		ExceptionResponse exceptionResponse = exceptionResponseBuild(ex);
+		
+		log.error(exceptionLogMessageBuilder(exceptionResponse));
+		
+		return new ResponseEntity<ExceptionResponse>(exceptionResponse, getHttpStatusFromException(ex));
+	}
+	
 	@ExceptionHandler(DuplicatedPersonException.class)
 	public ResponseEntity<ExceptionResponse> handleDuplicatedPersonException(DuplicatedPersonException ex){
 		
 		ExceptionResponse exceptionResponse = exceptionResponseBuild(ex);
+		
+		log.error(exceptionLogMessageBuilder(exceptionResponse));
 		
 		return new ResponseEntity<ExceptionResponse>(exceptionResponse, getHttpStatusFromException(ex));
 	}
@@ -37,6 +54,8 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler{
 		
 		ExceptionResponse exceptionResponse = exceptionResponseBuild(ex);
 		
+		log.error(exceptionLogMessageBuilder(exceptionResponse));
+		
 		return new ResponseEntity<ExceptionResponse>(exceptionResponse, getHttpStatusFromException(ex));
 	}
 	
@@ -44,6 +63,8 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler{
 	public ResponseEntity<ExceptionResponse> handleDuplicatedLinkedFireStationException(DuplicatedLinkedFireStationException ex){
 		
 		ExceptionResponse exceptionResponse = exceptionResponseBuild(ex);
+		
+		log.error(exceptionLogMessageBuilder(exceptionResponse));
 		
 		return new ResponseEntity<ExceptionResponse>(exceptionResponse, getHttpStatusFromException(ex));
 	}
@@ -53,6 +74,8 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler{
 		
 		ExceptionResponse exceptionResponse = exceptionResponseBuild(ex);
 		
+		log.error(exceptionLogMessageBuilder(exceptionResponse));
+		
 		return new ResponseEntity<ExceptionResponse>(exceptionResponse, getHttpStatusFromException(ex));
 	}
 	
@@ -60,6 +83,8 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler{
 	public ResponseEntity<ExceptionResponse> handleMedicalRecordsDataNotFoundException(MedicalRecordsDataNotFoundException ex){
 		
 		ExceptionResponse exceptionResponse = exceptionResponseBuild(ex);
+		
+		log.error(exceptionLogMessageBuilder(exceptionResponse));
 		
 		return new ResponseEntity<ExceptionResponse>(exceptionResponse, getHttpStatusFromException(ex));
 	}
@@ -69,6 +94,8 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler{
 		
 		ExceptionResponse exceptionResponse = exceptionResponseBuild(ex);
 		
+		log.error(exceptionLogMessageBuilder(exceptionResponse));
+		
 		return new ResponseEntity<ExceptionResponse>(exceptionResponse, getHttpStatusFromException(ex));
 	}
 	
@@ -76,6 +103,8 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler{
 	public ResponseEntity<ExceptionResponse> handlePersonNotFoundException(PersonNotFoundException ex){
 		
 		ExceptionResponse exceptionResponse = exceptionResponseBuild(ex);
+		
+		log.error(exceptionLogMessageBuilder(exceptionResponse));
 		
 		return new ResponseEntity<ExceptionResponse>(exceptionResponse, getHttpStatusFromException(ex));
 	}
@@ -85,6 +114,8 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler{
 		
 		ExceptionResponse exceptionResponse = exceptionResponseBuild(ex);
 		
+		log.error(exceptionLogMessageBuilder(exceptionResponse));
+		
 		return new ResponseEntity<ExceptionResponse>(exceptionResponse, getHttpStatusFromException(ex));
 	}
 	
@@ -92,6 +123,8 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler{
 	public ResponseEntity<ExceptionResponse> handleLinkedFireStationNotFoundException(LinkedFireStationNotFoundException ex){
 		
 		ExceptionResponse exceptionResponse = exceptionResponseBuild(ex);
+		
+		log.error(exceptionLogMessageBuilder(exceptionResponse));
 		
 		return new ResponseEntity<ExceptionResponse>(exceptionResponse, getHttpStatusFromException(ex));
 	}
@@ -120,4 +153,11 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler{
 		return status.toString();
 	}
 	
+	private String exceptionLogMessageBuilder(ExceptionResponse exceptionResponse) {
+	
+		String logMessage = System.lineSeparator()+exceptionResponse.getMessage()+System.lineSeparator()
+		+"Leading to : "+exceptionResponse.getStatusCode()+System.lineSeparator()+"Caused by : "+exceptionResponse.getCausedBy();
+		
+		return logMessage;
+	}
 }

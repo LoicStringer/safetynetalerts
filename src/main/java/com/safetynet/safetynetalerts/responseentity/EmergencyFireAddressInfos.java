@@ -24,5 +24,11 @@ public class EmergencyFireAddressInfos {
 		this.inhabitantsThere = inhabitantsThere;
 	}
 
+	@Override
+	public String toString() {
+		return "EmergencyFireAddressInfos [stationNumber=" + stationNumber + ", inhabitantsThere=" + inhabitantsThere
+				+ "]";
+	}
+
 
 }

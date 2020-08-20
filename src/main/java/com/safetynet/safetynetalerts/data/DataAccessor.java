@@ -6,6 +6,8 @@ import java.util.Properties;
 
 import org.springframework.stereotype.Component;
 
+import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
+
 
 @Component
 public class DataAccessor extends Properties {
@@ -18,8 +20,7 @@ public class DataAccessor extends Properties {
 		try (InputStream in = getClass().getClassLoader().getResourceAsStream("data.properties")){
 			this.load(in);
 		} catch (IOException e) {
-			System.out.println("A problem occured while loading the file");
-			e.printStackTrace();
+			throw new DataImportFailedException("A problem occured while loading the data properties file required to acces data.", e);
 		}
 	}
 

@@ -13,17 +13,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.mockito.InjectMocks;
-
 import org.mockito.Mock;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.safetynet.safetynetalerts.dao.PersonDao;
-import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
-import com.safetynet.safetynetalerts.exceptions.DuplicatedPersonException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
+import com.safetynet.safetynetalerts.exceptions.DuplicatedPersonException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
 import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonNotFoundException;
@@ -71,8 +67,7 @@ class PersonServiceTest {
 	class OperationsTests {
 
 		@Test
-		void getAllTest() throws UnavailableDataException, EmptyDataException, DataImportFailedException,
-				PersonsDataNotFoundException {
+		void getAllTest() throws UnavailableDataException, EmptyDataException, PersonsDataNotFoundException {
 
 			when(personDao.getAll()).thenReturn(persons);
 
@@ -83,8 +78,8 @@ class PersonServiceTest {
 		}
 
 		@Test
-		void getOneTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException,
-				ItemNotFoundException, PersonNotFoundException, PersonsDataNotFoundException {
+		void getOneTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException,
+				PersonNotFoundException, PersonsDataNotFoundException {
 
 			when(personDao.getOne("SophiaZemicks")).thenReturn(persons.get(5));
 
@@ -94,8 +89,7 @@ class PersonServiceTest {
 		}
 
 		@Test
-		void insertTest() throws DuplicatedItemException, DataImportFailedException, UnavailableDataException,
-				EmptyDataException, DuplicatedPersonException, PersonsDataNotFoundException {
+		void insertTest() throws UnavailableDataException, EmptyDataException, PersonsDataNotFoundException {
 
 			Person personToInsert = new Person("Newbie", "Noob", "5,Rue Clavel", "75020", "Paris", "06-75-25-51-37",
 					"newbienoob@yahoo.com");
@@ -106,8 +100,9 @@ class PersonServiceTest {
 		}
 
 		@Test
-		void updateTest() throws DataImportFailedException, UnavailableDataException, EmptyDataException,
-				ItemNotFoundException, PersonsDataNotFoundException, PersonNotFoundException {
+		void updateTest()
+				throws UnavailableDataException, EmptyDataException, ItemNotFoundException, DuplicatedItemException,
+				PersonsDataNotFoundException, PersonNotFoundException, DuplicatedPersonException {
 
 			Person personToUpdate = persons.get(0);
 			personToUpdate.setZip("75020");
@@ -118,8 +113,9 @@ class PersonServiceTest {
 		}
 
 		@Test
-		void deleteTest() throws UnavailableDataException, EmptyDataException, DataImportFailedException,
-				ItemNotFoundException, PersonsDataNotFoundException, PersonNotFoundException {
+		void deleteTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException,
+				PersonsDataNotFoundException, PersonNotFoundException, DuplicatedPersonException,
+				DuplicatedItemException {
 
 			Person personTodelete = persons.get(0);
 
@@ -135,28 +131,14 @@ class PersonServiceTest {
 	class ExceptionsTests {
 
 		@Test
-		void isExpectedExceptionThrownWhenInsertingDuplicatedPersonTest() throws DuplicatedItemException,
-				DataImportFailedException, UnavailableDataException, EmptyDataException {
+		void isExpectedExceptionThrowmWhenTryingToUpdateDuplicatedPerson() {
 
-			Person personToInsert = new Person();
-			personToInsert.setFirstName("Bruce");
-			personToInsert.setLastName("Willis");
-			
-			when(personDao.insert(personToInsert)).thenThrow(DuplicatedItemException.class);
-
-			Exception exception = assertThrows(DuplicatedPersonException.class,
-					() -> personService.insertPerson(personToInsert));
-
-			assertEquals(exception.getMessage(), "Warning : a person identified by " + personToInsert.getFirstName()
-					+" "+ personToInsert.getLastName() + " already exists");
 		}
 
 		@Test
 		void isExpectedExceptionThrownWhenTryingToFindUnknownPersonTest()
-				throws DataImportFailedException, UnavailableDataException, EmptyDataException, ItemNotFoundException {
+				throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
 
-			
-			
 			when(personDao.getOne("Toto")).thenThrow(ItemNotFoundException.class);
 
 			Exception exception = assertThrows(PersonNotFoundException.class, () -> personService.getOnePerson("Toto"));
@@ -167,7 +149,7 @@ class PersonServiceTest {
 
 		@Test
 		void isExpectedExceptionThrownWhenDataSourceIsCorruptedTest()
-				throws UnavailableDataException, EmptyDataException, DataImportFailedException {
+				throws UnavailableDataException, EmptyDataException {
 
 			when(personDao.getAll()).thenThrow(UnavailableDataException.class);
 
