@@ -13,9 +13,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.safetynet.safetynetalerts.data.DataContainer;
 import com.safetynet.safetynetalerts.data.DataProvider;
-import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
+import com.safetynet.safetynetalerts.exceptions.DuplicatedLinkedFireStationException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
-import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.LinkedFireStationNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
 
@@ -50,7 +50,7 @@ public class LinkedFireStationDao extends DataProvider implements IDao<LinkedFir
 
 	@Override
 	public LinkedFireStation getOne(String address) 
-			throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
+			throws UnavailableDataException, EmptyDataException, LinkedFireStationNotFoundException {
 
 		LinkedFireStation linkedFireStationToGet = new LinkedFireStation();
 
@@ -61,20 +61,20 @@ public class LinkedFireStationDao extends DataProvider implements IDao<LinkedFir
 				.findAny().orElse(null);
 
 		if (linkedFireStationToGet == null)
-			throw new ItemNotFoundException("No fire station mapping found for address " + address);
+			throw new LinkedFireStationNotFoundException("No fire station mapping found for address " + address);
 
 		return linkedFireStationToGet;
 	}
 	
-	public List<LinkedFireStation> getDuplicatedItems(String address) 
-			throws UnavailableDataException, EmptyDataException, ItemNotFoundException{
+	public List<LinkedFireStation> getDuplicatedLinkedFireStation(String address) 
+			throws UnavailableDataException, EmptyDataException, LinkedFireStationNotFoundException{
 		
 		List<LinkedFireStation> duplicatedLinkedFireStations = this.getAll().stream()
 				.filter(lfs -> (lfs.getAddress().equalsIgnoreCase(address)))
 				.collect(Collectors.toList());
 		
 		if(duplicatedLinkedFireStations.isEmpty())
-			throw new ItemNotFoundException("No fire station mapping found for address " + address);
+			throw new LinkedFireStationNotFoundException("No fire station mapping found for address " + address);
 		
 		return duplicatedLinkedFireStations;
 	}
@@ -86,7 +86,7 @@ public class LinkedFireStationDao extends DataProvider implements IDao<LinkedFir
 		long duplicated = checkForDuplication(linkedFireStation.getAddress());
 		
 		if(duplicated>=1) 
-			log.warn("Warning! "+duplicated+" fire station mappings for address "+linkedFireStation.getAddress()+" are registered in data container.");
+			log.warn(System.lineSeparator()+"Warning! "+duplicated+" fire station mappings for address "+linkedFireStation.getAddress()+" are registered in data container.");
 
 		JsonNode linkedFireStationNode = getObjectMapper().convertValue(linkedFireStation, JsonNode.class);
 		DataContainer.linkedFireStationsData.add(linkedFireStationNode);
@@ -96,13 +96,13 @@ public class LinkedFireStationDao extends DataProvider implements IDao<LinkedFir
 
 	@Override
 	public LinkedFireStation update(LinkedFireStation linkedFireStationUpdated) 
-			throws UnavailableDataException, EmptyDataException, ItemNotFoundException, DuplicatedItemException {
+			throws UnavailableDataException, EmptyDataException, LinkedFireStationNotFoundException, DuplicatedLinkedFireStationException {
 		
 		long duplicated = checkForDuplication(linkedFireStationUpdated.getAddress());
 		
 		if(duplicated>1) {
-			List<LinkedFireStation> duplicatedLinkedFireStations = this.getDuplicatedItems(linkedFireStationUpdated.getAddress());
-			throw new DuplicatedItemException("Warning! "+duplicated+" fire station mappings are registered in data container: "
+			List<LinkedFireStation> duplicatedLinkedFireStations = this.getDuplicatedLinkedFireStation(linkedFireStationUpdated.getAddress());
+			throw new DuplicatedLinkedFireStationException("Warning! "+duplicated+" fire station mappings are registered in data container: "
 			+duplicatedLinkedFireStations+" . Not able to determine which one has to be deleted.");
 		}
 		
@@ -120,13 +120,13 @@ public class LinkedFireStationDao extends DataProvider implements IDao<LinkedFir
 
 	@Override
 	public LinkedFireStation delete(LinkedFireStation linkedFireStation) 
-			throws UnavailableDataException, EmptyDataException, ItemNotFoundException, DuplicatedItemException {
+			throws UnavailableDataException, EmptyDataException, LinkedFireStationNotFoundException, DuplicatedLinkedFireStationException {
 		
 		long duplicated = checkForDuplication(linkedFireStation.getAddress());
 		
 		if(duplicated>1) {
-			List<LinkedFireStation> duplicatedLinkedFireStations = this.getDuplicatedItems(linkedFireStation.getAddress());
-			throw new DuplicatedItemException("Warning! "+duplicated+" fire station mappings are registered in data container: "
+			List<LinkedFireStation> duplicatedLinkedFireStations = this.getDuplicatedLinkedFireStation(linkedFireStation.getAddress());
+			throw new DuplicatedLinkedFireStationException("Warning! "+duplicated+" fire station mappings are registered in data container: "
 			+duplicatedLinkedFireStations+" . Not able to determine which one has to be deleted.");
 		}
 		

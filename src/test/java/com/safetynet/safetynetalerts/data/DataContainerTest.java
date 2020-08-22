@@ -29,6 +29,8 @@ class DataContainerTest {
 	void isContainingAllPersonDataTest()
 			throws DataImportFailedException, UnavailableDataException, EmptyDataException {
 
+		DataContainer.reloadDataForTests();
+		
 		assertNotNull(DataContainer.personsData);
 		assertTrue(DataContainer.personsData.isContainerNode());
 		assertEquals(23, DataContainer.personsData.size());
@@ -38,6 +40,8 @@ class DataContainerTest {
 	void isContainingAllMedicalRecordsDataTest()
 			throws DataImportFailedException, UnavailableDataException, EmptyDataException {
 
+		DataContainer.reloadDataForTests();
+		
 		assertNotNull(DataContainer.medicalRecordsData);
 		assertTrue(DataContainer.medicalRecordsData.isContainerNode());
 		assertEquals(23, DataContainer.medicalRecordsData.size());
@@ -46,6 +50,8 @@ class DataContainerTest {
 	@Test
 	void isContainingAllFireStationsDataTest()
 			throws DataImportFailedException, UnavailableDataException, EmptyDataException {
+		
+		DataContainer.reloadDataForTests();
 		
 		assertNotNull(DataContainer.linkedFireStationsData);
 		assertTrue(DataContainer.linkedFireStationsData.isContainerNode());
@@ -58,7 +64,8 @@ class DataContainerTest {
 
 		DataContainer.personsData.removeAll();
 		
-		Exception expectedException = assertThrows(EmptyDataException.class, () -> dataContainer.checkDataIntegrity(DataContainer.personsData));
+		Exception expectedException = assertThrows(EmptyDataException.class, 
+				() -> dataContainer.checkDataIntegrity(DataContainer.personsData));
 		assertEquals(expectedException.getMessage(), "Warning : the data source is empty !");
 	}
 		

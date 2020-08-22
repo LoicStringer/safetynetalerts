@@ -13,9 +13,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.safetynet.safetynetalerts.data.DataContainer;
 import com.safetynet.safetynetalerts.data.DataProvider;
-import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
+import com.safetynet.safetynetalerts.exceptions.DuplicatedMedicalRecordException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
-import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.MedicalRecordNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 
@@ -48,7 +48,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 	}
 
 	@Override
-	public MedicalRecord getOne(String identifier) throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
+	public MedicalRecord getOne(String identifier) throws UnavailableDataException, EmptyDataException, MedicalRecordNotFoundException {
 		
 		MedicalRecord medicalRecordToGet = new MedicalRecord();
 		List<MedicalRecord> medicalRecords = this.getAll();
@@ -58,20 +58,20 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 				.findAny().orElse(null);
 		
 		if (medicalRecordToGet == null)
-			throw new ItemNotFoundException("No medical record found for identifier " + identifier);
+			throw new MedicalRecordNotFoundException("No medical record found for identifier " + identifier);
 
 		return medicalRecordToGet;
 	}
 
-	public List<MedicalRecord> getDuplicatedItems(String identifier) 
-			throws UnavailableDataException, EmptyDataException, ItemNotFoundException{
+	public List<MedicalRecord> getDuplicatedMedicalRecords(String identifier) 
+			throws UnavailableDataException, EmptyDataException, MedicalRecordNotFoundException{
 		
 		List<MedicalRecord> homonymousMedicalRecords = this.getAll().stream()
 				.filter(mr -> (mr.getFirstName()+mr.getLastName()).equalsIgnoreCase(identifier))
 				.collect(Collectors.toList());
 		
 		if(homonymousMedicalRecords.isEmpty())
-			throw new ItemNotFoundException("No medical record found for identifier " + identifier);
+			throw new MedicalRecordNotFoundException("No medical record found for identifier " + identifier);
 		
 		return homonymousMedicalRecords;
 	}
@@ -83,7 +83,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 		long duplicated = checkForDuplication(medicalRecord.getFirstName()+medicalRecord.getLastName());
 		
 		if(duplicated>=1) 
-			log.warn("Warning! "+duplicated+" medical records identified by "+medicalRecord.getFirstName()+" "+medicalRecord.getLastName()+" are registered in data container.");
+			log.warn("Warning! "+duplicated+" medical records identified by "+medicalRecord.getFirstName()+" "+medicalRecord.getLastName()+" is/are registered in data container.");
 	
 		JsonNode medicalRecordNode = getObjectMapper().convertValue(medicalRecord, JsonNode.class);
 		DataContainer.medicalRecordsData.add(medicalRecordNode);
@@ -93,13 +93,14 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 
 	@Override
 	public MedicalRecord update(MedicalRecord medicalRecordUpdated) 
-			throws  UnavailableDataException, EmptyDataException, ItemNotFoundException, DuplicatedItemException {
+			throws  UnavailableDataException, EmptyDataException, MedicalRecordNotFoundException, DuplicatedMedicalRecordException {
 
 		long duplicated = checkForDuplication(medicalRecordUpdated.getFirstName()+medicalRecordUpdated.getLastName());
 		
 		if(duplicated>1) {
-			List<MedicalRecord> homonymousMedicalRecords = this.getDuplicatedItems(medicalRecordUpdated.getFirstName()+medicalRecordUpdated.getLastName());
-			throw new DuplicatedItemException("Warning! "+duplicated+" medical records identified by "+medicalRecordUpdated.getFirstName()+" "+medicalRecordUpdated.getLastName()+" are registered in data container: "
+			List<MedicalRecord> homonymousMedicalRecords = this.getDuplicatedMedicalRecords(medicalRecordUpdated.getFirstName()+medicalRecordUpdated.getLastName());
+			throw new DuplicatedMedicalRecordException("Warning! "+duplicated+" medical records identified by "+medicalRecordUpdated.getFirstName()+" "+medicalRecordUpdated.getLastName()
+			+" is/are registered in data container: "
 			+homonymousMedicalRecords+" . Not able to determine which one has to be updated.");
 		}
 		
@@ -117,13 +118,13 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 
 	@Override
 	public MedicalRecord delete(MedicalRecord medicalRecord) 
-			throws  UnavailableDataException, EmptyDataException, ItemNotFoundException, DuplicatedItemException {
+			throws  UnavailableDataException, EmptyDataException, MedicalRecordNotFoundException, DuplicatedMedicalRecordException {
 
 		long duplicated = checkForDuplication(medicalRecord.getFirstName()+medicalRecord.getLastName());
 		
 		if(duplicated>1) {
-			List<MedicalRecord> homonymousMedicalRecords = this.getDuplicatedItems(medicalRecord.getFirstName()+medicalRecord.getLastName());
-			throw new DuplicatedItemException("Warning! "+duplicated+" medical records are registered in data container: "
+			List<MedicalRecord> homonymousMedicalRecords = this.getDuplicatedMedicalRecords(medicalRecord.getFirstName()+medicalRecord.getLastName());
+			throw new DuplicatedMedicalRecordException("Warning! "+duplicated+" medical records is/are registered in data container: "
 			+homonymousMedicalRecords+" . Not able to determine which one has to be deleted.");
 		}
 		

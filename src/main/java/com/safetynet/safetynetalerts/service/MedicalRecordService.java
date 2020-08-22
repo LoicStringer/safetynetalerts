@@ -9,18 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.safetynet.safetynetalerts.dao.MedicalRecordDao;
-import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
-import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedMedicalRecordException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
-import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.MedicalRecordNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.MedicalRecordsDataNotFoundException;
-import com.safetynet.safetynetalerts.exceptions.PersonNotFoundException;
-import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
-import com.safetynet.safetynetalerts.model.Person;
 
 @Service
 public class MedicalRecordService {
@@ -38,8 +32,8 @@ public class MedicalRecordService {
 			log.debug(System.lineSeparator()+
 					"MedicalRecord Service call to MedicalRecord Dao, aiming at retrieving the whole list of medical records.");
 			medicalRecords = medicalRecordDao.getAll();
-		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
-			throw new MedicalRecordsDataNotFoundException("A problem occured while retrieving medical records data");
+		} catch (UnavailableDataException | EmptyDataException e) {
+			throw new MedicalRecordsDataNotFoundException("A problem occured while retrieving medical records data",e);
 		}
 		
 		return medicalRecords;
@@ -53,10 +47,10 @@ public class MedicalRecordService {
 			log.debug(System.lineSeparator()+
 					"MedicalRecord Service call to MedicalRecord Dao, aiming at retrieving the medical record identified by the parameter \"identifier\": "+identifier);
 			medicalRecordToGet = medicalRecordDao.getOne(identifier);
-		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
-			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data");
-		} catch (ItemNotFoundException e) {
-			throw new MedicalRecordNotFoundException("Medical record identified by " + identifier + " has not been found");
+		} catch (UnavailableDataException | EmptyDataException e) {
+			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data",e);
+		} catch (MedicalRecordNotFoundException e) {
+			throw new MedicalRecordNotFoundException("Medical record identified by " + identifier + " has not been found",e);
 		}
 
 		return medicalRecordToGet;
@@ -70,17 +64,15 @@ public class MedicalRecordService {
 		List<MedicalRecord> homonymousMedicalRecords = new ArrayList<MedicalRecord>();
 		
 		try {
-			homonymousMedicalRecords = medicalRecordDao.getDuplicatedItems(identifier);
+			homonymousMedicalRecords = medicalRecordDao.getDuplicatedMedicalRecords(identifier);
 		} catch (UnavailableDataException | EmptyDataException e) {
-			throw new MedicalRecordsDataNotFoundException("A problem occured while retrieving medical records data");
-		} catch (ItemNotFoundException e) {
-			throw new MedicalRecordNotFoundException("Medical record identified by " + identifier + " has not been found");
+			throw new MedicalRecordsDataNotFoundException("A problem occured while retrieving medical records data",e);
+		} catch (MedicalRecordNotFoundException e) {
+			throw new MedicalRecordNotFoundException("Medical record identified by " + identifier + " has not been found",e);
 		}
 		return homonymousMedicalRecords;
 		
 	}
-	
-	
 	
 	public MedicalRecord insertMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordsDataNotFoundException, DuplicatedMedicalRecordException  {
 		
@@ -88,8 +80,8 @@ public class MedicalRecordService {
 			log.debug(System.lineSeparator()+
 					"Medical Record Service call to Medical Record Dao, aiming at inserting a new medical record.");
 			medicalRecordDao.insert(medicalRecord);
-		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
-			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data");
+		} catch (UnavailableDataException | EmptyDataException e) {
+			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data",e);
 		} 
 
 		return medicalRecord;
@@ -101,12 +93,12 @@ public class MedicalRecordService {
 			log.debug(System.lineSeparator()+
 					"Medical Record Service call to Medical Record Dao, aiming at updating "+medicalRecord.getFirstName()+medicalRecord.getLastName()+" medical record.");
 			medicalRecordDao.update(medicalRecord);
-		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
-			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data");
-		} catch (ItemNotFoundException e) {
-			throw new MedicalRecordNotFoundException("Medical record " + medicalRecord.toString() + " has not been found");
-		} catch (DuplicatedItemException e) {
-			throw new DuplicatedMedicalRecordException(e.getMessage());
+		} catch (UnavailableDataException | EmptyDataException e) {
+			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data",e);
+		} catch (MedicalRecordNotFoundException e) {
+			throw new MedicalRecordNotFoundException("Medical record " + medicalRecord.toString() + " has not been found",e);
+		} catch (DuplicatedMedicalRecordException e) {
+			throw new DuplicatedMedicalRecordException(e.getMessage(),e);
 		}
 		
 		return medicalRecord;
@@ -118,12 +110,12 @@ public class MedicalRecordService {
 			log.debug(System.lineSeparator()+
 					"Medical Record Service call to Medical Record Dao, aiming at deleting "+medicalRecord.getFirstName()+" "+medicalRecord.getLastName()+" medical record.");
 			medicalRecordDao.delete(medicalRecord);
-		} catch (DataImportFailedException | UnavailableDataException | EmptyDataException e) {
-			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data");
-		} catch (ItemNotFoundException e) {
-			throw new MedicalRecordNotFoundException("Medical record " + medicalRecord.toString() + " has not been found");
-		} catch (DuplicatedItemException e) {
-			throw new DuplicatedMedicalRecordException(e.getMessage());
+		} catch (UnavailableDataException | EmptyDataException e) {
+			throw new MedicalRecordsDataNotFoundException("A problem occured when retrieving medical records data",e);
+		} catch (MedicalRecordNotFoundException e) {
+			throw new MedicalRecordNotFoundException("Medical record " + medicalRecord.toString() + " has not been found",e);
+		} catch (DuplicatedMedicalRecordException e) {
+			throw new DuplicatedMedicalRecordException(e.getMessage(),e);
 		}
 		
 		return medicalRecord;

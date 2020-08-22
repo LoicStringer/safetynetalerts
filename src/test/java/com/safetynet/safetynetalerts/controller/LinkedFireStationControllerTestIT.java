@@ -1,6 +1,7 @@
 package com.safetynet.safetynetalerts.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -18,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.safetynetalerts.dao.LinkedFireStationDao;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
-import com.safetynet.safetynetalerts.model.Person;
 
 
 @ExtendWith(SpringExtension.class)

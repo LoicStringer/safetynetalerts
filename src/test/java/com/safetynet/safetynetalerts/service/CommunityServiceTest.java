@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,12 +106,20 @@ class CommunityServiceTest {
 	@Test
 	void getPersonInfoTest() throws MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException, PersonNotFoundException, PersonsDataNotFoundException {
 		
-		when(medicalRecordService.getOneMedicalRecord("JohnBoyd")).thenReturn(medicalRecords.get(0));
-		when(personService.getOnePerson("JohnBoyd")).thenReturn(persons.get(0));
+		List<MedicalRecord> homonymousMedicalRecordsList = new ArrayList<MedicalRecord>();
+		List<Person> homonymousPersonsList = new ArrayList<Person>();
+		
+		homonymousMedicalRecordsList.add(medicalRecords.get(0));
+		homonymousMedicalRecordsList.add(medicalRecords.get(0));
+		homonymousPersonsList.add(persons.get(0));
+		homonymousPersonsList.add(persons.get(0));
+		
+		when(medicalRecordService.getHomonymousMedicalRecords("JohnBoyd")).thenReturn(homonymousMedicalRecordsList);
+		when(personService.getHomonymousPersons("JohnBoyd")).thenReturn(homonymousPersonsList);
 
 		CommunityPersonInfo communityPersonInfo = communityService.getPersonInfo("JohnBoyd");
 		
-		assertEquals(communityPersonInfo.getPersonsInfo().get(0).getFirstName(),"John");
+		assertEquals(communityPersonInfo.getPersonsInfo().size(),2);
 	}
 
 	@Test

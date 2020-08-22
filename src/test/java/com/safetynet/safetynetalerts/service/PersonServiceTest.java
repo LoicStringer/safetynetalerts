@@ -2,6 +2,7 @@ package com.safetynet.safetynetalerts.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -18,10 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.safetynet.safetynetalerts.dao.PersonDao;
-import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedPersonException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
-import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
@@ -78,8 +77,8 @@ class PersonServiceTest {
 		}
 
 		@Test
-		void getOneTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException,
-				PersonNotFoundException, PersonsDataNotFoundException {
+		void getOneTest() throws UnavailableDataException, EmptyDataException, PersonNotFoundException,
+				PersonsDataNotFoundException {
 
 			when(personDao.getOne("SophiaZemicks")).thenReturn(persons.get(5));
 
@@ -88,6 +87,22 @@ class PersonServiceTest {
 			assertEquals(personToGet.getLastName(), "Zemicks");
 		}
 
+		@Test
+		void getHomonymousPersonsTest() throws UnavailableDataException, EmptyDataException, PersonNotFoundException, PersonsDataNotFoundException {
+			
+			List<Person> homonymousPersonsList = new ArrayList<Person>();
+			Person homonymousPerson = new Person();
+			
+			homonymousPerson.setFirstName("Jacob");
+			homonymousPerson.setLastName("Boyd");
+			homonymousPersonsList.add(persons.get(1));
+			homonymousPersonsList.add(homonymousPerson);
+			
+			when(personDao.getDuplicatedPersons("JacobBoyd")).thenReturn(homonymousPersonsList);
+			
+			assertEquals(personService.getHomonymousPersons("JacobBoyd"),homonymousPersonsList);
+		}
+		
 		@Test
 		void insertTest() throws UnavailableDataException, EmptyDataException, PersonsDataNotFoundException {
 
@@ -100,9 +115,8 @@ class PersonServiceTest {
 		}
 
 		@Test
-		void updateTest()
-				throws UnavailableDataException, EmptyDataException, ItemNotFoundException, DuplicatedItemException,
-				PersonsDataNotFoundException, PersonNotFoundException, DuplicatedPersonException {
+		void updateTest() throws UnavailableDataException, EmptyDataException, PersonsDataNotFoundException,
+				PersonNotFoundException, DuplicatedPersonException {
 
 			Person personToUpdate = persons.get(0);
 			personToUpdate.setZip("75020");
@@ -113,9 +127,8 @@ class PersonServiceTest {
 		}
 
 		@Test
-		void deleteTest() throws UnavailableDataException, EmptyDataException, ItemNotFoundException,
-				PersonsDataNotFoundException, PersonNotFoundException, DuplicatedPersonException,
-				DuplicatedItemException {
+		void deleteTest() throws UnavailableDataException, EmptyDataException, PersonsDataNotFoundException,
+				PersonNotFoundException, DuplicatedPersonException {
 
 			Person personTodelete = persons.get(0);
 
@@ -131,20 +144,32 @@ class PersonServiceTest {
 	class ExceptionsTests {
 
 		@Test
-		void isExpectedExceptionThrowmWhenTryingToUpdateDuplicatedPerson() {
+		void isExpectedExceptionThrowmWhenTryingToUpdateDuplicatedPerson() throws UnavailableDataException, EmptyDataException, PersonNotFoundException, DuplicatedPersonException {
 
+			Person personToUpdate = new Person();
+			
+			when(personDao.update(any(Person.class))).thenThrow(DuplicatedPersonException.class);
+			
+			assertThrows(DuplicatedPersonException.class, ()->personService.updatePerson(personToUpdate));
 		}
 
 		@Test
+		void isExpectedExceptionThrowmWhenTryingToDeleteDuplicatedPerson() throws UnavailableDataException, EmptyDataException, PersonNotFoundException, DuplicatedPersonException {
+
+			Person personToDelete = new Person();
+			
+			when(personDao.delete(any(Person.class))).thenThrow(DuplicatedPersonException.class);
+			
+			assertThrows(DuplicatedPersonException.class, ()->personService.deletePerson(personToDelete));
+		}
+		
+		@Test
 		void isExpectedExceptionThrownWhenTryingToFindUnknownPersonTest()
-				throws UnavailableDataException, EmptyDataException, ItemNotFoundException {
+				throws UnavailableDataException, EmptyDataException, PersonNotFoundException {
 
-			when(personDao.getOne("Toto")).thenThrow(ItemNotFoundException.class);
+			when(personDao.getOne(any(String.class))).thenThrow(PersonNotFoundException.class);
 
-			Exception exception = assertThrows(PersonNotFoundException.class, () -> personService.getOnePerson("Toto"));
-
-			assertEquals(exception.getMessage(), "Person identified by Toto has not been found");
-
+			assertThrows(PersonNotFoundException.class, () -> personService.getOnePerson("Toto"));
 		}
 
 		@Test
@@ -153,9 +178,7 @@ class PersonServiceTest {
 
 			when(personDao.getAll()).thenThrow(UnavailableDataException.class);
 
-			Exception exception = assertThrows(PersonsDataNotFoundException.class, () -> personService.getAllPersons());
-
-			assertEquals(exception.getMessage(), "A problem occured while retrieving persons data");
+			assertThrows(PersonsDataNotFoundException.class, () -> personService.getAllPersons());
 		}
 	}
 

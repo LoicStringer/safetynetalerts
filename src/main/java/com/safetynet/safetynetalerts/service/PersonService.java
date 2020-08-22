@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.safetynet.safetynetalerts.dao.PersonDao;
-import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedPersonException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
-import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
@@ -35,7 +33,7 @@ public class PersonService {
 					"Person Service call to Person Dao, aiming at retrieving the whole list of persons.");
 			persons = personDao.getAll();
 		} catch (UnavailableDataException | EmptyDataException e) {
-			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data");
+			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data",e);
 		}
 
 		return persons;
@@ -50,9 +48,9 @@ public class PersonService {
 					"Person Service call to Person Dao, aiming at retrieving the person identified by the parameter \"identifier\" : "+identifier+" .");
 			personToGet = personDao.getOne(identifier);
 		} catch (UnavailableDataException | EmptyDataException e) {
-			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data");
-		} catch (ItemNotFoundException e) {
-			throw new PersonNotFoundException("Person identified by " + identifier + " has not been found");
+			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data",e);
+		} catch (PersonNotFoundException e) {
+			throw new PersonNotFoundException("Person identified as " + identifier + " has not been found",e);
 		}
 
 		return personToGet;
@@ -66,14 +64,14 @@ public class PersonService {
 		List<Person> homonymousPersons = new ArrayList<Person>();
 		
 		try {
-			homonymousPersons = personDao.getDuplicatedItems(identifier);
+			homonymousPersons = personDao.getDuplicatedPersons(identifier);
 		} catch (UnavailableDataException | EmptyDataException e) {
-			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data");
-		} catch (ItemNotFoundException e) {
-			throw new PersonNotFoundException("Person identified by " + identifier + " has not been found");
+			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data",e);
+		} catch (PersonNotFoundException e) {
+			throw new PersonNotFoundException("Person identified as " + identifier + " has not been found",e);
 		}
-		return homonymousPersons;
 		
+		return homonymousPersons;
 	}
 	
 	public Person insertPerson(Person person) throws PersonsDataNotFoundException{
@@ -83,8 +81,9 @@ public class PersonService {
 					"Person Service call to Person Dao, aiming at inserting a new person: "+person.getFirstName()+" "+person.getLastName()+" .");
 			personDao.insert(person);
 		} catch (UnavailableDataException | EmptyDataException e) {
-			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data");
+			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data",e);
 		} 
+		
 		return person;
 	}
 
@@ -96,13 +95,13 @@ public class PersonService {
 		try {
 			personDao.update(person);
 		} catch (UnavailableDataException | EmptyDataException e) {
-			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data");
-		} catch (ItemNotFoundException e) {
-			throw new PersonNotFoundException("Person " + person.toString() + " has not been found");
-		} catch (DuplicatedItemException e) {
-			throw new DuplicatedPersonException(e.getMessage());
+			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data",e);
+		} catch (PersonNotFoundException e) {
+			throw new PersonNotFoundException("Person " + person.toString() + " has not been found",e);
+		} catch (DuplicatedPersonException e) {
+			throw new DuplicatedPersonException(e.getMessage(),e);
 		}
-
+		
 		return person;
 	}
 
@@ -114,13 +113,13 @@ public class PersonService {
 		try {
 			personDao.delete(person);
 		} catch (UnavailableDataException | EmptyDataException e) {
-			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data");
-		} catch (ItemNotFoundException e) {
-			throw new PersonNotFoundException("Person " + person.toString() + " has not been found");
-		}catch (DuplicatedItemException e) {
-			throw new DuplicatedPersonException(e.getMessage());
+			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data",e);
+		} catch (PersonNotFoundException e) {
+			throw new PersonNotFoundException("Person " + person.toString() + " has not been found",e);
+		}catch (DuplicatedPersonException e) {
+			throw new DuplicatedPersonException(e.getMessage(),e);
 		}
-
+		
 		return person;
 	}
 

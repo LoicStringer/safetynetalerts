@@ -201,6 +201,10 @@ public class EmergencyService {
 	}
 
 	private int getAgeFromBirthDate(String birthDate) {
+		
+		if(birthDate==null||birthDate.isBlank())
+			birthDate = "00/00/0000";
+		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 		LocalDate birthDateToDate = LocalDate.parse(birthDate, formatter);
 		return Period.between(birthDateToDate, LocalDate.now()).getYears();

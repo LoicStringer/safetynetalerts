@@ -9,18 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.safetynet.safetynetalerts.dao.LinkedFireStationDao;
-import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
-import com.safetynet.safetynetalerts.exceptions.DuplicatedItemException;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedLinkedFireStationException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
-import com.safetynet.safetynetalerts.exceptions.ItemNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.LinkedFireStationNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.LinkedFireStationsDataNotFoundException;
-import com.safetynet.safetynetalerts.exceptions.PersonNotFoundException;
-import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
-import com.safetynet.safetynetalerts.model.Person;
 
 @Service
 public class LinkedFireStationService {
@@ -39,7 +33,7 @@ public class LinkedFireStationService {
 					"Linked Fire Station Service call to Linked Fire Station Dao, aiming at retrieving the whole list of fire stations mappings.");
 			linkedFireStations = linkedFireStationDao.getAll();
 		} catch (UnavailableDataException | EmptyDataException e) {
-			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data");
+			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data",e);
 		}
 
 		return linkedFireStations;
@@ -54,9 +48,9 @@ public class LinkedFireStationService {
 					"Linked Fire Station Service call to Linked Fire Station Dao, aiming at retrieving the fire station mapping for address :"+address+" .");
 			linkedFireStationToGet = linkedFireStationDao.getOne(address);
 		} catch (UnavailableDataException | EmptyDataException e) {
-			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data");
-		} catch (ItemNotFoundException e) {
-			throw new LinkedFireStationNotFoundException("Fire station mapping for address " + address + " has not been found");
+			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data",e);
+		} catch (LinkedFireStationNotFoundException e) {
+			throw new LinkedFireStationNotFoundException("Fire station mapping for address " + address + " has not been found",e);
 		}
 		
 		return linkedFireStationToGet;
@@ -70,11 +64,11 @@ public class LinkedFireStationService {
 		List<LinkedFireStation> duplicatedLinkedFireStations = new ArrayList<LinkedFireStation>();
 		
 		try {
-			duplicatedLinkedFireStations = linkedFireStationDao.getDuplicatedItems(address);
+			duplicatedLinkedFireStations = linkedFireStationDao.getDuplicatedLinkedFireStation(address);
 		} catch (UnavailableDataException | EmptyDataException e) {
-			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data");
-		} catch (ItemNotFoundException e) {
-			throw new LinkedFireStationNotFoundException("Fire station mapping for address " + address + " has not been found");
+			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data",e);
+		} catch (LinkedFireStationNotFoundException e) {
+			throw new LinkedFireStationNotFoundException("Fire station mapping for address " + address + " has not been found",e);
 		}
 		return duplicatedLinkedFireStations;
 		
@@ -87,7 +81,7 @@ public class LinkedFireStationService {
 					"Linked Fire Station Service call to Linked Fire Station Dao, aiming at inserting a new fire station mapping.");
 			linkedFireStationDao.insert(linkedFireStation);
 		} catch (UnavailableDataException | EmptyDataException e) {
-			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data");
+			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data",e);
 		}
 		
 		return linkedFireStation;
@@ -100,11 +94,11 @@ public class LinkedFireStationService {
 					"Linked Fire Station Service call to Linked Fire Station Dao, aiming at updating fire station mapping "+linkedFireStation.toString()+" .");
 			linkedFireStationDao.update(linkedFireStation);
 		} catch (UnavailableDataException | EmptyDataException e) {
-			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data");
-		} catch (ItemNotFoundException e) {
-			throw new LinkedFireStationNotFoundException("Fire station mapping " + linkedFireStation.toString() + " has not been found");
-		} catch (DuplicatedItemException e) {
-			throw new DuplicatedLinkedFireStationException(e.getMessage());
+			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data",e);
+		} catch (LinkedFireStationNotFoundException e) {
+			throw new LinkedFireStationNotFoundException("Fire station mapping " + linkedFireStation.toString() + " has not been found",e);
+		} catch (DuplicatedLinkedFireStationException e) {
+			throw new DuplicatedLinkedFireStationException(e.getMessage(),e);
 		}
 		
 		return linkedFireStation;
@@ -117,11 +111,11 @@ public class LinkedFireStationService {
 					"Linked Fire Station Service call to Linked Fire Station Dao, aiming at deleting fire station mapping "+linkedFireStation.toString()+" .");
 			linkedFireStationDao.delete(linkedFireStation);
 		} catch (UnavailableDataException | EmptyDataException e) {
-			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data");
-		} catch (ItemNotFoundException e) {
-			throw new LinkedFireStationNotFoundException("Fire station mapping " + linkedFireStation.toString() + " has not been found");
-		} catch (DuplicatedItemException e) {
-			throw new DuplicatedLinkedFireStationException(e.getMessage());
+			throw new LinkedFireStationsDataNotFoundException("A problem occured while retrieving fire station mappings data",e);
+		} catch (LinkedFireStationNotFoundException e) {
+			throw new LinkedFireStationNotFoundException("Fire station mapping " + linkedFireStation.toString() + " has not been found",e);
+		} catch (DuplicatedLinkedFireStationException e) {
+			throw new DuplicatedLinkedFireStationException(e.getMessage(),e);
 		}
 
 		return linkedFireStation;

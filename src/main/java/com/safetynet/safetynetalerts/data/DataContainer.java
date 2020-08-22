@@ -3,8 +3,6 @@ package com.safetynet.safetynetalerts.data;
 import java.io.File;
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -48,7 +46,21 @@ public class DataContainer {
 		}
 
 	}
-	
-	
+
+	public static void reloadDataForTests() {
+
+		try {
+			personsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFilePath()))
+					.get(dataAccessor.getPersonsNode());
+			medicalRecordsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFilePath()))
+					.get(dataAccessor.getMedicalRecordsNode());
+			linkedFireStationsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFilePath()))
+					.get(dataAccessor.getLinkedFireStationsNode());
+		} catch (JsonProcessingException e) {
+			throw new DataImportFailedException("A problem occured while Json being parsed", e);
+		} catch (IOException e) {
+			throw new DataImportFailedException("A problem occured while reading the Json file", e);
+		}
+	}
 
 }

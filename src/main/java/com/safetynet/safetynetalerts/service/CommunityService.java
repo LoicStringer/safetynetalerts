@@ -28,8 +28,8 @@ import com.safetynet.safetynetalerts.responseentity.CommunityPersonsCoveredByFir
 @Service
 public class CommunityService {
 
-	private Logger log =LoggerFactory.getLogger(this.getClass());
-	
+	private Logger log = LoggerFactory.getLogger(this.getClass());
+
 	@Autowired
 	private PersonService personService;
 
@@ -48,17 +48,18 @@ public class CommunityService {
 	 * @throws PersonsDataNotFoundException
 	 */
 	public List<String> getCommunityEmails(String city) throws PersonsDataNotFoundException {
-		
-		if(!personService.getAllPersons().stream().anyMatch(p -> p.getCity().equalsIgnoreCase(city)))
-			throw new PersonsDataNotFoundException("This city "+city+" is not registered in persons data");
-	
+
+		if (!personService.getAllPersons().stream().anyMatch(p -> p.getCity().equalsIgnoreCase(city)))
+			throw new PersonsDataNotFoundException("This city " + city + " is not registered in persons data");
+
 		List<String> communityEmails = new ArrayList<String>();
 
 		communityEmails = personService.getAllPersons().stream().filter(p -> p.getCity().equalsIgnoreCase(city))
 				.map(p -> p.getEmail()).collect(Collectors.toList());
 
-		log.debug(System.lineSeparator()+"Checking if city "+city +" exists, filtering through persons data, collecting matching ones.");
-		
+		log.debug(System.lineSeparator() + "Checking if city " + city
+				+ " exists, filtering through persons data, collecting matching ones.");
+
 		return communityEmails;
 	}
 
@@ -67,58 +68,66 @@ public class CommunityService {
 
 		CommunityPersonInfo communityPersonInfo = new CommunityPersonInfo();
 
-		List <Person> personsToGetInfoFrom = personService.getHomonymousPersons(identifier);
-		List <MedicalRecord> medicalRecordsToGetInfoFrom = medicalRecordService.getHomonymousMedicalRecords(identifier);
+		List<Person> personsToGetInfoFrom = personService.getHomonymousPersons(identifier);
+		List<MedicalRecord> medicalRecordsToGetInfoFrom = medicalRecordService.getHomonymousMedicalRecords(identifier);
+		PersonInfo personInfo = new CommunityPersonInfo().new PersonInfo();
 
-		for(Person person:personsToGetInfoFrom)
-			for(MedicalRecord medicalRecord:medicalRecordsToGetInfoFrom) {
-				if((person.getFirstName()+person.getLastName()).equalsIgnoreCase((medicalRecord.getFirstName()+medicalRecord.getLastName()))) {
-					PersonInfo personInfo = new CommunityPersonInfo().new PersonInfo();
-					personInfo.setFirstName(person.getFirstName());
-					personInfo.setLastName(person.getLastName());
+		for (Person person : personsToGetInfoFrom) {
+			personInfo.setFirstName(person.getFirstName());
+			personInfo.setLastName(person.getLastName());
+			for (MedicalRecord medicalRecord : medicalRecordsToGetInfoFrom) {
+				if ((personInfo.getFirstName() + personInfo.getLastName())
+						.equalsIgnoreCase((medicalRecord.getFirstName() + medicalRecord.getLastName()))) {
 					personInfo.setAge(this.getAgeFromBirthDate(medicalRecord.getBirthdate()));
 					personInfo.setAddress(person.getAddress());
 					personInfo.setEmail(person.getEmail());
 					personInfo.setMedications(medicalRecord.getMedications());
 					personInfo.setAllergies(medicalRecord.getAllergies());
-					communityPersonInfo.addPersonInfo(personInfo);
 				}
 			}
-	
-		log.debug(System.lineSeparator()+"Calling the person dao \"getHomonymousPersons\" method, that retrieves the persons list matching with the specified name, "
-		+System.lineSeparator()+"collecting infos by filtering through medical records data, building a specific CommunityPersonInfo object");
-		
+			communityPersonInfo.addPersonInfo(personInfo);
+		}
+
+		log.debug(System.lineSeparator()
+				+ "Calling the person dao \"getHomonymousPersons\" method, that retrieves the persons list matching with the specified name, "
+				+ System.lineSeparator()
+				+ "collecting infos by filtering through medical records data, building a specific CommunityPersonInfo object");
+
 		return communityPersonInfo;
 	}
 
 	public CommunityPersonsCoveredByFireStation getPersonsCoveredByFireStation(String stationNumber)
-			throws LinkedFireStationNotFoundException, PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException, LinkedFireStationsDataNotFoundException {
+			throws LinkedFireStationNotFoundException, PersonsDataNotFoundException,
+			MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException,
+			LinkedFireStationsDataNotFoundException {
 
-		if(!linkedFireStationService.getAllLinkedFireStations().stream().anyMatch(lfs -> lfs.getStation().equalsIgnoreCase(stationNumber)))
-			throw new LinkedFireStationNotFoundException("This station number "+ stationNumber +" is not registered in fire station mappings data");
-		
+		if (!linkedFireStationService.getAllLinkedFireStations().stream()
+				.anyMatch(lfs -> lfs.getStation().equalsIgnoreCase(stationNumber)))
+			throw new LinkedFireStationNotFoundException(
+					"This station number " + stationNumber + " is not registered in fire station mappings data");
+
 		CommunityPersonsCoveredByFireStation communityPersonsCoveredByFireStation = new CommunityPersonsCoveredByFireStation();
 
 		List<String> addressesCovered = getAdressesCoveredByFirestation(stationNumber);
 		List<Person> personsCovered = getPersonsThere(addressesCovered);
 
-		for(Person coveredPerson : personsCovered) 
-			communityPersonsCoveredByFireStation.addCoveredPerson(coveredPerson.getFirstName(), coveredPerson.getLastName(), coveredPerson.getAddress(),
-					coveredPerson.getPhone(), getPersonAge(coveredPerson));
-		
-		log.debug(System.lineSeparator()+"Checking if station number "+stationNumber+" exists, "
-				+ System.lineSeparator()+"retrieving a specific CommunityPersonsCoveredByFireStation object conataining persons infos covered by this fire station.");
-		
+		for (Person coveredPerson : personsCovered)
+			communityPersonsCoveredByFireStation.addCoveredPerson(coveredPerson.getFirstName(),
+					coveredPerson.getLastName(), coveredPerson.getAddress(), coveredPerson.getPhone(),
+					getPersonAge(coveredPerson));
+
+		log.debug(System.lineSeparator() + "Checking if station number " + stationNumber + " exists, "
+				+ System.lineSeparator()
+				+ "retrieving a specific CommunityPersonsCoveredByFireStation object conataining persons infos covered by this fire station.");
+
 		return communityPersonsCoveredByFireStation;
 	}
 
 	private int getPersonAge(Person p) throws MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException {
 
-		String birthDate = new String();
+		String birthDate = medicalRecordService.getOneMedicalRecord(p.getFirstName() + p.getLastName()).getBirthdate();
 
-		birthDate = medicalRecordService.getOneMedicalRecord(p.getFirstName() + p.getLastName()).getBirthdate();
-
-		return Integer.valueOf(this.getAgeFromBirthDate(birthDate));
+		return this.getAgeFromBirthDate(birthDate);
 	}
 
 	private List<Person> getPersonsThere(List<String> addressesCovered) throws PersonsDataNotFoundException {
@@ -134,6 +143,10 @@ public class CommunityService {
 	}
 
 	private int getAgeFromBirthDate(String birthDate) {
+		
+		if(birthDate==null||birthDate.isBlank())
+			birthDate = "00/00/0000";
+		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 		LocalDate birthDateToDate = LocalDate.parse(birthDate, formatter);
 		return Period.between(birthDateToDate, LocalDate.now()).getYears();

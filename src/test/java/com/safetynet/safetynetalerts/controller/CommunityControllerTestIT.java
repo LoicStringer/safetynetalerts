@@ -38,14 +38,14 @@ class CommunityControllerTestIT {
 	@Test
 	void isCommunityPersonInfoUrlFunctionalTest() throws Exception {
 
-		String firstName = "Eric";
-		String lastName = "Cadigan";
+		String firstName = "Tony";
+		String lastName = "Cooper";
 
 		mockMvc.perform(get("/personInfo?firstName=" + firstName + "&lastName=" + lastName)).andExpect(status().isOk())
 				.andExpect(jsonPath("$").isNotEmpty())
-				.andExpect(jsonPath("$.firstName").value("Eric"))
-				.andExpect(jsonPath("$.lastName").value("Cadigan"))
-				.andExpect(jsonPath("$.age").value("75"));
+				.andExpect(jsonPath("$.personsInfo.[0].firstName").value("Tony"))
+				.andExpect(jsonPath("$.personsInfo.[0].lastName").value("Cooper"))
+				.andExpect(jsonPath("$.personsInfo.[0].age").value("26"));
 	}
 
 	@Test

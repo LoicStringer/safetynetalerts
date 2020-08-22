@@ -28,9 +28,6 @@ public class CommunityPersonInfo {
 		this.personsInfo = personsInfo;
 	}
 
-
-
-
 	public class PersonInfo{
 		private String firstName;
 		private String lastName;
