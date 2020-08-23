@@ -23,6 +23,7 @@ import com.safetynet.safetynetalerts.dao.PersonDao;
 import com.safetynet.safetynetalerts.data.DataContainer;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedPersonException;
 import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.RequestBodyException;
 import com.safetynet.safetynetalerts.model.Person;
 
 
@@ -139,8 +140,62 @@ class PersonControllerTestIT {
 		mockMvc.perform(delete("/person")
 				.content(objectMapper.writeValueAsString(personToDelete))
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().is4xxClientError())
-		.andExpect(result-> assertTrue(result.getResolvedException() instanceof PersonsDataNotFoundException));
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof PersonsDataNotFoundException));
+		
+	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenPersonFirstNameOrLastNameIsBlank() throws Exception {
+		
+		Person blankPerson = new Person();
+		blankPerson.setFirstName("");
+		blankPerson.setLastName("");
+		
+		mockMvc.perform(post("/person")
+				.content(objectMapper.writeValueAsString(blankPerson))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));
+		
+		mockMvc.perform(put("/person")
+				.content(objectMapper.writeValueAsString(blankPerson))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));
+		
+		mockMvc.perform(delete("/person")
+				.content(objectMapper.writeValueAsString(blankPerson))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));	
+	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenPersonFirstNameOrLastNameIsNotAlphabetical() throws Exception {
+		
+		Person notAlphabeticalPerson = new Person();
+		notAlphabeticalPerson.setFirstName("1");
+		notAlphabeticalPerson.setLastName("1");
+		
+		mockMvc.perform(post("/person")
+				.content(objectMapper.writeValueAsString(notAlphabeticalPerson))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));
+		
+		mockMvc.perform(put("/person")
+				.content(objectMapper.writeValueAsString(notAlphabeticalPerson))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));
+		
+		mockMvc.perform(delete("/person")
+				.content(objectMapper.writeValueAsString(notAlphabeticalPerson))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));
 		
 	}
 }
+

@@ -24,6 +24,7 @@ import com.safetynet.safetynetalerts.data.DataContainer;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedMedicalRecordException;
 import com.safetynet.safetynetalerts.exceptions.MedicalRecordNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.MedicalRecordsDataNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.RequestBodyException;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 
 
@@ -159,5 +160,58 @@ class MedicalRecordControllerTestIT {
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().is4xxClientError())
 				.andExpect(result-> assertTrue(result.getResolvedException() instanceof MedicalRecordsDataNotFoundException));
+	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenPersonFirstNameOrLastNameIsBlank() throws Exception {
+		
+		MedicalRecord blankMedicalRecord = new MedicalRecord();
+		blankMedicalRecord.setFirstName("");
+		blankMedicalRecord.setLastName("");
+		
+		mockMvc.perform(post("/medicalRecord")
+				.content(objectMapper.writeValueAsString(blankMedicalRecord))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));
+		
+		mockMvc.perform(put("/medicalRecord")
+				.content(objectMapper.writeValueAsString(blankMedicalRecord))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));
+		
+		mockMvc.perform(delete("/medicalRecord")
+				.content(objectMapper.writeValueAsString(blankMedicalRecord))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));	
+	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenPersonFirstNameOrLastNameIsNotAlphabetical() throws Exception {
+		
+		MedicalRecord notAlphabeticalMedicalRecord = new MedicalRecord();
+		notAlphabeticalMedicalRecord.setFirstName("1");
+		notAlphabeticalMedicalRecord.setLastName("1");
+		
+		mockMvc.perform(post("/medicalRecord")
+				.content(objectMapper.writeValueAsString(notAlphabeticalMedicalRecord))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));
+		
+		mockMvc.perform(put("/medicalRecord")
+				.content(objectMapper.writeValueAsString(notAlphabeticalMedicalRecord))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));
+		
+		mockMvc.perform(delete("/medicalRecord")
+				.content(objectMapper.writeValueAsString(notAlphabeticalMedicalRecord))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));
+		
 	}
 }

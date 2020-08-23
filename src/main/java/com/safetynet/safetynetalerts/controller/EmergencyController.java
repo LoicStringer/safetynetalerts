@@ -2,6 +2,7 @@ package com.safetynet.safetynetalerts.controller;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import com.safetynet.safetynetalerts.exceptions.LinkedFireStationsDataNotFoundEx
 import com.safetynet.safetynetalerts.exceptions.MedicalRecordNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.MedicalRecordsDataNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.RequestParameterException;
 import com.safetynet.safetynetalerts.responseentity.EmergencyChildAlert;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFireAddressInfos;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos;
@@ -35,7 +37,10 @@ public class EmergencyController {
 	
 	@GetMapping("/childAlert")
 	public ResponseEntity<EmergencyChildAlert> getChildren
-	(@RequestParam ("address") String address) throws PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException{
+	(@RequestParam("address") String address) throws PersonsDataNotFoundException, MedicalRecordsDataNotFoundException,
+			MedicalRecordNotFoundException, RequestParameterException{
+		
+		checkForBlankParameters(address);
 		
 		EmergencyChildAlert anyChildThere = emergencyService.getChildrenThere(address);
 		
@@ -47,7 +52,10 @@ public class EmergencyController {
 	
 	@GetMapping("/phoneAlert")
 	public List<String> getPhoneNumbers
-	(@RequestParam("firestation") String stationNumber) throws PersonsDataNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException{
+	(@RequestParam("firestation") String stationNumber) throws PersonsDataNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException, RequestParameterException{
+		
+		checkForBlankParameters(stationNumber);
+		checkForNumericParameter(stationNumber);
 		
 		List<String> phoneNumbers = emergencyService.getCoveredPersonsPhoneNumbers(stationNumber);
 		
@@ -59,7 +67,9 @@ public class EmergencyController {
 	
 	@GetMapping("/fire")
 	public  ResponseEntity<EmergencyFireAddressInfos> getInhabitants
-	(@RequestParam("address") String address) throws LinkedFireStationsDataNotFoundException, PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, LinkedFireStationNotFoundException{
+	(@RequestParam("address") String address) throws LinkedFireStationsDataNotFoundException, PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, LinkedFireStationNotFoundException, RequestParameterException{
+		
+		checkForBlankParameters(address);
 		
 		EmergencyFireAddressInfos inhabitantsThere = emergencyService.getPersonsThereInfos(address);
 		
@@ -71,7 +81,10 @@ public class EmergencyController {
 	
 	@GetMapping("/flood/stations")
 	public ResponseEntity<EmergencyFloodInfos> getHomesInfo
-	(@RequestParam("stations")  List<String> stationNumbers) throws MedicalRecordsDataNotFoundException, PersonsDataNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException{
+	(@RequestParam("stations")  List<String> stationNumbers) throws MedicalRecordsDataNotFoundException, PersonsDataNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException, RequestParameterException{
+		
+		if(stationNumbers.isEmpty())
+			throw new RequestParameterException("Request parameter can't be blank");
 		
 		EmergencyFloodInfos emergencyFloodInfos = emergencyService.getCoveredHomesInfos(stationNumbers);
 		
@@ -81,4 +94,13 @@ public class EmergencyController {
 		return ResponseEntity.ok(emergencyFloodInfos);
 	}
 	
+	private void checkForBlankParameters(String parameter) throws RequestParameterException {
+		if(parameter.isBlank())
+			throw new RequestParameterException("Request parameter can't be blank");
+	}
+	
+	private void checkForNumericParameter(String parameter) throws RequestParameterException {
+		if(!StringUtils.isNumericSpace(parameter))
+			throw new RequestParameterException("Request parameter has to be a number");
+	}
 }

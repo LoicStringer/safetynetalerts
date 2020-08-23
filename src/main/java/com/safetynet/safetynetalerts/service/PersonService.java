@@ -26,11 +26,12 @@ public class PersonService {
 
 	public List<Person> getAllPersons() throws PersonsDataNotFoundException {
 
+		log.debug(System.lineSeparator()+
+				"Person Service call to Person Dao, aiming at retrieving the whole list of persons.");
+		
 		List<Person> persons = new ArrayList<Person>();
 
 		try {
-			log.debug(System.lineSeparator()+
-					"Person Service call to Person Dao, aiming at retrieving the whole list of persons.");
 			persons = personDao.getAll();
 		} catch (UnavailableDataException | EmptyDataException e) {
 			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data",e);
@@ -41,11 +42,12 @@ public class PersonService {
 
 	public Person getOnePerson(String identifier) throws PersonNotFoundException, PersonsDataNotFoundException {
 
+		log.debug(System.lineSeparator()+
+				"Person Service call to Person Dao, aiming at retrieving the person identified by the parameter \"identifier\" : "+identifier+" .");
+		
 		Person personToGet = new Person();
 
 		try {
-			log.debug(System.lineSeparator()+
-					"Person Service call to Person Dao, aiming at retrieving the person identified by the parameter \"identifier\" : "+identifier+" .");
 			personToGet = personDao.getOne(identifier);
 		} catch (UnavailableDataException | EmptyDataException e) {
 			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data",e);
@@ -75,10 +77,11 @@ public class PersonService {
 	}
 	
 	public Person insertPerson(Person person) throws PersonsDataNotFoundException{
-
+		
+		log.debug(System.lineSeparator()+
+				"Person Service call to Person Dao, aiming at inserting a new person: "+person.getFirstName()+" "+person.getLastName()+" .");
+		
 		try {
-			log.debug(System.lineSeparator()+
-					"Person Service call to Person Dao, aiming at inserting a new person: "+person.getFirstName()+" "+person.getLastName()+" .");
 			personDao.insert(person);
 		} catch (UnavailableDataException | EmptyDataException e) {
 			throw new PersonsDataNotFoundException("A problem occured while retrieving persons data",e);

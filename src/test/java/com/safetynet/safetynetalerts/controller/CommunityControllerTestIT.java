@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.safetynet.safetynetalerts.exceptions.LinkedFireStationNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.RequestParameterException;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -90,4 +91,41 @@ class CommunityControllerTestIT {
 		mockMvc.perform(get("/personInfo?firstName=" + firstName + "&lastName=" + lastName))
 		.andExpect(result-> assertTrue(result.getResolvedException() instanceof PersonNotFoundException));
 	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenRequestParameterIsBlank() throws Exception{
+		
+		String parameter ="";
+		
+		mockMvc.perform(get("/communityEmail?city=" + parameter))
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestParameterException));
+		
+		mockMvc.perform(get("/firestation?stationNumber=" + parameter))
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestParameterException));
+		
+		mockMvc.perform(get("/personInfo?firstName=" + parameter + "&lastName=" + parameter))
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestParameterException));
+	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenRequestParameterIsNotAlphabetical() throws Exception{
+		
+		String parameter ="0";
+		
+		mockMvc.perform(get("/communityEmail?city=" + parameter))
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestParameterException));
+				
+		mockMvc.perform(get("/personInfo?firstName=" + parameter + "&lastName=" + parameter))
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestParameterException));
+	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenRequestParameterIsNotNumeric() throws Exception{
+		
+		String parameter ="A";
+	
+		mockMvc.perform(get("/firestation?stationNumber=" + parameter))
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestParameterException));
+	}
+	
 }

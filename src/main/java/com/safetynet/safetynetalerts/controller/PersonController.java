@@ -1,5 +1,6 @@
 package com.safetynet.safetynetalerts.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedPersonException;
 import com.safetynet.safetynetalerts.exceptions.PersonNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.RequestBodyException;
 import com.safetynet.safetynetalerts.model.Person;
 import com.safetynet.safetynetalerts.service.PersonService;
 
@@ -27,7 +29,10 @@ public class PersonController {
 	private PersonService personService;
 	
 	@PostMapping("")
-	public ResponseEntity<Person> insertPerson(@RequestBody Person person) throws DuplicatedPersonException, PersonsDataNotFoundException{
+	public ResponseEntity<Person> insertPerson(@RequestBody Person person) throws DuplicatedPersonException, PersonsDataNotFoundException, RequestBodyException{
+		
+		checkForInvalidBody(person);
+		checkForAlphabeticalParameters(person);
 		
 		log.info(System.lineSeparator()+"User has entered \"/person\" endpoint (GET request) to insert a new person: "+person.getFirstName()+" "+person.getLastName()+" ."
 				+System.lineSeparator()+ "Request has returned :" +person.toString());
@@ -36,7 +41,10 @@ public class PersonController {
 	}
 	
 	@PutMapping("")
-	public ResponseEntity<Person> updatePerson(@RequestBody Person person) throws PersonsDataNotFoundException, PersonNotFoundException, DuplicatedPersonException{
+	public ResponseEntity<Person> updatePerson(@RequestBody Person person) throws PersonsDataNotFoundException, PersonNotFoundException, DuplicatedPersonException, RequestBodyException{
+		
+		checkForInvalidBody(person);
+		checkForAlphabeticalParameters(person);
 		
 		log.info(System.lineSeparator()+"User has entered the PUT \"/person\" endpoint (PUT request) to update "+person.getFirstName()+" "+person.getLastName()+" ."
 				+System.lineSeparator()+ "Request has returned :" +person.toString());
@@ -45,7 +53,10 @@ public class PersonController {
 	}
 	
 	@DeleteMapping("")
-	public ResponseEntity<Person> deletePerson(@RequestBody Person person) throws PersonsDataNotFoundException, PersonNotFoundException, DuplicatedPersonException{
+	public ResponseEntity<Person> deletePerson(@RequestBody Person person) throws PersonsDataNotFoundException, PersonNotFoundException, DuplicatedPersonException, RequestBodyException{
+		
+		checkForInvalidBody(person);
+		checkForAlphabeticalParameters(person);
 		
 		log.info(System.lineSeparator()+"User has entered the DELETE \"/person\" endpoint (DELETE request) to delete "+person.getFirstName()+" "+person.getLastName()+" ."
 				+System.lineSeparator()+ "Request has returned :" +person.toString());
@@ -53,4 +64,13 @@ public class PersonController {
 		return ResponseEntity.ok(personService.deletePerson(person));
 	}
 
+	private void checkForInvalidBody(Person person) throws RequestBodyException {
+		if(person.getFirstName().isBlank()||person.getLastName().isBlank())
+			throw new RequestBodyException("Person's first name or last name can't be empty");
+	}
+	
+	private void checkForAlphabeticalParameters(Person person) throws RequestBodyException {
+		if(!StringUtils.isAlphanumeric(person.getFirstName())||!StringUtils.isAlphaSpace(person.getLastName()))
+			throw new RequestBodyException("Request parameter has to be alphabetical");
+	}
 }

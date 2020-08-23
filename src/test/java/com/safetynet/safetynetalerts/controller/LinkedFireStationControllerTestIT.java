@@ -23,6 +23,7 @@ import com.safetynet.safetynetalerts.dao.LinkedFireStationDao;
 import com.safetynet.safetynetalerts.data.DataContainer;
 import com.safetynet.safetynetalerts.exceptions.DuplicatedLinkedFireStationException;
 import com.safetynet.safetynetalerts.exceptions.LinkedFireStationsDataNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.RequestBodyException;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
 
 
@@ -142,5 +143,31 @@ class LinkedFireStationControllerTestIT {
 				.andExpect(status().is4xxClientError())
 				.andExpect(result-> assertTrue(result.getResolvedException() instanceof LinkedFireStationsDataNotFoundException));
 	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenLinkedFireStationAddressIsBlank() throws Exception {
+		
+		LinkedFireStation blankLinkedFireStation = new LinkedFireStation();
+		blankLinkedFireStation.setAddress("");
+		
+		mockMvc.perform(post("/firestation")
+				.content(objectMapper.writeValueAsString(blankLinkedFireStation))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));
+		
+		mockMvc.perform(put("/firestation")
+				.content(objectMapper.writeValueAsString(blankLinkedFireStation))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));
+		
+		mockMvc.perform(delete("/firestation")
+				.content(objectMapper.writeValueAsString(blankLinkedFireStation))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));	
+	}
+	
 	
 }

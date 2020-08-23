@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.safetynet.safetynetalerts.exceptions.LinkedFireStationNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.RequestParameterException;
 
 
 
@@ -92,5 +93,31 @@ class EmergencyControllerTestIT {
 				.andExpect(result-> assertTrue(result.getResolvedException() instanceof LinkedFireStationNotFoundException));
 	}
 	
+	@Test
+	void isExpectedExceptionHandledWhenRequestParameterIsBlank() throws Exception{
+		
+		String parameter ="";
+		
+		mockMvc.perform(get("/childAlert?address="+parameter))
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestParameterException));
+		
+		mockMvc.perform(get("/flood/stations?stations="+parameter))
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestParameterException));
+		
+		mockMvc.perform(get("/phoneAlert?firestation=" + parameter))
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestParameterException));
+		
+		mockMvc.perform(get("/fire?address=" + parameter))
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestParameterException));
+		
+	}
 	
+	@Test
+	void isExpectedExceptionHandledWhenRequestParameterIsNotNumeric() throws Exception{
+		
+		String parameter = "A";
+		
+		mockMvc.perform(get("/phoneAlert?firestation=" + parameter))
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestParameterException));
+	}
 }

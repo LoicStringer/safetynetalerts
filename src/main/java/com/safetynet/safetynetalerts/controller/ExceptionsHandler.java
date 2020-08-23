@@ -22,12 +22,35 @@ import com.safetynet.safetynetalerts.exceptions.MedicalRecordNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.MedicalRecordsDataNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.RequestBodyException;
+import com.safetynet.safetynetalerts.exceptions.RequestParameterException;
 import com.safetynet.safetynetalerts.responseentity.ExceptionResponse;
 
 @RestControllerAdvice
 public class ExceptionsHandler extends ResponseEntityExceptionHandler{
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
+	
+	@ExceptionHandler(RequestBodyException.class)
+	public ResponseEntity<ExceptionResponse> handleInvalidParameterException(RequestBodyException ex){
+		
+		ExceptionResponse exceptionResponse = exceptionResponseBuild(ex);
+		
+		log.error(exceptionLogMessageBuilder(exceptionResponse));
+		
+		return new ResponseEntity<ExceptionResponse>(exceptionResponse, getHttpStatusFromException(ex));
+	}
+	
+	
+	@ExceptionHandler(RequestParameterException.class)
+	public ResponseEntity<ExceptionResponse> handleInvalidAttributeValueException(RequestParameterException ex){
+		
+		ExceptionResponse exceptionResponse = exceptionResponseBuild(ex);
+		
+		log.error(exceptionLogMessageBuilder(exceptionResponse));
+		
+		return new ResponseEntity<ExceptionResponse>(exceptionResponse, getHttpStatusFromException(ex));
+	}
 	
 	@ExceptionHandler(DataImportFailedException.class)
 	public ResponseEntity<ExceptionResponse> handleDataImportFailedException(DataImportFailedException ex){
