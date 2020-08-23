@@ -1,5 +1,6 @@
 package com.safetynet.safetynetalerts.controller;
 
+
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -13,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.safetynet.safetynetalerts.exceptions.LinkedFireStationNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.PersonNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
 
 @ExtendWith(SpringExtension.class)
@@ -61,11 +64,30 @@ class CommunityControllerTestIT {
 	}
 
 	@Test
-	void exception() throws Exception{
+	void isExpectedExceptionHandledWhenCityIsUnknownTest() throws Exception{
 		
 		String city = "London";
 
 		mockMvc.perform(get("/communityEmail?city=" + city))
 				.andExpect(result-> assertTrue(result.getResolvedException() instanceof PersonsDataNotFoundException));
+	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenStationNumberIsUnknown() throws Exception{
+		
+		String fireStationNumber = "12";
+		
+		mockMvc.perform(get("/firestation?stationNumber=" + fireStationNumber))
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof LinkedFireStationNotFoundException));
+	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenPersonIsUnknown() throws Exception{
+		
+		String firstName = "Tony";
+		String lastName = "Montana";
+		
+		mockMvc.perform(get("/personInfo?firstName=" + firstName + "&lastName=" + lastName))
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof PersonNotFoundException));
 	}
 }

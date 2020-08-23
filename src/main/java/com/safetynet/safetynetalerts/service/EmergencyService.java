@@ -87,19 +87,19 @@ public class EmergencyService {
 		return emergencyFireAddressInfos;
 	}
 
-	public EmergencyFloodInfos getCoveredHomesInfos(List<String> stationNumbers)
+	public EmergencyFloodInfos getCoveredHomesInfos(List<String> stationNumbersList)
 			throws MedicalRecordsDataNotFoundException, PersonsDataNotFoundException,
 			LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException {
 
 		EmergencyFloodInfos emergencyFloodInfos = new EmergencyFloodInfos();
 
-		for (String stationNumber : stationNumbers) {
+		for (String stationNumber : stationNumbersList) {
 			emergencyFloodInfos.addStationInfos(stationNumber,
 					getHomesInfos(getAdressesCoveredByFirestation(stationNumber)));
 		}
 
 		log.debug(System.lineSeparator()+"Retrieving the whole homes inhabitants detailed infos list "
-				+ System.lineSeparator()+"covered by fire stations corresponding to the specified list of station numbers "+stationNumbers+" .");
+				+ System.lineSeparator()+"covered by fire stations corresponding to the specified list of station numbers "+stationNumbersList+" .");
 		
 		return emergencyFloodInfos;
 	}
@@ -172,7 +172,7 @@ public class EmergencyService {
 				InhabitantInfos inhabitantThere = new InhabitantInfos();
 				inhabitantThere.setFirstName(medicalRecord.getFirstName());
 				inhabitantThere.setLastName(medicalRecord.getLastName());
-				inhabitantThere.setAge(Integer.valueOf(this.getAgeFromBirthDate(medicalRecord.getBirthdate())));
+				inhabitantThere.setAge(this.getAgeFromBirthDate(medicalRecord.getBirthdate()));
 				inhabitantThere
 						.setPhoneNumber(getPhoneNumber(medicalRecord.getFirstName() + medicalRecord.getLastName()));
 				inhabitantThere.setMedications(medicalRecord.getMedications());
@@ -202,10 +202,11 @@ public class EmergencyService {
 
 	private int getAgeFromBirthDate(String birthDate) {
 		
-		if(birthDate==null||birthDate.isBlank())
-			birthDate = "00/00/0000";
-		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+		
+		if(birthDate==null||birthDate.isBlank())
+			birthDate = LocalDate.now().format(formatter);
+		
 		LocalDate birthDateToDate = LocalDate.parse(birthDate, formatter);
 		return Period.between(birthDateToDate, LocalDate.now()).getYears();
 	}

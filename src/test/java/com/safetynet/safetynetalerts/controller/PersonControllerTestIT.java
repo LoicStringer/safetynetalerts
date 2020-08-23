@@ -1,5 +1,6 @@
 package com.safetynet.safetynetalerts.controller;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -7,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.safetynetalerts.dao.PersonDao;
+import com.safetynet.safetynetalerts.data.DataContainer;
+import com.safetynet.safetynetalerts.exceptions.DuplicatedPersonException;
+import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
 import com.safetynet.safetynetalerts.model.Person;
 
 
@@ -34,6 +39,11 @@ class PersonControllerTestIT {
 	
 	@Autowired
 	private PersonDao personDao;
+	
+	@BeforeEach
+	void setUpForTests() {
+		DataContainer.reloadDataForTests();
+	}
 	
 	@Test
 	void isInsertPersonEndpointFunctionalTest() throws Exception {
@@ -69,16 +79,68 @@ class PersonControllerTestIT {
 	@Test
 	void isDeletePersonEndpointFunctional() throws Exception {
 		
-		Person personToDelete = personDao.getAll().get(0);
+		Person personToDelete = personDao.getAll().get(5);
 		
 		mockMvc.perform(delete("/person")
 				.content(objectMapper.writeValueAsString(personToDelete))
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 		
-		assertNotEquals(personDao.getAll().get(0),personToDelete);
+		assertNotEquals(personDao.getAll().get(5),personToDelete);
+	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenTryingToUpdateHomonymousPerson() throws Exception{
+		
+		Person homonymousPerson = new Person();
+		homonymousPerson.setFirstName("Ron");
+		homonymousPerson.setLastName("Peters");
+		personDao.insert(homonymousPerson);
+		
+		mockMvc.perform(put("/person")
+		.content(objectMapper.writeValueAsString(homonymousPerson))
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().is3xxRedirection())
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof DuplicatedPersonException));
 	}
 	
 
+	@Test
+	void isExpectedExceptionHandledWhenTryingToDeleteHomonymousPerson() throws Exception{
+		
+		Person homonymousPerson = new Person();
+		homonymousPerson.setFirstName("Ron");
+		homonymousPerson.setLastName("Peters");
+		personDao.insert(homonymousPerson);
+		
+		mockMvc.perform(delete("/person")
+		.content(objectMapper.writeValueAsString(homonymousPerson))
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().is3xxRedirection())
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof DuplicatedPersonException));
+	}
 	
+	@Test
+	void isExpectedExceptionHandledWhenTryingToProceedWithCorruptedData() throws Exception{
+		
+		Person personToUpdate = personDao.getAll().get(0);
+		personToUpdate.setCity("Paris");
+		
+		Person personToDelete = personDao.getAll().get(5);
+		
+		DataContainer.personsData.removeAll();
+		
+		mockMvc.perform(put("/person")
+				.content(objectMapper.writeValueAsString(personToUpdate))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof PersonsDataNotFoundException));
+		
+		mockMvc.perform(delete("/person")
+				.content(objectMapper.writeValueAsString(personToDelete))
+				.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().is4xxClientError())
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof PersonsDataNotFoundException));
+		
+	}
 }

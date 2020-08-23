@@ -1,5 +1,6 @@
 package com.safetynet.safetynetalerts.controller;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -7,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.safetynetalerts.dao.LinkedFireStationDao;
+import com.safetynet.safetynetalerts.data.DataContainer;
+import com.safetynet.safetynetalerts.exceptions.DuplicatedLinkedFireStationException;
+import com.safetynet.safetynetalerts.exceptions.LinkedFireStationsDataNotFoundException;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
 
 
@@ -34,6 +39,11 @@ class LinkedFireStationControllerTestIT {
 	
 	@Autowired
 	private LinkedFireStationDao linkedFireStationDao;
+	
+	@BeforeEach
+	void setUpForTests() {
+		DataContainer.reloadDataForTests();
+	}
 	
 	@Test
 	void isInsertLinkedFireStationEndpointFunctionalTest() throws Exception {
@@ -79,5 +89,58 @@ class LinkedFireStationControllerTestIT {
 		assertNotEquals(linkedFireStationDao.getAll().get(0),linkedFireStationToDelete);
 	}
 	
+	@Test
+	void isExpectedExceptionHandledWhenTryingToUpdateDuplicatedLinkedFireStation() throws Exception{
+		
+		LinkedFireStation duplicatedLinkedFireStation = new LinkedFireStation();
+		duplicatedLinkedFireStation.setAddress("489 Manchester St");
+		duplicatedLinkedFireStation.setStation("4");
+		linkedFireStationDao.insert(duplicatedLinkedFireStation);
+		
+		mockMvc.perform(put("/firestation")
+		.content(objectMapper.writeValueAsString(duplicatedLinkedFireStation))
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().is3xxRedirection())
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof DuplicatedLinkedFireStationException));
+	}
+	
 
+	@Test
+	void isExpectedExceptionHandledWhenTryingToDeleteDuplicatedLinkedFireStation() throws Exception{
+		
+		LinkedFireStation duplicatedLinkedFireStation = new LinkedFireStation();
+		duplicatedLinkedFireStation.setAddress("489 Manchester St");
+		duplicatedLinkedFireStation.setStation("4");
+		linkedFireStationDao.insert(duplicatedLinkedFireStation);
+		
+		mockMvc.perform(delete("/firestation")
+		.content(objectMapper.writeValueAsString(duplicatedLinkedFireStation))
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().is3xxRedirection())
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof DuplicatedLinkedFireStationException));
+	}
+
+	@Test
+	void isExpectedExceptionHandledWhenTryingToProceedWithCorruptedData() throws Exception{
+		
+		LinkedFireStation linkedFireStationToUpdate = linkedFireStationDao.getAll().get(0);
+		linkedFireStationToUpdate.setStation("20");
+		
+		LinkedFireStation linkedFireStationToDelete = linkedFireStationDao.getAll().get(0);
+		
+		DataContainer.linkedFireStationsData.removeAll();
+		
+		mockMvc.perform(put("/firestation")
+				.content(objectMapper.writeValueAsString(linkedFireStationToUpdate))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof LinkedFireStationsDataNotFoundException));
+		
+		mockMvc.perform(delete("/firestation")
+				.content(objectMapper.writeValueAsString(linkedFireStationToDelete))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof LinkedFireStationsDataNotFoundException));
+	}
+	
 }

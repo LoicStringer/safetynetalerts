@@ -1,5 +1,6 @@
 package com.safetynet.safetynetalerts.controller;
 
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -11,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.safetynet.safetynetalerts.exceptions.LinkedFireStationNotFoundException;
 
 
 
@@ -70,5 +73,24 @@ class EmergencyControllerTestIT {
 				.andExpect(jsonPath("$.coveredHomesList[0].homesInfos[0].address").value("644 Gershwin Cir"));
 				
 	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenStationNumberIsUnknown() throws Exception{
+		
+		String fireStationNumber = "12";
+		
+		mockMvc.perform(get("/phoneAlert?firestation=" + fireStationNumber))
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof LinkedFireStationNotFoundException));
+	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenAddressIsUnknown() throws Exception{
+		
+		String address = "10, Downing Street";
+		
+		mockMvc.perform(get("/fire?address=" + address))
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof LinkedFireStationNotFoundException));
+	}
+	
 	
 }

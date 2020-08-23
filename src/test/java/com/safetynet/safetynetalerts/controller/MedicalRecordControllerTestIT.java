@@ -1,5 +1,6 @@
 package com.safetynet.safetynetalerts.controller;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -7,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.safetynetalerts.dao.MedicalRecordDao;
+import com.safetynet.safetynetalerts.data.DataContainer;
+import com.safetynet.safetynetalerts.exceptions.DuplicatedMedicalRecordException;
+import com.safetynet.safetynetalerts.exceptions.MedicalRecordNotFoundException;
+import com.safetynet.safetynetalerts.exceptions.MedicalRecordsDataNotFoundException;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 
 
@@ -36,6 +42,11 @@ class MedicalRecordControllerTestIT {
 	
 	@Autowired
 	private MedicalRecordDao medicalRecordDao;
+	
+	@BeforeEach
+	void setUpForTests() {
+		DataContainer.reloadDataForTests();
+	}
 	
 	
 	@Test
@@ -82,5 +93,71 @@ class MedicalRecordControllerTestIT {
 		assertNotEquals(medicalRecordDao.getAll().get(0),medicalRecordToDelete);
 	}
 	
+	@Test
+	void isExpectedExceptionHandledWhenTryingToUpdateHomonymousMedicalRecord() throws Exception{
+		
+		MedicalRecord homonymousMedicalRecord = new MedicalRecord();
+		homonymousMedicalRecord.setFirstName("Ron");
+		homonymousMedicalRecord.setLastName("Peters");
+		medicalRecordDao.insert(homonymousMedicalRecord);
+		
+		mockMvc.perform(put("/medicalRecord")
+		.content(objectMapper.writeValueAsString(homonymousMedicalRecord))
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().is3xxRedirection())
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof DuplicatedMedicalRecordException));
+	}
 	
+
+	@Test
+	void isExpectedExceptionHandledWhenTryingToDeleteHomonymousMedicalRecord() throws Exception{
+		
+		MedicalRecord homonymousMedicalRecord = new MedicalRecord();
+		homonymousMedicalRecord.setFirstName("Ron");
+		homonymousMedicalRecord.setLastName("Peters");
+		medicalRecordDao.insert(homonymousMedicalRecord);
+		
+		mockMvc.perform(delete("/medicalRecord")
+		.content(objectMapper.writeValueAsString(homonymousMedicalRecord))
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().is3xxRedirection())
+		.andExpect(result-> assertTrue(result.getResolvedException() instanceof DuplicatedMedicalRecordException));
+	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenTryingToUpdateUnknownMedicalRecord() throws Exception{
+		
+		MedicalRecord unknownMedicalRecord = new MedicalRecord();
+		unknownMedicalRecord.setFirstName("Carlito");
+		unknownMedicalRecord.setLastName("Brigante");
+		
+		mockMvc.perform(put("/medicalRecord")
+				.content(objectMapper.writeValueAsString(unknownMedicalRecord))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof MedicalRecordNotFoundException));
+	}
+	
+	@Test
+	void isExpectedExceptionHandledWhenTryingToProceedWithCorruptedData() throws Exception{
+		
+		MedicalRecord medicalRecordToUpdate = medicalRecordDao.getAll().get(0);
+		medicalRecordToUpdate.setBirthdate("04/01/1978");
+		
+		MedicalRecord medicalRecordToDelete = medicalRecordDao.getAll().get(0);
+		
+		DataContainer.medicalRecordsData.removeAll();
+		
+		mockMvc.perform(put("/medicalRecord")
+				.content(objectMapper.writeValueAsString(medicalRecordToUpdate))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof MedicalRecordsDataNotFoundException));
+	
+		mockMvc.perform(delete("/medicalRecord")
+				.content(objectMapper.writeValueAsString(medicalRecordToDelete))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError())
+				.andExpect(result-> assertTrue(result.getResolvedException() instanceof MedicalRecordsDataNotFoundException));
+	}
 }

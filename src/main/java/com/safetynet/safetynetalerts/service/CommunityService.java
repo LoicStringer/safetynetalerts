@@ -144,10 +144,11 @@ public class CommunityService {
 
 	private int getAgeFromBirthDate(String birthDate) {
 		
-		if(birthDate==null||birthDate.isBlank())
-			birthDate = "00/00/0000";
-		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+		
+		if(birthDate==null||birthDate.isBlank())
+			birthDate = LocalDate.now().format(formatter);
+		
 		LocalDate birthDateToDate = LocalDate.parse(birthDate, formatter);
 		return Period.between(birthDateToDate, LocalDate.now()).getYears();
 	}

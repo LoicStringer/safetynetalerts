@@ -83,7 +83,7 @@ public class MedicalRecordDao extends DataProvider implements IDao<MedicalRecord
 		long duplicated = checkForDuplication(medicalRecord.getFirstName()+medicalRecord.getLastName());
 		
 		if(duplicated>=1) 
-			log.warn("Warning! "+duplicated+" medical records identified by "+medicalRecord.getFirstName()+" "+medicalRecord.getLastName()+" is/are registered in data container.");
+			log.warn(System.lineSeparator()+"Warning! "+duplicated+" medical records identified by "+medicalRecord.getFirstName()+" "+medicalRecord.getLastName()+" is/are registered in data container.");
 	
 		JsonNode medicalRecordNode = getObjectMapper().convertValue(medicalRecord, JsonNode.class);
 		DataContainer.medicalRecordsData.add(medicalRecordNode);
