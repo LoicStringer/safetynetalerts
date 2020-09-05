@@ -26,6 +26,15 @@ import com.safetynet.safetynetalerts.exceptions.RequestBodyException;
 import com.safetynet.safetynetalerts.exceptions.RequestParameterException;
 import com.safetynet.safetynetalerts.responseentity.ExceptionResponse;
 
+/**
+ * <p>Reunites every methods providing a response when a exception is raised.
+ * Each exception is handled by an {@link ExceptionHandler} method that returns the appropriate
+ * {@link ResponseEntity} object containing details.</p>
+ * 
+ * @author newbie
+ * @see RestControllerAdvice
+ *
+ */
 @RestControllerAdvice
 public class ExceptionsHandler extends ResponseEntityExceptionHandler{
 
@@ -40,7 +49,6 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler{
 		
 		return new ResponseEntity<ExceptionResponse>(exceptionResponse, getHttpStatusFromException(ex));
 	}
-	
 	
 	@ExceptionHandler(RequestParameterException.class)
 	public ResponseEntity<ExceptionResponse> handleInvalidAttributeValueException(RequestParameterException ex){

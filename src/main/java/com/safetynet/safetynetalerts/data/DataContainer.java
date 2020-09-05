@@ -12,6 +12,12 @@ import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
 import com.safetynet.safetynetalerts.exceptions.EmptyDataException;
 import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 
+/**
+ * <p>A class that aims at reproducing a kind of database 
+ * in order to separate data from applicative methods in a static way.</p>
+ * @author newbie
+ *
+ */
 @Component
 public class DataContainer {
 
@@ -22,6 +28,9 @@ public class DataContainer {
 	public static ArrayNode linkedFireStationsData;
 	public static ArrayNode personsData;
 
+	/**
+	 * Loads the JSON data file at the application start-up. 
+	 */
 	static {
 		try {
 			personsData = (ArrayNode) objectMapper.readTree(new File(dataAccessor.getFilePath()))
@@ -47,6 +56,11 @@ public class DataContainer {
 
 	}
 
+	/**
+	 *<p>Method written to make tests easier, 
+	 * reloading the JSON data file as it was at the application start-up.
+	 * Only used in JUnit tests classes.</p>
+	 */
 	public static void reloadDataForTests() {
 
 		try {

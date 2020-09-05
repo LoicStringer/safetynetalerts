@@ -23,9 +23,11 @@ import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos;
 import com.safetynet.safetynetalerts.service.EmergencyService;
 
 /**
- * Controller class which exposes endpoints dealing with
+ * <p>Controller class which exposes endpoints that may be used 
+ * to retrieve important informations in situations considered as an emergency.</p>
+ * 
  * @author newbie
- *
+ *@see EmergencyService
  */
 @RestController
 public class EmergencyController {
@@ -35,6 +37,18 @@ public class EmergencyController {
 	@Autowired
 	private EmergencyService emergencyService;
 	
+	/**
+	 * <p>Call to the {@link EmergencyService#getChildrenThere(String)} method,
+	 * retrieving the inhabtitants list of the specified address,
+	 * precising if they are children or adults.</p>
+	 * 
+	 * @return a {@link EmergencyChildAlert} custom object.
+	 * @throws PersonsDataNotFoundException
+	 * @throws MedicalRecordsDataNotFoundException
+	 *  @throws MedicalRecordNotFoundException
+	 * @throws RequestParameterException
+	 * @see EmergencyService
+	 */
 	@GetMapping("/childAlert")
 	public ResponseEntity<EmergencyChildAlert> getChildren
 	(@RequestParam("address") String address) throws PersonsDataNotFoundException, MedicalRecordsDataNotFoundException,
@@ -50,6 +64,17 @@ public class EmergencyController {
 		return ResponseEntity.ok(anyChildThere);
 	}
 	
+	/**
+	 * <p>Call to the {@link EmergencyService#getCoveredPersonsPhoneNumbers(String)} method,
+	 * retrieving the persons phone numbers list covered by the specified fire station .</p>
+	 * 
+	 * @return a String {@link List} of phone numbers.
+	 * @throws PersonsDataNotFoundException
+	 * @throws LinkedFireStationsDataNotFoundException
+	 *  @throws LinkedFireStationNotFoundException
+	 * @throws RequestParameterException
+	 * @see EmergencyService
+	 */
 	@GetMapping("/phoneAlert")
 	public List<String> getPhoneNumbers
 	(@RequestParam("firestation") String stationNumber) throws PersonsDataNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException, RequestParameterException{
@@ -65,6 +90,19 @@ public class EmergencyController {
 		return phoneNumbers;
 	}
 	
+	/**
+	 * <p>Call to the {@link EmergencyService#getPersonsThereInfos(String)} method,
+	 * retrieving the inhabtitants list of the specified address,
+	 * and their relating informations.</p>
+	 * 
+	 * @return a {@link EmergencyFireAddressInfos} custom object.
+	 * @throws LinkedFireStationsDataNotFoundException
+	 * @throws PersonsDataNotFoundException
+	 * @throws MedicalRecordsDataNotFoundException
+	 * @throws LinkedFireStationNotFoundException
+	 * @throws RequestParameterException
+	 * @see EmergencyService
+	 */
 	@GetMapping("/fire")
 	public  ResponseEntity<EmergencyFireAddressInfos> getInhabitants
 	(@RequestParam("address") String address) throws LinkedFireStationsDataNotFoundException, PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, LinkedFireStationNotFoundException, RequestParameterException{
@@ -79,6 +117,19 @@ public class EmergencyController {
 		return ResponseEntity.ok(inhabitantsThere);
 	}
 	
+	/**
+	 * <p>Call to the {@link EmergencyService#getCoveredHomesInfos(List String)} method,
+	 * retrieving the whole homes list covered by the specified fire stations list,
+	 * their inhabitants and their informations, in ascending order and addresses.</p>
+	 * 
+	 * @return a {@link EmergencyFloodInfos} custom object.
+	 * @throws PersonsDataNotFoundException
+	 * @throws MedicalRecordsDataNotFoundException
+	 * @throws LinkedFireStationsDataNotFoundException
+	 * @throws LinkedFireStationNotFoundException
+	 * @throws RequestParameterException
+	 * @see EmergencyService
+	 */
 	@GetMapping("/flood/stations")
 	public ResponseEntity<EmergencyFloodInfos> getHomesInfo
 	(@RequestParam("stations")  List<String> stationNumbers) throws MedicalRecordsDataNotFoundException, PersonsDataNotFoundException, LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException, RequestParameterException{

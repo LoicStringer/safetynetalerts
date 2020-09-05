@@ -25,6 +25,13 @@ import com.safetynet.safetynetalerts.responseentity.CommunityPersonInfo;
 import com.safetynet.safetynetalerts.responseentity.CommunityPersonInfo.PersonInfo;
 import com.safetynet.safetynetalerts.responseentity.CommunityPersonsCoveredByFireStation;
 
+/**
+ * <p>This class includes methods related to the {@link CommunityController}.
+ * Each public method matches an URL, filters and retrieves informations 
+ * in a specific "response" object or a simple list.</p>
+ * @author newbie
+ *
+ */
 @Service
 public class CommunityService {
 
@@ -63,6 +70,18 @@ public class CommunityService {
 		return communityEmails;
 	}
 
+	/**
+	 * <p>For a given first name and last name, returns a specific {@link CommunityPersonInfo}
+	 * containing the person required informations, including medical ones, 
+	 * by filtering persons and medical records data.
+	 * If several persons got the same name, they all appear.</p>
+	 * @param identifier
+	 * @return CommunityPersonInfo
+	 * @throws PersonNotFoundException
+	 * @throws PersonsDataNotFoundException
+	 * @throws MedicalRecordsDataNotFoundException
+	 * @throws MedicalRecordNotFoundException
+	 */
 	public CommunityPersonInfo getPersonInfo(String identifier) throws PersonNotFoundException,
 			PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException {
 
@@ -96,6 +115,21 @@ public class CommunityService {
 		return communityPersonInfo;
 	}
 
+	/**
+	 * <p>Returns, in a specific {@link CommunityPersonsCoveredByFireStation} object,
+	 * the persons list covered by the specified fire station, 
+	 * their informations, and the number of children and adults.</p>
+	 * <p>The {@link #getAdressesCoveredByFirestation(String)} method retrieves addresses covered
+	 * by the station number and the {@link #getPersonsThere(List)} method builds 
+	 * the persons living there list, filtering the addresses through persons data.</p>
+	 * @param stationNumber
+	 * @return CommunityPersonsCoveredByFireStation
+	 * @throws LinkedFireStationNotFoundException
+	 * @throws PersonsDataNotFoundException
+	 * @throws MedicalRecordsDataNotFoundException
+	 * @throws MedicalRecordNotFoundException
+	 * @throws LinkedFireStationsDataNotFoundException
+	 */
 	public CommunityPersonsCoveredByFireStation getPersonsCoveredByFireStation(String stationNumber)
 			throws LinkedFireStationNotFoundException, PersonsDataNotFoundException,
 			MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException,

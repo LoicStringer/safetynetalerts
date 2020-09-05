@@ -34,7 +34,6 @@ import com.safetynet.safetynetalerts.model.MedicalRecord;
 @AutoConfigureMockMvc
 class MedicalRecordControllerTestIT {
 
-
 	@Autowired
 	private MockMvc mockMvc;
 	
@@ -48,7 +47,6 @@ class MedicalRecordControllerTestIT {
 	void setUpForTests() {
 		DataContainer.reloadDataForTests();
 	}
-	
 	
 	@Test
 	void isInsertMedicalRecordEndpointFunctionalTest() throws Exception {
@@ -212,6 +210,6 @@ class MedicalRecordControllerTestIT {
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().is4xxClientError())
 				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));
-		
 	}
+	
 }

@@ -1,5 +1,6 @@
 package com.safetynet.safetynetalerts.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -26,8 +27,8 @@ import com.safetynet.safetynetalerts.responseentity.CommunityPersonsCoveredByFir
 import com.safetynet.safetynetalerts.service.CommunityService;
 
 /**
- * Controller class which exposes endpoints dealing with the people informations
- * such as emails or specific person infos.
+ * <p>Controller class which exposes endpoints dealing with the people informations
+ * such as emails or specific person infos.</p>
  * 
  * @author newbie
  * @see CommunityService
@@ -42,11 +43,10 @@ public class CommunityController {
 	private CommunityService communityService;
 
 	/**
-	 * Call to the {@link CommunityService#getCommunityEmails(String)} method,
-	 * retrieving the emails' list of all the specified city's inhabitants.
+	 * <p>Call to the {@link CommunityService#getCommunityEmails(String)} method,
+	 * retrieving the emails' list of all the specified city's inhabitants.</p>
 	 * 
-	 * @param String city's name.
-	 * @return a {@link List} of emails as String.
+	 * @return a String {@link ArrayList} of emails.
 	 * @throws PersonsDataNotFoundException
 	 * @throws RequestBodyException
 	 * @see CommunityService
@@ -67,13 +67,11 @@ public class CommunityController {
 	}
 
 	/**
-	 * Call to the {@link CommunityService#getPersonInfo(String)} method, retrieving
-	 * a specific person's informations.
-	 * 
-	 * @param Person's first name, the "firstName" attribute's value.
-	 * @param Person's last name, the "lastName" attribute's value.
-	 * @return a {@link CommunityPersonInfo} custom object containing the required
-	 *         person informations.
+	 * <p>Call to the {@link CommunityService#getPersonInfo(String)} method, retrieving
+	 * a specific person's informations.If several persons wear the same name, they are
+	 * all retrieved.</p>
+	 *
+	 * @return a {@link CommunityPersonInfo} custom object 
 	 * @throws MedicalRecordNotFoundException
 	 * @throws MedicalRecordsDataNotFoundException
 	 * @throws PersonsDataNotFoundException
@@ -102,13 +100,11 @@ public class CommunityController {
 	}
 
 	/**
-	 * Call to the {@link CommunityService#getPersonsCoveredByFireStation(String)}
-	 * retrieving a list of the persons covered by the specified fire station,
-	 * identified by its ("id") number.
+	 * <p>Call to the {@link CommunityService#getPersonsCoveredByFireStation(String)}
+	 * retrieving the persons list covered by the specified fire station,
+	 * identified by its ("id") number.</p>
 	 * 
-	 * @param a LinkedFireStation stationNumber as int
 	 * @return a {@link CommunityPersonsCoveredByFireStation} custom object
-	 *         containing all persons' informations.
 	 * @throws MedicalRecordNotFoundException
 	 * @throws MedicalRecordsDataNotFoundException
 	 * @throws PersonsDataNotFoundException

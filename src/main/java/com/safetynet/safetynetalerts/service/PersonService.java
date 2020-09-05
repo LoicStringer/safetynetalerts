@@ -16,6 +16,12 @@ import com.safetynet.safetynetalerts.exceptions.PersonsDataNotFoundException;
 import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 import com.safetynet.safetynetalerts.model.Person;
 
+/**
+ * <p>Service layer class that displays CRUD methods, 
+ * corresponding to the DAO methods, to handle {@link Person} objects.</p>
+ * @author newbie
+ * @see PersonDao
+ */
 @Service
 public class PersonService {
 

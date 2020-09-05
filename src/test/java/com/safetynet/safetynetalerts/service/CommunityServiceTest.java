@@ -27,7 +27,6 @@ import com.safetynet.safetynetalerts.responseentity.CommunityPersonInfo;
 import com.safetynet.safetynetalerts.responseentity.CommunityPersonsCoveredByFireStation;
 
 @ExtendWith(MockitoExtension.class)
-//@MockitoSettings(strictness = Strictness.LENIENT)
 class CommunityServiceTest {
 
 	@Mock
@@ -89,7 +88,6 @@ class CommunityServiceTest {
 		
 		linkedFireStations.add(new LinkedFireStation("1509 Culver St", "3"));
 		linkedFireStations.add(new LinkedFireStation("892 Downing Ct", "2"));
-		
 	}
 
 	@Test

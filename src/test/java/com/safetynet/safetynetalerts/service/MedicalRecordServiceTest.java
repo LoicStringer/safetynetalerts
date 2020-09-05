@@ -97,9 +97,12 @@ class MedicalRecordServiceTest {
 		@Test
 		void insertTest() throws UnavailableDataException, EmptyDataException,
 				 MedicalRecordsDataNotFoundException, DuplicatedMedicalRecordException {
+			
 			MedicalRecord medicalRecordToInsert = new MedicalRecord("Newbie", "Noob", "04/01/1978", new String[] { "" },
 					new String[] { "" });
+			
 			when(medicalRecordDao.insert(medicalRecordToInsert)).thenReturn(medicalRecordToInsert);
+			
 			assertEquals(medicalRecordService.insertMedicalRecord(medicalRecordToInsert).getFirstName(), "Newbie");
 		}
 
@@ -107,9 +110,12 @@ class MedicalRecordServiceTest {
 		void updateTest() throws UnavailableDataException, EmptyDataException,
 				MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException,
 				DuplicatedMedicalRecordException {
+			
 			MedicalRecord medicalRecordToUpdate = medicalRecords.get(0);
 			medicalRecordToUpdate.setBirthdate("04/01/1978");
+			
 			when(medicalRecordDao.update(medicalRecordToUpdate)).thenReturn(medicalRecordToUpdate);
+			
 			assertEquals(medicalRecordService.updateMedicalRecord(medicalRecordToUpdate).getBirthdate(), "04/01/1978");
 		}
 
@@ -117,8 +123,11 @@ class MedicalRecordServiceTest {
 		void deleteTest() throws UnavailableDataException, EmptyDataException,
 				MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException,
 				DuplicatedMedicalRecordException {
+			
 			MedicalRecord medicalRecordTodelete = medicalRecords.get(0);
+			
 			when(medicalRecordDao.delete(medicalRecordTodelete)).thenReturn(medicalRecordTodelete);
+			
 			assertEquals(medicalRecordService.deleteMedicalRecord(medicalRecordTodelete).getLastName(), "Marrack");
 		}
 	}

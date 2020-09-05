@@ -27,7 +27,6 @@ import com.safetynet.safetynetalerts.responseentity.EmergencyFireAddressInfos;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos;
 
 @ExtendWith(MockitoExtension.class)
-//@MockitoSettings(strictness = Strictness.LENIENT)
 class EmergencyServiceTest {
 
 	@Mock
@@ -90,11 +89,6 @@ class EmergencyServiceTest {
 		linkedFireStations.add(new LinkedFireStation("892 Downing Ct", "2"));
 	}
 
-	/*
-	 * @BeforeEach void setUpForTests() throws PersonsDataNotFoundException {
-	 * 
-	 * when(personService.getAllPersons()).thenReturn(persons); }
-	 */
 	@Test
 	void getChildrenThereTest()
 			throws MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException, PersonsDataNotFoundException {
@@ -167,7 +161,6 @@ class EmergencyServiceTest {
 		assertEquals(
 				emergencyFloodInfos.getCoveredHomesList().get(0).getHomesInfos().get(0).getInhabitantsThere().size(),
 				3);
-
 	}
 
 	@Test

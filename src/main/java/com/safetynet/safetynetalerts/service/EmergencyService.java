@@ -26,6 +26,13 @@ import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos;
 import com.safetynet.safetynetalerts.responseentity.EmergencyFloodInfos.HomeInfo;
 import com.safetynet.safetynetalerts.responseentity.InhabitantInfos;
 
+/**
+ * <p>This class includes methods related to the {@link EmergencyController}.
+ * Each public method matches an URL, filters and retrieves informations 
+ * in a specific "response" object or a simple list.</p>
+ * @author newbie
+ *
+ */
 @Service
 public class EmergencyService {
 	
@@ -40,6 +47,18 @@ public class EmergencyService {
 	@Autowired
 	private MedicalRecordService medicalRecordService;
 
+	/**
+	 * <p>Filters the persons list living at the specified address, 
+	 * retrieved by the {@link #getPersonsThere(String address)},
+	 * and returns an {@link EmergencyChildAlert} object
+	 * containing the children's name living there list, and their related informations, 
+	 * and also the other persons living there list, and their related informations as well. </p>
+	 * @param address
+	 * @return EmergencyChildAlert
+	 * @throws PersonsDataNotFoundException
+	 * @throws MedicalRecordsDataNotFoundException
+	 * @throws MedicalRecordNotFoundException
+	 */
 	public EmergencyChildAlert getChildrenThere(String address)
 			throws PersonsDataNotFoundException, MedicalRecordsDataNotFoundException, MedicalRecordNotFoundException {
 
@@ -51,11 +70,21 @@ public class EmergencyService {
 			childrenThere.addPerson(person.getFirstName(), person.getLastName(), getPersonAge(person));
 
 		log.debug(System.lineSeparator()+"Retrieving for the specified address "+address
-				+ System.lineSeparator()+", the number of children and other persons living there, and their infos");
+				+ System.lineSeparator()+"the number of children and other persons living there, and their infos");
 		
 		return childrenThere;
 	}
 
+	/**
+	 * <p>For a given station number, filters addresses covered by this fire station list,
+	 * retrieved by {@link #getAdressesCoveredByFirestation(String stationNumber)},
+	 * and returns the persons phone numbers list.</p>
+	 * @param stationNumber
+	 * @return {@link List}
+	 * @throws PersonsDataNotFoundException
+	 * @throws LinkedFireStationsDataNotFoundException
+	 * @throws LinkedFireStationNotFoundException
+	 */
 	public List<String> getCoveredPersonsPhoneNumbers(String stationNumber) throws PersonsDataNotFoundException,
 			LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException {
 
@@ -67,6 +96,28 @@ public class EmergencyService {
 				.map(Person::getPhone).collect(Collectors.toList());
 	}
 
+	/**
+	 * <p>Returns a specific "response" object {@link EmergencyFireAddressInfos}
+	 * containing the station number that covers the specified address 
+	 * and the persons living there list, with their medical informations. 
+	 * Each person's informations set is displayed 
+	 * in a specific {@link InhabitantInfos} object and added to this list.</p> 
+	 * <p>To build this InhabitantInfos object, 
+	 * the {@link #getPersonsThere(String address)} method 
+	 * retrieves the persons living at the specified address list.
+	 * Then the {@link #getPersonIdentifiers(List persons)} method extracts 
+	 * the "identifier" (firstName and lastName) of each person.
+	 * Finally, the {@link #getInhabitantInfos(List identifiers)} method fetches informations
+	 * by filtering the medical records with the given identifiers.</p>
+	 * <p>The station number is retrieved by the {@link #getStationNumberCoveringAddress(String address)} method.</p>
+	 * 
+	 * @param address
+	 * @return EmergencyFireAddressInfos
+	 * @throws LinkedFireStationsDataNotFoundException
+	 * @throws PersonsDataNotFoundException
+	 * @throws MedicalRecordsDataNotFoundException
+	 * @throws LinkedFireStationNotFoundException
+	 */
 	public EmergencyFireAddressInfos getPersonsThereInfos(String address)
 			throws LinkedFireStationsDataNotFoundException, PersonsDataNotFoundException,
 			MedicalRecordsDataNotFoundException, LinkedFireStationNotFoundException {
@@ -82,11 +133,28 @@ public class EmergencyService {
 		emergencyFireAddressInfos.setInhabitantsThere(inhabitantsThere);
 
 		log.debug(System.lineSeparator()+"Retrieving for the specified address "+address
-				+ System.lineSeparator()+" the station number that covers it and their inhabitants infos list.");
+				+ System.lineSeparator()+"the station number that covers it and their inhabitants infos list.");
 		
 		return emergencyFireAddressInfos;
 	}
 
+	/**
+	 * <p>Fetches complete informations of each inhabitant covered by 
+	 * the given fire station numbers list. Returns a {@link EmergencyFloodInfos} object
+	 * that stands as a {@link EmergencyFloodInfos.StationInfos} list.</p>
+	 * <p>Each StationInfos contains a fire station number and 
+	 * the {@link EmergencyFloodInfos.HomeInfo} list covered by this fire station.
+	 * Each HomeInfo contains inhabitants detailed informations living there.</p>
+	 * <p>The {@link #getInhabitantInfos(List)} method builds the inhabitants list and their informations,
+	 * as the {@link #getHomesInfos(List)} method builds the homes list covered by the fire station 
+	 * and add the inhabitants list corresponding to the address.</p>
+	 * @param stationNumbersList
+	 * @return EmergencyFloodInfos
+	 * @throws MedicalRecordsDataNotFoundException
+	 * @throws PersonsDataNotFoundException
+	 * @throws LinkedFireStationsDataNotFoundException
+	 * @throws LinkedFireStationNotFoundException
+	 */
 	public EmergencyFloodInfos getCoveredHomesInfos(List<String> stationNumbersList)
 			throws MedicalRecordsDataNotFoundException, PersonsDataNotFoundException,
 			LinkedFireStationsDataNotFoundException, LinkedFireStationNotFoundException {
@@ -150,7 +218,6 @@ public class EmergencyService {
 	}
 
 	private String getPhoneNumber(String identifier) throws PersonsDataNotFoundException {
-
 		return personService.getAllPersons().stream()
 				.filter(p -> (p.getFirstName() + p.getLastName()).equalsIgnoreCase(identifier)).map(p -> p.getPhone())
 				.findAny().orElse(null);

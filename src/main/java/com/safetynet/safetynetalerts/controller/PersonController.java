@@ -19,6 +19,13 @@ import com.safetynet.safetynetalerts.exceptions.RequestBodyException;
 import com.safetynet.safetynetalerts.model.Person;
 import com.safetynet.safetynetalerts.service.PersonService;
 
+/**
+ * <p>Controller class which exposes endpoints for CRUD operations 
+ * related to the persons.</>
+ * 
+ * @author newbie
+ * @see PersonService
+ */
 @RestController
 @RequestMapping("/person")
 public class PersonController {

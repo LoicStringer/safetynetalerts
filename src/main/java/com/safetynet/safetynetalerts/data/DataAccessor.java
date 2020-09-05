@@ -8,11 +8,16 @@ import org.springframework.stereotype.Component;
 
 import com.safetynet.safetynetalerts.exceptions.DataImportFailedException;
 
-
+/**
+ * Loads the required properties, such as the file path 
+ * and the data file's JSON nodes names, 
+ * from the corresponding "data.properties" file.</p>
+ * @author newbie
+ * @see Properties
+ */
 @Component
 public class DataAccessor extends Properties {
 
-	
 	private static final long serialVersionUID = 1L;
 
 	public DataAccessor() {

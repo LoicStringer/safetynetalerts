@@ -169,5 +169,4 @@ class LinkedFireStationControllerTestIT {
 				.andExpect(result-> assertTrue(result.getResolvedException() instanceof RequestBodyException));	
 	}
 	
-	
 }

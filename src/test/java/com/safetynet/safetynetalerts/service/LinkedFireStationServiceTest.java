@@ -136,7 +136,7 @@ class LinkedFireStationServiceTest {
 	class ExceptionsTests {
 		
 		@Test
-		void isExpectedExceptionThrowmWhenTryingToUpdateDuplicatedLinkedFireStationn() throws UnavailableDataException, EmptyDataException, LinkedFireStationNotFoundException, DuplicatedLinkedFireStationException {
+		void isExpectedExceptionThrowmWhenTryingToUpdateDuplicatedLinkedFireStation() throws UnavailableDataException, EmptyDataException, LinkedFireStationNotFoundException, DuplicatedLinkedFireStationException {
 
 			LinkedFireStation linkedFireStationToUpdate = new LinkedFireStation();
 			

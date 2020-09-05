@@ -18,6 +18,13 @@ import com.safetynet.safetynetalerts.exceptions.RequestBodyException;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
 import com.safetynet.safetynetalerts.service.LinkedFireStationService;
 
+/**
+ * <p>Controller class which exposes endpoints for CRUD operations 
+ * related to the fire station mappings.</>
+ * 
+ * @author newbie
+ *@see LinkedFireStationService
+ */
 @RestController
 @RequestMapping("/firestation")
 public class LinkedFireStationController {
@@ -27,7 +34,7 @@ public class LinkedFireStationController {
 	@Autowired
 	private LinkedFireStationService linkedFireStationService;
 
-	@PostMapping
+	@PostMapping("")
 	public ResponseEntity<LinkedFireStation> insertLinkedFireStation(@RequestBody LinkedFireStation linkedFireStation)
 			throws LinkedFireStationsDataNotFoundException, DuplicatedLinkedFireStationException, RequestBodyException {
 

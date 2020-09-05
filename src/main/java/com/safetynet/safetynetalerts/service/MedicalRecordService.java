@@ -16,6 +16,12 @@ import com.safetynet.safetynetalerts.exceptions.MedicalRecordsDataNotFoundExcept
 import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 
+/**
+ * <p>Service layer class that displays CRUD methods, 
+ * corresponding to the DAO methods, to handle {@link MedicalRecord} objects.</p>
+ * @author newbie
+ * @see MedicalRecordDao
+ */
 @Service
 public class MedicalRecordService {
 

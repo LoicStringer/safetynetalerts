@@ -8,12 +8,10 @@ public class EmergencyFloodInfos {
 	private List<StationInfos> coveredHomesList;
 
 	public EmergencyFloodInfos() {
-
 		this.coveredHomesList = new ArrayList<StationInfos>();
 	}
 
 	public void addStationInfos(String stationNumber, List<HomeInfo> homesInfos) {
-
 		this.coveredHomesList.add(new StationInfos(stationNumber, homesInfos));
 	}
 
@@ -32,7 +30,6 @@ public class EmergencyFloodInfos {
 		public StationInfos(String stationNumber, List<HomeInfo> homesInfos) {
 			this.stationNumber = stationNumber;
 			this.homesInfos = homesInfos;
-
 		}
 
 		public String getStationNumber() {
@@ -56,9 +53,6 @@ public class EmergencyFloodInfos {
 			return "StationInfos [stationNumber=" + stationNumber + ", homesInfos=" + homesInfos + "]";
 		}
 
-		
-		
-		
 	}
 
 	public class HomeInfo {
@@ -95,8 +89,6 @@ public class EmergencyFloodInfos {
 		public String toString() {
 			return "HomeInfo [address=" + address + ", inhabitantsThere=" + inhabitantsThere + "]";
 		}
-
-		
 		
 	}
 
@@ -105,6 +97,4 @@ public class EmergencyFloodInfos {
 		return "EmergencyFloodInfos [coveredHomesList=" + coveredHomesList + "]";
 	}
 
-	
-	
 }

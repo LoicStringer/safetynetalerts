@@ -16,6 +16,12 @@ import com.safetynet.safetynetalerts.exceptions.LinkedFireStationsDataNotFoundEx
 import com.safetynet.safetynetalerts.exceptions.UnavailableDataException;
 import com.safetynet.safetynetalerts.model.LinkedFireStation;
 
+/**
+ * <p>Service layer class that displays CRUD methods, 
+ * corresponding to the DAO methods, to handle {@link LinkedFireStation} objects.</p>
+ * @author newbie
+ * @see LinkedFireStationDao
+ */
 @Service
 public class LinkedFireStationService {
 

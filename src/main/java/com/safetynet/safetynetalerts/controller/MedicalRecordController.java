@@ -19,6 +19,12 @@ import com.safetynet.safetynetalerts.exceptions.RequestBodyException;
 import com.safetynet.safetynetalerts.model.MedicalRecord;
 import com.safetynet.safetynetalerts.service.MedicalRecordService;
 
+/**
+ * <p>Controller class which exposes endpoints for CRUD operations 
+ * related to the medical records.</>
+ * @author newbie
+ * @see MedicalRecordService
+ */
 @RestController
 @RequestMapping("/medicalRecord")
 public class MedicalRecordController {
